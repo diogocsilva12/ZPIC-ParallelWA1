@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/diogocsilva12/Documents/GitHub/ZPIC-Parallel",
+      "program": "/Users/diogocsilva12/Documents/GitHub/ZPIC-Parallel/build/Debug/outDebug"
+    }
+  ]
+}
