@@ -1,5 +1,5 @@
 # GCC options
-CC = gcc
+CC = scorep gcc
 CFLAGS = -Ofast -g -std=c99 -pedantic -Wall
 #CFLAGS = -Kfast -std=c99 
 LDFLAGS = -lm
