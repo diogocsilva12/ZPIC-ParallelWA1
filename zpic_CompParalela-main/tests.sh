@@ -36,15 +36,10 @@ done
 TEST_NAME=$1
 CONFIG=$2
 CORES=$3
-VTUNE_TEST=$4
 
 if [ -z "$TEST_NAME" ]; then
     echo "Usage: sbatch run_tests.sh <test_name> <?config> <?cores>"
     exit 1
-fi
-
-if [ -z "$VTUNE_TEST" ]; then
-    VTUNE_TEST="hotspots"
 fi
 
 if [ -z "$CONFIG" ]; then
@@ -68,7 +63,7 @@ case $TEST_NAME in
         make CONFIG="$CONFIG"
         srun -c $CORES ./zpic
         ;;
-    
+
     scorep-1)
         echo "Running Score-P test with CONFIG=$CONFIG and CORES=$CORES"
         make clean
@@ -85,17 +80,6 @@ case $TEST_NAME in
         srun -c $CORES perf -r 3 stat ./zpic &> "$PERF_DIR"
         echo "Perf stats saved to $PERF_OUT"
         ;;
-
-    vtune)
-        echo "Running VTune analysis with CONFIG=$CONFIG and CORES=$CORES"
-        make clean
-        make CONFIG="$CONFIG"
-        mkdir -p tests/vtune_results
-        VTUNE_DIR="tests/vtune_results/vtune_${CONFIG}_${CORES}_threads"
-        srun -c $CORES vtune -collect "$VTUNE_TEST" -result-dir "$VTUNE_DIR" ./zpic
-        echo "VTune results saved to $VTUNE_DIR"
-        ;;
-
     *)
         echo "Unknown test name: $TEST_NAME"
         exit 1
