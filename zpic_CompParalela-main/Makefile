@@ -32,7 +32,7 @@
 
 # ====================== OMP SETTINGS ====================================== #
 
-OMP_NUM_THREADS?=48
+OMP_NUM_THREADS?=48 # ! Change this to achieve best performance
 OMP_PLACES?=cores
 OMP_PROC_BIND?=close 
 
