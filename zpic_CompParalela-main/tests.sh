@@ -22,7 +22,6 @@ echo "[STARTING] Loading modules"
 modules=(
     "GCC/13.3.0"
     "Score-P/8.0"
-    "VTune/2022.3.0"
 )
 
 ml purge
