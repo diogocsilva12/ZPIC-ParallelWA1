@@ -1,10 +1,10 @@
 # =========================================================================== #
-# Makefile - ZPIC Project
+#  Makefile - ZPIC Project
 # =========================================================================== #
 # - University - University of Minho
 # - Course - Parallel Computing (MCA)
-# - Authors - Tomás Pereira and Diogo Silva
-# ============================================================================== #
+# - Authors - Diogo Silva & Tomás Pereira 
+# ============================================================================= #
 # - Configurations you can use:
 # 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%% #
@@ -40,7 +40,7 @@ OMP_PROC_BIND?=close
 
 MAKEFLAGS += --no-print-directory
 
-CC = gcc # Compiler (Other options would include Fujistu Compiler for A64FX )
+CC ?= gcc # Compiler (Other options would include Fujistu Compiler for A64FX )
 
 CFLAGS_DEFAULT = -std=c99 -pedantic -Wall
 CFLAGS_OPT_1 = -O2 -march=native
