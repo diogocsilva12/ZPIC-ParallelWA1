@@ -100,7 +100,7 @@ $(SRC_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) -c $(CFLAGS) -I$(LIB_DIR) $< -o $@
 
 run: all
-	@echo "Compiling application with max number of THREADS"
+	@echo "Best case possible (TODO)"
 
 no_opt:
 	@echo "Running with no optimizations..."
