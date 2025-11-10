@@ -1,0 +1,14 @@
+[INFO] Cleaning previous builds...
+rm -f zpic current.o emf.o particles.o random.o timer.o main.o simulation.o zdf.o
+rm -rf docs
+[INFO] Compiling ZPIC with Score-P (GCC 13.3.0)
+scorep gcc -c -Ofast -g -std=c99 -pedantic -Wall current.c -o current.o
+scorep gcc -c -Ofast -g -std=c99 -pedantic -Wall emf.c -o emf.o
+scorep gcc -c -Ofast -g -std=c99 -pedantic -Wall particles.c -o particles.o
+scorep gcc -c -Ofast -g -std=c99 -pedantic -Wall random.c -o random.o
+scorep gcc -c -Ofast -g -std=c99 -pedantic -Wall timer.c -o timer.o
+scorep gcc -c -Ofast -g -std=c99 -pedantic -Wall main.c -o main.o
+scorep gcc -c -Ofast -g -std=c99 -pedantic -Wall simulation.c -o simulation.o
+scorep gcc -c -Ofast -g -std=c99 -pedantic -Wall zdf.c -o zdf.o
+scorep gcc -Ofast -g -std=c99 -pedantic -Wall current.o emf.o particles.o random.o timer.o main.o simulation.o zdf.o -lm -o zpic
+[SUCCESS] Compilation complete — executable 'zpic' created in /projects/F202500010HPCVLABUMINHO/uminhocp006/ProjetoCPar/zpic_CompParalela

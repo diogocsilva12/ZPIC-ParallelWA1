@@ -1,0 +1,22 @@
+
+Simulation ended.
+
+Time for spec. advance = 262.955266 s
+Time for emf   advance = 12.872205 s
+Total simulation time  = 293.033978 s
+
+Particle advance [nsec/part] = 1387.518807 
+Particle advance [Mpart/sec] = 0.720711 
+
+ Performance counter stats for './zpic':
+
+   586,188,486,958      cycles                    #    2.000 GHz                    
+   724,494,705,318      instructions              #    1.24  insn per cycle         
+        293,094.97 msec task-clock                #    1.000 CPUs utilized          
+
+     293.112917911 seconds time elapsed
+
+     293.066644000 seconds user
+       0.030000000 seconds sys
+
+
