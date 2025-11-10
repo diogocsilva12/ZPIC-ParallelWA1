@@ -57,7 +57,7 @@ int main (int argc, const char * argv[]) {
   printf("n = 0, t = 0.0\n");
 
 	for (n=0,t=0.0; t<=sim.tmax; n++, t=n*sim.dt) {
-  	printf("n = %i, t = %f\n",n,t);
+  		// printf("n = %i, t = %f\n",n,t);
 		if (report ( n , sim.ndump ) )	sim_report( &sim );
 		sim_iter( &sim );
 
