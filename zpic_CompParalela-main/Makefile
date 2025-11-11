@@ -43,9 +43,9 @@ MAKEFLAGS += --no-print-directory
 CC ?= gcc # Compiler (Other options would include Fujistu Compiler for A64FX )
 
 CFLAGS_DEFAULT = -std=c99 -pedantic -Wall
-CFLAGS_OPT_1 = -O2 -march=native
-CFLAGS_OPT_2 = -O3 -march=native
-CFLAGS_OPT_FULL = -Ofast -march=native -mtune=a64fx -flto # Allows FMA's and Cross file optimizations (For future work add more accordingly to hotspots that might be needed to be fixed) 
+CFLAGS_OPT_2 = -O2 -march=native -flto
+CFLAGS_OPT_3 = -O3 -march=native -flto
+CFLAGS_OPT_FULL = -Ofast -march=native -flto # Allows FMA's and Cross file optimizations (For future work add more accordingly to hotspots that might be needed to be fixed) 
 LDFLAGS = -lm
 
 # Inputs by user ! CONFIG = <config>, PARALLEL = <Y/N>
@@ -100,7 +100,7 @@ $(SRC_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) -c $(CFLAGS) -I$(LIB_DIR) $< -o $@
 
 run: all
-	@echo "Compiling application with max number of THREADS"
+	@echo "Best case possible (TODO)"
 
 no_opt:
 	@echo "Running with no optimizations..."

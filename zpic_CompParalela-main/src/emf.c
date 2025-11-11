@@ -624,7 +624,7 @@ void emf_set_ext_fld( t_emf* const emf, t_emf_ext_fld* ext_fld ) {
 
 	emf -> ext_fld.E_type = ext_fld -> E_type;
 
-	if ( emf -> ext_fld.E_type == EMF_FLD_TYPE_NONE ) {
+	if (emf -> ext_fld.E_type == EMF_FLD_TYPE_NONE) {
 		// Particle fields just point to the self-consistent fields
 		emf -> E_part = emf -> E;
 		emf -> ext_fld.E_part_buf = NULL;

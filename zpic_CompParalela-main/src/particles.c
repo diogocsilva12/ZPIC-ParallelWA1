@@ -13,6 +13,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
+#include <omp.h>
 
 #include "../lib/particles.h"
 
@@ -82,13 +83,23 @@ void spec_set_u( t_species* spec, const int start, const int end )
 #else
     /**
      * Version 1 momentum initialization
-     */
+    */
 
-    // Initialize thermal component
-    for (int i = start; i <= end; i++) {
-        spec->part[i].ux = spec -> uth[0] * rand_norm();
-        spec->part[i].uy = spec -> uth[1] * rand_norm();
-        spec->part[i].uz = spec -> uth[2] * rand_norm();
+     // Initialize thermal component
+    #pragma omp parallel private(rx, ry, rz)
+    {
+        double rx, ry, rz;
+
+        #pragma omp for schedule(static)
+        for (int i = start; i <= end; i++) {
+            rx = rand_norm();
+            ry = rand_norm();
+            rz = rand_norm();
+
+            spec->part[i].ux = spec->uth[0] * (float)rx;
+            spec->part[i].uy = spec->uth[1] * (float)ry;
+            spec->part[i].uz = spec->uth[2] * (float)rz;
+        }
     }
 
     // Calculate net momentum in each cell
@@ -100,14 +111,19 @@ void spec_set_u( t_species* spec, const int start, const int end )
     memset(npc, 0, (spec->nx) * sizeof(int) );
 
     // Accumulate momentum in each cell
-    for (int i = start; i <= end; i++) {
-        const int idx  = spec -> part[i].ix;
+    #pragma omp parallel private(idx)
+    {
+        int idx;
+        #pragma ompfor schedule(static)
+            for (int i = start; i <= end; i++) {
+                idx  = spec -> part[i].ix;
 
-        net_u[ idx ].x += spec->part[i].ux;
-        net_u[ idx ].y += spec->part[i].uy;
-        net_u[ idx ].z += spec->part[i].uz;
+                net_u[ idx ].x += spec->part[i].ux;
+                net_u[ idx ].y += spec->part[i].uy;
+                net_u[ idx ].z += spec->part[i].uz;
 
-        npc[ idx ] += 1;
+                npc[ idx ] += 1;
+            }
     }
 
     // Normalize to the number of particles in each cell to get the

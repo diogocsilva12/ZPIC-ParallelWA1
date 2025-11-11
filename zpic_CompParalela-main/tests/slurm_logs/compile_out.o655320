@@ -1,0 +1,25 @@
+[STARTING] Loading modules
+[LOAD_MODULE] GCC/14
+[LOAD_MODULE] Score-P/8.4-gompi-2024a
+Running perf record with CONFIG=OPT_FULL and CORES=1
+rm -f zpic src/zdf.o src/current.o src/simulation.o src/particles.o src/main.o src/random.o src/emf.o src/timer.o
+rm -rf docs
+cc -c -std=c99 -pedantic -Wall -Ofast -march=native -flto  -Ilib src/zdf.c -o src/zdf.o
+cc -c -std=c99 -pedantic -Wall -Ofast -march=native -flto  -Ilib src/current.c -o src/current.o
+cc -c -std=c99 -pedantic -Wall -Ofast -march=native -flto  -Ilib src/simulation.c -o src/simulation.o
+cc -c -std=c99 -pedantic -Wall -Ofast -march=native -flto  -Ilib src/particles.c -o src/particles.o
+cc -c -std=c99 -pedantic -Wall -Ofast -march=native -flto  -Ilib src/main.c -o src/main.o
+cc -c -std=c99 -pedantic -Wall -Ofast -march=native -flto  -Ilib src/random.c -o src/random.o
+cc -c -std=c99 -pedantic -Wall -Ofast -march=native -flto  -Ilib src/emf.c -o src/emf.o
+cc -c -std=c99 -pedantic -Wall -Ofast -march=native -flto  -Ilib src/timer.c -o src/timer.o
+OMP_NUM_THREADS=1 OMP_PLACES=cores OMP_PROC_BIND=close  \
+cc -std=c99 -pedantic -Wall -Ofast -march=native -flto  src/zdf.o src/current.o src/simulation.o src/particles.o src/main.o src/random.o src/emf.o src/timer.o -lm -o zpic
+Starting simulation ...
+
+n = 0, t = 0.0
+Energy (fields | particles | total) = 3.000000e+02 0.000000e+00 3.000000e+02
+n = 42106, t = 40.000702
+Energy (fields | particles | total) = 2.985455e+02 1.624781e+00 3.001703e+02
+Initial energy: 3.000000e+02, Final energy: 3.001703e+02
+
+Final energy different from Initial Energy. Change in total energy is: 0.06 % 

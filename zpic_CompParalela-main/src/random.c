@@ -46,7 +46,7 @@ void set_rand_seed( uint32_t m_w_, uint32_t m_z_ )
  * @return Random value in the range [0,2^32 - 1]
  */
 uint32_t rand_uint32( void )
-{
+{	
     m_z = 36969 * (m_z & 65535) + (m_z >> 16);
     m_w = 18000 * (m_w & 65535) + (m_w >> 16);
     return (m_z << 16) + m_w;  /* 32-bit result */

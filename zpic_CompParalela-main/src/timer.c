@@ -35,9 +35,9 @@ uint64_t timer_ticks( void )
  * @param end 		End event number of ticks
  * @return 			Time interval in seconds between end and start
  */
-double timer_interval_seconds(uint64_t start, uint64_t end)
+static inline double timer_interval_seconds(uint64_t start, uint64_t end)
 {
-	return (end - start) * 1.0e-6;
+	return (double)((end - start)) * 1.0e-6;
 }
 
 /**
