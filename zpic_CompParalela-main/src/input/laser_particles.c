@@ -13,7 +13,7 @@ void sim_init( t_simulation* sim ){
 
 	// Time step
 	float dt = 0.00095;
-	float tmax = 40;
+	float tmax = 40.0;
 
 	// Simulation box
 	int   nx  = 20000;
@@ -33,6 +33,7 @@ void sim_init( t_simulation* sim ){
 
 	t_species* species = (t_species *) malloc( n_species * sizeof( t_species ));
 	spec_new( &species[0], "electrons", -1.0, ppc, NULL, NULL, nx, box, dt, &density );
+	
 
 	// Initialize Simulation data
 	sim_new( sim, nx, box, dt, tmax, ndump, species, n_species );

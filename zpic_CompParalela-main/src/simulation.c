@@ -12,6 +12,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 #include "../lib/simulation.h"
 #include "../lib/timer.h"
 

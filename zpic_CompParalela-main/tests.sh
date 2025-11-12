@@ -79,11 +79,12 @@ case $TEST_NAME in
 
     scorep)
         echo "Running Score-P test with CONFIG=$CONFIG and CORES=$CORES"
-        make clean
-        make CC="scorep gcc" CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
-        mkdir -p tests/scorep
-        SCOREP_DIR="tests/scorep/score_${CONFIG}_${CORES}_threads"
-        srun -c $CORES ./zpic &> "$SCOREP_DIR"
+	    make clean
+	    make CC="scorep gcc" CONFIG="$CONFIG" DEBUG="Y" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
+	    mkdir -p tests/scorep
+	    SCOREP_DIR="tests/scorep/score_${CONFIG}_${CORES}_threads"a
+	    export SCOREP_EXPERIMENT_DIRECTORY="$SCOREP_DIR"
+	    srun -c "$CORES" ./zpic &> "${SCOREP_DIR}.log"
         ;;
     perf_stat)
         echo "Running perf test with CONFIG=$CONFIG and CORES=$CORES"
@@ -100,7 +101,7 @@ case $TEST_NAME in
         make CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" DEBUG="Y" OMP_PARALLEL="$PARALLEL"
         mkdir -p tests/perf
         PERF_DIR="tests/perf/perf_record_${CONFIG}_${CORES}_threads.data"
-        srun -c $CORES perf record -o "$PERF_DIR" ./zpic
+        srun -c "$CORES" perf record -g --call-graph dwarf -o "$PERF_DIR" -- ./zpic
         ;;
     *)
         echo "Unknown test name: $TEST_NAME"

@@ -24,15 +24,16 @@
 
 /**
  * @brief Structure holding single particle data
+ * @note This new structure follows a new vectorized approach
  * 
  */
-typedef struct Particle {
-	int ix;		///< Particle cell index
-	float x;	///< Position inside cell
-	float ux;	///< Generalized velocity along x
-	float uy;	///< Generalized velocity along y
-	float uz;	///< Generalized velocity along z
-} t_part;
+typedef struct ParticleBuffer {
+	int* ix;	///< Particle cell index
+	float* x;	///< Position inside cell
+	float* ux;	///< Generalized velocity along x
+	float* uy;	///< Generalized velocity along y
+	float* uz;	///< Generalized velocity along z
+} t_part_buffer;
 
 /**
  * @brief Types of density profile
@@ -49,6 +50,8 @@ enum density_type {
 
 /**
  * @brief Density profile parameters
+ * @note Since only electrons are used we decided to not vectorize the density profile
+ * !If in the future more than one density profile is needed, vectorization will be needed
  * 
  */
 typedef struct Density {
@@ -81,7 +84,7 @@ enum part_boundary {
 
 /**
  * @brief Set of particles
- * 
+* ! ONLY ELECTRONS ARE USED FOR THIS SIMULATION
  */
 typedef struct Species {
 
@@ -89,7 +92,7 @@ typedef struct Species {
 	char name[MAX_SPNAME_LEN+1];
 
 	// Particles
-	t_part *part;	///< Particle buffer
+	t_part_buffer part;	///< Particle buffer
 	int np;			///< Number of particles in buffer
 	int np_max;		///< Maximum number of particles in buffer
 

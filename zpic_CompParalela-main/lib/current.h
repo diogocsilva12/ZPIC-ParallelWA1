@@ -43,7 +43,7 @@ typedef struct Smooth {
 
 /**
  * @brief Current density object
- * 
+ * ! Vectorize this 
  */
 typedef struct Current {
 	
