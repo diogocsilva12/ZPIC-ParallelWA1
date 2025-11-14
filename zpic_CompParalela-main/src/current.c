@@ -1,24 +1,56 @@
 /**
  * @file current.c
- * @author Ricardo Fonseca
+ * @author Diogo Silva, Ricardo Fonseca, Tomás Pereira
  * @brief Electric current density
- * @version 0.2
- * @date 2022-02-04
- * 
- * @copyright Copyright (c) 2022
+ * @date 2025/11/24
+ * @copyright Copyright (c) 2025
  * 
  */
 
-#include "current.h"
-
+// Stdlib headers
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 
+// Local headers
+#include "current.h"
 #include "zdf.h"
 
+// Temporary buffer to help on kernel vectorization
+static float3Buffer tmp;
+static int is_allocated = 0;
 
-void current_smooth( t_current* const current );
+/**
+ * @brief Allocates a temporary buffer of size nx (Number of grid cells)
+ * @brief Our approach works because number of grid cells is constant during the simulation
+ * @param nx Number of grid cells
+ * @note This temporary buffer also avoids multiple alloc_float3Buffer calls which stress cache too much for kernel_x function
+ */
+void kernel_tmpbuf_init(int nx){
+    if (!is_allocated){
+        alloc_float3Buffer(&tmp, nx);
+        is_allocated= 1;
+    }
+}
+
+/**
+ * @brief Free the temporary buffer (call once after simulation ends)
+*/
+void kernel_tmpbuf_cleanup() {
+    if (is_allocated) {
+        free_float3Buffer(&tmp);
+        is_allocated = 0;
+    }
+}
+
+/**
+ * @brief Return pointer to temporary buffer
+*/
+float3Buffer* kernel_tmpbuf_get() {
+    return &tmp;
+}
+
+void current_smooth(t_current* const current);
 
 /**
  * @brief Initializes Electric current density object
@@ -28,7 +60,7 @@ void current_smooth( t_current* const current );
  * @param box       Physical box size
  * @param dt        Simulation time step
  */
-void current_new( t_current *current, int nx, float box, float dt )
+void current_new(t_current *current, int nx, float box, float dt)
 {
     // Number of guard cells for linear interpolation
     int gc[2] = {1,2}; 
@@ -77,7 +109,7 @@ void current_new( t_current *current, int nx, float box, float dt )
  * 
  * @param current   Electric current density
  */
-void current_delete( t_current *current )
+void current_delete(t_current *current)
 {
     free_float3Buffer(&current->J_buf);
     current->J_buf.x = NULL;
@@ -91,7 +123,7 @@ void current_delete( t_current *current )
  * 
  * @param current   Electric current density
  */
-void current_zero( t_current *current )
+void current_zero(t_current *current)
 {
     // zero fields
     size_t size;
@@ -110,14 +142,16 @@ void current_zero( t_current *current )
  * 
  * @param current Electric current density
  */
-void current_update_gc( t_current *current )
+void current_update_gc(t_current *current)
 {
     if ( current -> bc_type == CURRENT_BC_PERIODIC ) {
+        
         float* restrict const J_0x = current -> J_0x;
         float* restrict const J_0y = current -> J_0y;
         float* restrict const J_0z = current -> J_0z;
         const int nx = current -> nx;
 
+        #pragma GCC ivdep
         // lower - add the values from upper boundary ( both gc and inside box )
         for (int i=-current->gc[0]; i<current->gc[1]; i++) {
             J_0x[i] += J_0x[nx + i];
@@ -125,6 +159,7 @@ void current_update_gc( t_current *current )
             J_0z[i] += J_0z[nx + i];
         }
         
+        #pragma GCC ivdep
         // upper - just copy the values from the lower boundary 
         for (int i=-current->gc[0]; i<current->gc[1]; i++) {
             J_0x[nx + i] = J_0x[i];
@@ -146,7 +181,7 @@ void current_update_gc( t_current *current )
  */
 void current_update( t_current *current )
 {
-    
+
     // Boundary conditions / guard cells
     current_update_gc(current);
 
@@ -169,20 +204,20 @@ void current_update( t_current *current )
  */
 void current_report( const t_current *current, const int jc )
 {
-	if ( jc < 0 || jc > 2 ) {
+	if (jc < 0 || jc > 2) {
 		fprintf(stderr, "(*error*) Invalid current component (jc) selected, returning\n");
 		return;
 	}
 
     // Pack the information
-    float buf[current->nx];
-    float *fx = current->J_0x;
-    float *fy = current->J_0y;
-    float *fz = current->J_0z;
+    float buf[current->nx] __attribute__((aligned(64)));
+    const float* restrict const fx = current->J_0x;
+    const float* restrict const fy = current->J_0y;
+    const float* restrict const fz = current->J_0z;
 
     switch (jc) {
         case 0:
-            for ( int i = 0; i < current->nx; i++ ) {
+            for (int i = 0; i < current->nx; i++) {
                 buf[i] = fx[i];
             }
             break;
@@ -231,7 +266,7 @@ void current_report( const t_current *current, const int jc )
         .time_units = "1/\\omega_p"
     };
 
-    zdf_save_grid( (void *) buf, zdf_float32, &info, &iter, "CURRENT" );
+    zdf_save_grid((void *) buf, zdf_float32, &info, &iter, "CURRENT");
 }
 
 /**
@@ -250,7 +285,7 @@ void get_smooth_comp( int n, float* sa, float* sb) {
     float a,b,total;
 
     a = -1;
-    b = (4.0 + 2.0*n)/n;
+    b = 4.0 / n + 2.0;
     total = 2*a + b;
 
     *sa = a / total;
@@ -267,60 +302,51 @@ void get_smooth_comp( int n, float* sa, float* sb) {
  * @param sa kernel a value
  * @param sb kernel b value
  */
-void kernel_x( t_current* const current, const float sa, const float sb ){
+void kernel_x(t_current* const current, const float sa, const float sb){
 
     float* restrict const J_0x = current -> J_0x;
     float* restrict const J_0y = current -> J_0y;
     float* restrict const J_0z = current -> J_0z;
 
-    float fl_x = J_0x[-1];
-    float fl_y = J_0y[-1];
-    float fl_z = J_0z[-1];
-    float f0_x = J_0x[ 0];
-    float f0_y = J_0y[ 0];
-    float f0_z = J_0z[ 0];
+    //  Get temporary buffer (Used to avoid data dependencies)
+    float3Buffer* tmp = kernel_tmpbuf_get();
+    float* restrict const tmp_x = tmp->x;
+    float* restrict const tmp_y = tmp->y;
+    float* restrict const tmp_z = tmp->z;
 
-    for( int i = 0; i < current -> nx; i++) {
-
-        float fu_x = J_0x[i + 1];
-        float fu_y = J_0y[i + 1];
-        float fu_z = J_0z[i + 1];
-
-
-        float3 fs;
-
-        fs.x = sa * fl_x + sb * f0_x + sa * fu_x;
-        fs.y = sa * fl_y + sb * f0_y + sa * fu_y;
-        fs.z = sa * fl_z + sb * f0_z + sa * fu_z;
-
-        J_0x[i] = fs.x;
-        J_0y[i] = fs.y;
-        J_0z[i] = fs.z;
-
-        fl_x = f0_x;
-        f0_x = fu_x;  
-        fl_y = f0_y;
-        f0_y = fu_y;  
-        fl_z = f0_z;
-        f0_z = fu_z;  
-
+    /*
+       We vectorized this loop to avoid data dependencies
+    */
+    #pragma GCC ivdep
+    for (int i = 0; i < current->nx; i++) {
+        tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
+        tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
+        tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
     }
 
+    #pragma GCC ivdep
+    for(int i = 0; i < current->nx; i++) {
+        J_0x[i] = tmp_x[i];
+        J_0y[i] = tmp_y[i];
+        J_0z[i] = tmp_z[i];
+    }
+   
     // Update x boundaries for periodic boundaries
-    if ( current -> bc_type == CURRENT_BC_PERIODIC ) {
+    if (current -> bc_type == CURRENT_BC_PERIODIC) {
+        #pragma GCC ivdep
         for(int i = -current->gc[0]; i<0; i++){
-            J_0x[i] = J_0x[ current->nx + i ];
-            J_0y[i] = J_0y[ current->nx + i ];
-            J_0z[i] = J_0z[ current->nx + i ];
+            J_0x[i] = J_0x[current->nx + i];
+            J_0y[i] = J_0y[current->nx + i];
+            J_0z[i] = J_0z[current->nx + i];
         }
 
+        #pragma GCC ivdep
         for (int i=0; i<current->gc[1]; i++){
             J_0x[current->nx + i] = J_0x[ i ];
             J_0y[current->nx + i] = J_0y[ i ];
             J_0z[current->nx + i] = J_0z[ i ];
         }
     }
-
 }
 
 /**
@@ -334,23 +360,24 @@ void kernel_x( t_current* const current, const float sa, const float sb ){
  * 
  * @param current Electric current density
  */
-void current_smooth( t_current* const current ) {
+void current_smooth(t_current* const current) {
 
     // filter kernel [sa, sb, sa]
     float sa, sb;
 
     // x-direction filtering
-    if ( current -> smooth.xtype != NONE ) {
-        // binomial filter
+    if (current -> smooth.xtype != NONE) {
+        
+        // Binomial filter
         sa = 0.25; sb = 0.5;
-        for( int i = 0; i < current -> smooth.xlevel; i++) {
-            kernel_x( current, 0.25, 0.5 );
+        for(int i = 0; i < current -> smooth.xlevel; i++) {
+            kernel_x(current, sa, sb);
         }
 
         // Compensator
-        if ( current -> smooth.xtype == COMPENSATED ) {
-            get_smooth_comp( current -> smooth.xlevel, &sa, &sb );
-            kernel_x( current, sa, sb );
+        if (current -> smooth.xtype == COMPENSATED) {
+            get_smooth_comp(current -> smooth.xlevel, &sa, &sb);
+            kernel_x(current, sa, sb);
         }
     }
 

@@ -44,6 +44,7 @@ int report( int n, int ndump )
  * @param sim 	EM1D Simulation
  */
 void sim_iter( t_simulation* sim ) {
+
 	// Advance particles and deposit current
 	current_zero( &sim -> current );
 	for (int i = 0; i<sim -> n_species; i++)
@@ -63,7 +64,7 @@ void sim_iter( t_simulation* sim ) {
  * @param t0 	Simulation start time (ticks)
  * @param t1 	Simulation end time (ticks)
  */
-void sim_timings( t_simulation* sim, uint64_t t0, uint64_t t1 ){
+void sim_timings( t_simulation* sim, uint64_t t0, uint64_t t1){
 
 	fprintf(stderr, "Time for spec. advance = %f s\n", spec_time());
 	fprintf(stderr, "Time for emf   advance = %f s\n", emf_time());

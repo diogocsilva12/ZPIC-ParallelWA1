@@ -109,4 +109,7 @@ void current_update( t_current *current );
  */
 void current_report( const t_current *current, const int jc );
 
+void kernel_tmpbuf_init(int nx);
+void kernel_tmpbuf_cleanup();
+
 #endif

@@ -14,8 +14,11 @@
 #include <stdlib.h>
 
 /**
- * @brief Three component vector
- * 
+ * @struct Float3Buffer
+ * @brief Buffer of 3 float arrays
+ * float* x -> x[i],  x coordinates
+ * float* y -> y[i],  y coordinates
+ * float* z -> z[i],  z coordinates
  */
 typedef struct Float3Buffer {
 	float* x;	///< x vector component
@@ -23,19 +26,41 @@ typedef struct Float3Buffer {
 	float* z;	///< z vector component
 } float3Buffer;
 
-
+/**
+* @struct Float3
+* @brief Float3 vector
+* float x,  x coordinates
+* float y,  y coordinates
+* float z,  z coordinates
+*/
 typedef struct Float3{
     float x;
     float y;
     float z;
 } float3;
 
+// -- Utilities to create Float3Buffers --
 
+/**
+ * @brief Allocates a float3Buffer (float*x, float*y, float*z)
+ * @param buffer Pointer to the buffer
+ * @param size Number of elements in the buffer
+*/
 void alloc_float3Buffer(float3Buffer* buffer, int size);
+
+/**
+ * @brief Mem setting the buffer to a specific value
+ * @param buffer Pointer to the buffer
+ * @param size Number of elements in the buffer
+ * @param value Value to initialize the buffer
+ */
 void mem_set_float3Buffer(float3Buffer* buffer, int size, float value);
+
+/**
+ * @brief Free memory allocated of a float3Buffer
+ * @param buffer Pointer to the buffer
+ */
 void free_float3Buffer(float3Buffer* buffer);
-
-
 
 /* ANSI C does not define math constants */
 

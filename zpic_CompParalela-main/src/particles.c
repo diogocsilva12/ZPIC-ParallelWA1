@@ -1090,16 +1090,10 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         float qvy = spec->q * uy * rg;
         float qvz = spec->q * uz * rg;
 
-        // deposit current using Eskirepov method
-        // dep_current_esk( spec -> part[i].ix, di,
-        // 				 spec -> part[i].x, x1,
-        // 				 qnx, qvy, qvz,
-        // 				 current );
-
-        dep_current_zamb( spec->part.ix[i], di,
+        dep_current_zamb(spec->part.ix[i], di,
                          spec -> part.x[i], dx,
                          qnx, qvy, qvz,
-                         current );
+                         current);
 
         // Store results
         spec -> part.x[i] = x1;

@@ -57,6 +57,8 @@ int main (int argc, const char * argv[]) {
 	t0 = timer_ticks();
   	printf("n = 0, t = 0.0\n");
 
+	kernel_tmpbuf_init(sim.current.nx);
+
 	for (n=0,t=0.0; t<=sim.tmax; n++, t=n*sim.dt) {
   		// printf("n = %i, t = %f\n",n,t);
 		if (report ( n , sim.ndump ) )	sim_report( &sim );
@@ -67,6 +69,8 @@ int main (int argc, const char * argv[]) {
     	 	sim_report_energy (&sim);
     	}
 	}
+
+	kernel_tmpbuf_cleanup();
 
 	printf("n = %i, t = %f\n",n,t);
 	t1 = timer_ticks();
