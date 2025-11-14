@@ -7,20 +7,18 @@
  * 
  * @copyright Copyright (c) 2022
  * 
- */
+*/
+
 #define _POSIX_C_SOURCE 200112L
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include <omp.h>
 
 #include "../lib/particles.h"
-
 #include "../lib/random.h"
 #include "../lib/emf.h"
 #include "../lib/current.h"
-
 #include "../lib/zdf.h"
 #include "../lib/timer.h"
 
@@ -58,7 +56,7 @@ uint64_t spec_npush( void )
  */
 double spec_perf( void )
 {
-    return (_spec_npush > 0) ? (_spec_time / _spec_npush) : -1.0;
+    return (_spec_npush > 0 )? _spec_time / _spec_npush: -1.0;
 }
 
 /*********************************************************************************************
@@ -76,31 +74,21 @@ void spec_set_u( t_species* spec, const int start, const int end )
 {
 #if 0
     for (int i = start; i <= end; i++) {
-        spec->part.ux[i] = spec -> ufl[0] + spec -> uth[0] * rand_norm();
-        spec->part.uy[i] = spec -> ufl[1] + spec -> uth[1] * rand_norm();
-        spec->part.uz[i] = spec -> ufl[2] + spec -> uth[2] * rand_norm();
+        spec->part[i].ux = spec -> ufl[0] + spec -> uth[0] * rand_norm();
+        spec->part[i].uy = spec -> ufl[1] + spec -> uth[1] * rand_norm();
+        spec->part[i].uz = spec -> ufl[2] + spec -> uth[2] * rand_norm();
     }
 #else
     /**
      * Version 1 momentum initialization
-    */
+     */
 
-     // Initialize thermal component
-    // #pragma omp parallel private(rx, ry, rz)
-    // {
-        double rx, ry, rz;
-
-       //  #pragma omp for schedule(static)
-        for (int i = start; i <= end; i++) {
-            rx = rand_norm();
-            ry = rand_norm();
-            rz = rand_norm();
-
-            spec->part.ux[i] = spec->uth[0] * (float)rx;
-            spec->part.uy[i] = spec->uth[1] * (float)ry;
-            spec->part.uz[i] = spec->uth[2] * (float)rz;
-        }
-    //}
+    // Initialize thermal component
+    for (int i = start; i <= end; i++) {
+        spec->part.ux[i] = spec -> uth[0] * rand_norm();
+        spec->part.uy[i] = spec -> uth[1] * rand_norm();
+        spec->part.uz[i] = spec -> uth[2] * rand_norm();
+    }
 
     // Calculate net momentum in each cell
     float3 * restrict net_u = (float3 *) malloc( spec->nx * sizeof(float3));
@@ -111,16 +99,15 @@ void spec_set_u( t_species* spec, const int start, const int end )
     memset(npc, 0, (spec->nx) * sizeof(int) );
 
     // Accumulate momentum in each cell
-    //  #pragma omp parallel private(idx)
-    // {
-       //  #pragma ompfor schedule(static)
-            for (int i = start; i <= end; i++){
-                net_u[spec->part.ix[i]].x += spec->part.ux[i];
-                net_u[spec->part.ix[i]].y += spec->part.uy[i];
-                net_u[spec->part.ix[i]].z += spec->part.uz[i];
-                npc[spec->part.ix[i]]++;
-            }
-    //}
+    for (int i = start; i <= end; i++) {
+        const int idx  = spec -> part.ix[i];
+
+        net_u[ idx ].x += spec->part.ux[i];
+        net_u[ idx ].y += spec->part.uy[i];
+        net_u[ idx ].z += spec->part.uz[i];
+
+        npc[ idx ] += 1;
+    }
 
     // Normalize to the number of particles in each cell to get the
     // average momentum in each cell
@@ -418,7 +405,7 @@ void spec_set_x( t_species* spec, const int range[] )
 
                     // This version avoids a division by 0 if n1 = n0
                     double pos = 2 * (Rs-d0) /( sqrt( n0*n0 + 2 * (n1-n0) * (Rs-d0) ) + n0 );
-                    
+
                     spec->part.ix[ip] = ix;
                     spec->part.x[ip] = pos;
                     ip++;
@@ -461,25 +448,59 @@ void spec_set_x( t_species* spec, const int range[] )
 }
 
 /**
+ * @brief Reallocates memory in a aligned way
+ * @param ptr Pointer to the memory
+ * @param new_size New size of the memory
+ * @param old_size Old size of the memory
+ * @param align Alignment
+ */
+void* aligned_realloc(void *ptr, size_t new_size, size_t old_size, size_t align) {
+    
+    if (new_size == 0) {
+        free(ptr);
+        return NULL;
+    }
+    if (ptr == NULL) {
+        void* new_ptr = NULL;
+        if (posix_memalign(&new_ptr, align, new_size) != 0) {
+            fprintf(stderr, "[ERROR] Could not allocate memory, aborting\n");
+            exit(EXIT_FAILURE);
+        }
+        return new_ptr;
+    }
+
+    void* new_ptr = NULL;
+    if (posix_memalign(&new_ptr, align, new_size) != 0) {
+        fprintf(stderr, "[ERROR] Could not allocate memory, aborting\n");
+        exit(EXIT_FAILURE);
+    }
+
+    size_t copy_size = old_size < new_size ? old_size : new_size;
+    memcpy(new_ptr, ptr, copy_size);
+
+    free(ptr);
+    return new_ptr;
+}
+
+
+/**
  * @brief Grows particle buffer to specified size.
  * 
  * If the new size is smaller than the previous size the buffer size is not changed
  * and the function returns silently.
- * @note !! Removed realloc because particle is now a buffer
  * @param spec  Particle species
  * @param size  New buffer size (will be rounded up to next multiple of 1024)
  **/
 void spec_grow_buffer( t_species* spec, const int size ) {
-    
-    // Increase by chunks of 1024 particles
-    if ( size > spec -> np_max ) {
-        spec -> np_max = (size/1024 + 1) * 1024;
-        posix_memalign((void**)&spec -> part.ix, 64, spec -> np_max * sizeof(int));
-        posix_memalign((void**)&spec -> part.x, 64, spec -> np_max * sizeof(float));
-        posix_memalign((void**)&spec -> part.ux, 64, spec -> np_max * sizeof(float));
-        posix_memalign((void**)&spec -> part.uy, 64, spec -> np_max * sizeof(float));
-        posix_memalign((void**)&spec -> part.uz, 64, spec -> np_max * sizeof(float));
-    }
+ 
+    int old_np_max = spec -> np_max;
+    spec -> np_max = (size/1024 + 1) * 1024;
+
+    spec->part.ix = aligned_realloc(spec -> part.ix, spec -> np_max * sizeof(int), old_np_max * sizeof(int), 64);
+    spec->part.x = aligned_realloc(spec -> part.x, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 64);
+    spec->part.ux = aligned_realloc(spec -> part.ux, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 64);
+    spec->part.uy = aligned_realloc(spec -> part.uy, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 64);
+    spec->part.uz = aligned_realloc(spec -> part.uz, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 64);
 }
 
 /**
@@ -498,14 +519,18 @@ void spec_inject_particles( t_species* spec, const int range[] )
     int np_inj = spec_np_inj( spec, range );
 
     // Check if buffer is large enough and if not reallocate
-    spec_grow_buffer( spec, spec -> np + np_inj );
+       // Increase by chunks of 1024 particles
+    int size = spec -> np + np_inj;
+    if (size > spec -> np_max) { 
+        spec_grow_buffer(spec, size);
+    }
+
 
     // Set particle positions
     spec_set_x( spec, range );
 
     // Set momentum of injected particles
     spec_set_u( spec, start, spec -> np - 1 );
-
 }
 
 /**
@@ -567,25 +592,20 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
     spec -> density.custom_q_inj = 0.;
 
     // Density multiplier
-    spec ->q *= fabsf(spec -> density.n);
+    spec ->q *= fabsf( spec -> density.n );
 
-    // Initialize temperature profile (Trivial unrolling optimization)
+    // Initialize temperature profile
+    if ( ufl ) {
+        for(int i=0; i<3; i++) spec -> ufl[i] = ufl[i];
+    } else {
+        for(int i=0; i<3; i++) spec -> ufl[i] = 0;
+    }
 
-    float ufl0 = (ufl ? ufl[0] : 0.0f);
-    float ufl1 = (ufl ? ufl[1] : 0.0f);
-    float ufl2 = (ufl ? ufl[2] : 0.0f);
-
-    spec->ufl[0] = ufl0;
-    spec->ufl[1] = ufl1;
-    spec->ufl[2] = ufl2;
-
-    float uth0 = (uth ? uth[0] : 0.0f);
-    float uth1 = (uth ? uth[1] : 0.0f);
-    float uth2 = (uth ? uth[2] : 0.0f);
-
-    spec->uth[0] = uth0;
-    spec->uth[1] = uth1;
-    spec->uth[2] = uth2;
+    if ( uth ) {
+        for(int i=0; i<3; i++) spec -> uth[i] = uth[i];
+    } else {
+        for(int i=0; i<3; i++) spec -> uth[i] = 0;
+    }
 
     // Reset iteration number
     spec -> iter = 0;
@@ -641,23 +661,16 @@ void spec_move_window( t_species *spec ){
 
 /**
  * @brief Frees dynamic memory from particle species
- * @note This now supports simd particles
+ * 
  * @param spec Particle species
  */
 void spec_delete( t_species* spec )
-{   
+{
     free(spec->part.ix);
     free(spec->part.x);
     free(spec->part.ux);
     free(spec->part.uy);
     free(spec->part.uz);
-
-    spec->part.ix = NULL;
-    spec->part.x = NULL;
-    spec->part.ux = NULL;
-    spec->part.uy = NULL;
-    spec->part.uz = NULL;
-
     spec->np = -1;
 }
 
@@ -821,6 +834,8 @@ void dep_current_zamb( int ix0, int di,
 
  *********************************************************************************************/
 
+
+
  /**
   * @brief Swap integer pointers
   * @param ptr1 Pointer 1
@@ -926,24 +941,24 @@ void spec_sort( t_species* spec )
  * @param Bp    B-field interpolated at particle position
  */
 void interpolate_fld( const float3* restrict const E, const float3* restrict const B,
-              const t_part_buffer part, int part_i, float3* restrict const Ep, float3* restrict const Bp )
+              const t_part_buffer part, int idx, float3* restrict const Ep, float3* restrict const Bp )
 {
     int i, ih;
     float w1, w1h;
 
-    i = part.ix[part_i];
-    w1 = part.x[part_i];
+    i = part.ix[idx];
 
-    ih = (w1 < 0.5f)? -1 : 0;
+    w1 = part.x[idx];
+    ih = (w1 <0.5f)? -1 : 0;
     w1h = w1 + ((w1 <0.5f)?0.5f:-0.5f);
 
     ih += i;
 
     Ep->x = E[ih].x * (1.0f - w1h) + E[ih+1].x * w1h;
-    Ep->y = E[i].y * (1.0f -  w1) + E[i+1].y * w1;
-    Ep->z = E[i].z * (1.0f -  w1) + E[i+1].z * w1;
+    Ep->y = E[i ].y * (1.0f -  w1) + E[i+1 ].y * w1;
+    Ep->z = E[i ].z * (1.0f -  w1) + E[i+1 ].z * w1;
 
-    Bp->x = B[i].x * (1.0f  - w1) + B[i+1 ].x * w1;
+    Bp->x = B[i ].x * (1.0f  - w1) + B[i+1 ].x * w1;
     Bp->y = B[ih].y * (1.0f - w1h) + B[ih+1].y * w1h;
     Bp->z = B[ih].z * (1.0f - w1h) + B[ih+1].z * w1h;
 
@@ -957,7 +972,7 @@ void interpolate_fld( const float3* restrict const E, const float3* restrict con
  * @param x         End particle position, normalized to cell size
  * @return ltrim    Number of cells moved, {-1,0,1}
  */
-static inline int ltrim( float x )
+int ltrim( float x )
 {
     return ( x >= 1.0f ) - ( x < 0.0f );
 }
@@ -985,25 +1000,22 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
 
     uint64_t t0;
     t0 = timer_ticks();
+
     const float tem   = 0.5 * spec->dt/spec -> m_q;
     const float dt_dx = spec->dt / spec->dx;
 
     // Auxiliary values for current deposition
     const float qnx = spec -> q *  spec->dx / spec->dt;
+
     const int nx0 = spec -> nx;
+
     double energy = 0;
 
-    //#pragma omp parallel for reduction(+:energy)
     // Advance particles
-    for (int i=0; i < spec->np; i++) {
+    for (int i=0; i<spec->np; i++) {
 
-        // Eleteric charge and magnetic fields
         float3 Ep, Bp;
-
-        // Electric and magnetic momenta
         float utx, uty, utz;
-
-        // Current eletric charge
         float ux, uy, uz, u2;
         float gamma, rg, gtem, otsq;
 
@@ -1018,7 +1030,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         uz = spec -> part.uz[i];
 
         // interpolate fields
-        interpolate_fld( emf -> E_part, emf -> B_part, spec -> part, i,  &Ep, &Bp);
+        interpolate_fld( emf -> E_part, emf -> B_part, spec -> part, i, &Ep, &Bp );
         // Ep.x = Ep.y = Ep.z = Bp.x = Bp.y = Bp.z = 0;
 
         // advance u using Boris scheme
@@ -1074,6 +1086,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         rg = 1.0f / sqrtf(1.0f + ux*ux + uy*uy + uz*uz);
 
         dx = dt_dx * rg * ux;
+
         x1 = spec -> part.x[i] + dx;
 
         di = ltrim(x1);
@@ -1089,7 +1102,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         // 				 qnx, qvy, qvz,
         // 				 current );
 
-        dep_current_zamb(spec -> part.ix[i], di,
+        dep_current_zamb( spec->part.ix[i], di,
                          spec -> part.x[i], dx,
                          qnx, qvy, qvz,
                          current );
@@ -1120,7 +1133,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
                 spec -> part.x[i] = spec -> part.x[ -- spec -> np ];
                 spec -> part.ux[i] = spec -> part.ux[ -- spec -> np ];
                 spec -> part.uy[i] = spec -> part.uy[ -- spec -> np ];
-                spec -> part.uz[i] = spec -> part.uz[ -- spec -> np ]; 
+                spec -> part.uz[i] = spec -> part.uz[ -- spec -> np ];
                 continue;
             }
             i++;
@@ -1129,18 +1142,17 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
     } else {
         // Use periodic boundaries in x
         for (int i=0; i<spec->np; i++) {
-            spec -> part.ix[i] += (( spec -> part.ix[i] < 0 ) ? nx0 : 0 ) - (( spec -> part.ix[i] >= nx0 ) ? nx0 : 0);
+
+            spec-> part.ix[i] += (( spec -> part.ix[i] < 0 ) ? nx0 : 0 ) - (( spec -> part.ix[i] >= nx0 ) ? nx0 : 0);
         }
     }
 
     // Sort species at every n_sort time steps
-    
+    /*
     if ( spec -> n_sort > 0 ) {
         if ( ! (spec -> iter % spec -> n_sort) ) spec_sort( spec );
     }
-    
-    
-    
+    */
 
     // Timing info
     _spec_npush += spec -> np;
@@ -1251,7 +1263,8 @@ void spec_rep_particles( const t_species *spec )
     float* data = malloc( size );
 
     // x
-    for( i = 0; i < spec ->np; i++ ) data[i] = (spec -> n_move + spec -> part.ix[i] + spec -> part.x[i] ) * spec -> dx;
+    for( i = 0; i < spec ->np; i++ )
+        data[i] = (spec -> n_move + spec -> part.ix[i] + spec -> part.x[i] ) * spec -> dx;
     zdf_add_quant_part_file( &part_file, quants[0], data, spec ->np );
 
     // ux
@@ -1356,7 +1369,7 @@ void spec_pha_axis( const t_species *spec, int i0, int np, int quant,
             break;
         case U2:
             for (int i = 0; i < np; i++)
-                axis[i] = spec -> part.uy[i0+i];    
+                axis[i] = spec -> part.uy[i0+i];
             break;
         case U3:
             for (int i = 0; i < np; i++)

@@ -45,7 +45,7 @@ CC ?= gcc # Compiler (Other options would include Fujistu Compiler for A64FX )
 CFLAGS_DEFAULT = -std=c99 -pedantic -Wall
 CFLAGS_OPT_2 = -O2 -march=native -flto
 CFLAGS_OPT_3 = -O3 -march=native  -flto
-CFLAGS_OPT_FULL = -Ofast -march=native -flto # Allows FMA's and Cross file optimizations (For future work add more accordingly to hotspots that might be needed to be fixed) 
+CFLAGS_OPT_FULL = -Ofast -march=native -flto  # Allows FMA's and Cross file optimizations (For future work add more accordingly to hotspots that might be needed to be fixed) 
 LDFLAGS = -lm
 
 # Inputs by user ! CONFIG = <config>, PARALLEL = <Y/N>
