@@ -9,13 +9,13 @@
  * 
  */
 
-#include "../lib/current.h"
+#include "current.h"
 
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 
-#include "../lib/zdf.h"
+#include "zdf.h"
 
 
 void current_smooth( t_current* const current );
@@ -37,9 +37,7 @@ void current_new( t_current *current, int nx, float box, float dt )
     size_t size;
     
     size = gc[0] + nx + gc[1];
-    
-    current->J_buf = malloc( size * sizeof( float3 ) );
-    assert( current->J_buf );
+    alloc_float3Buffer(&current->J_buf, size);
 
     // store nx and gc values
     current->nx = nx;
@@ -47,7 +45,9 @@ void current_new( t_current *current, int nx, float box, float dt )
     current->gc[1] = gc[1];
     
     // Make J point to cell [0]
-    current->J = current->J_buf + gc[0];
+    current->J_0x = &current->J_buf.x[gc[0]];
+    current->J_0y = &current->J_buf.y[gc[0]];
+    current->J_0z = &current->J_buf.z[gc[0]];
     
     // Set cell sizes and box limits
     current -> box = box;
@@ -79,9 +79,10 @@ void current_new( t_current *current, int nx, float box, float dt )
  */
 void current_delete( t_current *current )
 {
-    free( current->J_buf );
-    
-    current->J_buf = NULL;
+    free_float3Buffer(&current->J_buf);
+    current->J_buf.x = NULL;
+    current->J_buf.y = NULL;
+    current->J_buf.z = NULL;
     
 }
 
@@ -95,8 +96,8 @@ void current_zero( t_current *current )
     // zero fields
     size_t size;
     
-    size = (current->gc[0] + current->nx + current->gc[1]) * sizeof( float3 );
-    memset( current->J_buf, 0, size );
+    size = current->gc[0] + current->nx + current->gc[1];
+    mem_set_float3Buffer(&current->J_buf, size, 0);
     
 }
 
@@ -112,21 +113,23 @@ void current_zero( t_current *current )
 void current_update_gc( t_current *current )
 {
     if ( current -> bc_type == CURRENT_BC_PERIODIC ) {
-        float3* restrict const J = current -> J;
+        float* restrict const J_0x = current -> J_0x;
+        float* restrict const J_0y = current -> J_0y;
+        float* restrict const J_0z = current -> J_0z;
         const int nx = current -> nx;
 
         // lower - add the values from upper boundary ( both gc and inside box )
         for (int i=-current->gc[0]; i<current->gc[1]; i++) {
-            J[ i ].x += J[ nx + i ].x;
-            J[ i ].y += J[ nx + i ].y;
-            J[ i ].z += J[ nx + i ].z;
+            J_0x[i] += J_0x[nx + i];
+            J_0y[i] += J_0y[nx + i];
+            J_0z[i] += J_0z[nx + i];
         }
         
         // upper - just copy the values from the lower boundary 
         for (int i=-current->gc[0]; i<current->gc[1]; i++) {
-            J[ nx + i ].x = J[ i ].x;
-            J[ nx + i ].y = J[ i ].y;
-            J[ nx + i ].z = J[ i ].z;
+            J_0x[nx + i] = J_0x[i];
+            J_0y[nx + i] = J_0y[i];
+            J_0z[nx + i] = J_0z[i];
         }
     }
 }
@@ -145,10 +148,10 @@ void current_update( t_current *current )
 {
     
     // Boundary conditions / guard cells
-    current_update_gc( current );
+    current_update_gc(current);
 
     // Smoothing
-    current_smooth( current );
+    current_smooth(current);
 
     // Advance iteration number
     current -> iter++;
@@ -173,22 +176,24 @@ void current_report( const t_current *current, const int jc )
 
     // Pack the information
     float buf[current->nx];
-    float3 *f = current->J;
+    float *fx = current->J_0x;
+    float *fy = current->J_0y;
+    float *fz = current->J_0z;
 
     switch (jc) {
         case 0:
             for ( int i = 0; i < current->nx; i++ ) {
-                buf[i] = f[i].x;
+                buf[i] = fx[i];
             }
             break;
         case 1:
             for ( int i = 0; i < current->nx; i++ ) {
-                buf[i] = f[i].y;
+                buf[i] = fy[i];
             }
             break;
         case 2:
             for ( int i = 0; i < current->nx; i++ ) {
-                buf[i] = f[i].z;
+                buf[i] = fz[i];
             }
             break;
     }
@@ -264,37 +269,57 @@ void get_smooth_comp( int n, float* sa, float* sb) {
  */
 void kernel_x( t_current* const current, const float sa, const float sb ){
 
-    float3* restrict const J = current -> J;
+    float* restrict const J_0x = current -> J_0x;
+    float* restrict const J_0y = current -> J_0y;
+    float* restrict const J_0z = current -> J_0z;
 
-    float3 fl = J[-1];
-    float3 f0 = J[ 0];
+    float fl_x = J_0x[-1];
+    float fl_y = J_0y[-1];
+    float fl_z = J_0z[-1];
+    float f0_x = J_0x[ 0];
+    float f0_y = J_0y[ 0];
+    float f0_z = J_0z[ 0];
 
     for( int i = 0; i < current -> nx; i++) {
 
-        float3 fu = J[i + 1];
+        float fu_x = J_0x[i + 1];
+        float fu_y = J_0y[i + 1];
+        float fu_z = J_0z[i + 1];
+
 
         float3 fs;
 
-        fs.x = sa * fl.x + sb * f0.x + sa * fu.x;
-        fs.y = sa * fl.y + sb * f0.y + sa * fu.y;
-        fs.z = sa * fl.z + sb * f0.z + sa * fu.z;
+        fs.x = sa * fl_x + sb * f0_x + sa * fu_x;
+        fs.y = sa * fl_y + sb * f0_y + sa * fu_y;
+        fs.z = sa * fl_z + sb * f0_z + sa * fu_z;
 
-        J[i] = fs;
+        J_0x[i] = fs.x;
+        J_0y[i] = fs.y;
+        J_0z[i] = fs.z;
 
-        fl = f0;
-        f0 = fu;
+        fl_x = f0_x;
+        f0_x = fu_x;  
+        fl_y = f0_y;
+        f0_y = fu_y;  
+        fl_z = f0_z;
+        f0_z = fu_z;  
 
     }
 
     // Update x boundaries for periodic boundaries
     if ( current -> bc_type == CURRENT_BC_PERIODIC ) {
-        for(int i = -current->gc[0]; i<0; i++)
-            J[ i ] = J[ current->nx + i ];
+        for(int i = -current->gc[0]; i<0; i++){
+            J_0x[i] = J_0x[ current->nx + i ];
+            J_0y[i] = J_0y[ current->nx + i ];
+            J_0z[i] = J_0z[ current->nx + i ];
+        }
 
-        for (int i=0; i<current->gc[1]; i++)
-            J[ current->nx + i ] = J[ i ];
+        for (int i=0; i<current->gc[1]; i++){
+            J_0x[current->nx + i] = J_0x[ i ];
+            J_0y[current->nx + i] = J_0y[ i ];
+            J_0z[current->nx + i] = J_0z[ i ];
+        }
     }
-
 
 }
 
@@ -330,4 +355,3 @@ void current_smooth( t_current* const current ) {
     }
 
 }
-

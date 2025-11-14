@@ -10,15 +10,32 @@
 #ifndef __ZPIC__
 #define __ZPIC__
 
+#include <stdio.h>
+#include <stdlib.h>
+
 /**
  * @brief Three component vector
  * 
  */
-typedef struct Float3 {
-	float x;	///< x vector component
-	float y;	///< y vector component
-	float z;	///< z vector component
+typedef struct Float3Buffer {
+	float* x;	///< x vector component
+	float* y;	///< y vector component
+	float* z;	///< z vector component
+} float3Buffer;
+
+
+typedef struct Float3{
+    float x;
+    float y;
+    float z;
 } float3;
+
+
+void alloc_float3Buffer(float3Buffer* buffer, int size);
+void mem_set_float3Buffer(float3Buffer* buffer, int size, float value);
+void free_float3Buffer(float3Buffer* buffer);
+
+
 
 /* ANSI C does not define math constants */
 
@@ -35,4 +52,4 @@ typedef struct Float3 {
 #endif
 
 
-#endif
+#endif // __ZPIC__

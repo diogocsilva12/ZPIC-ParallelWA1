@@ -72,17 +72,10 @@ double spec_perf( void )
  */
 void spec_set_u( t_species* spec, const int start, const int end )
 {
-#if 0
-    for (int i = start; i <= end; i++) {
-        spec->part[i].ux = spec -> ufl[0] + spec -> uth[0] * rand_norm();
-        spec->part[i].uy = spec -> ufl[1] + spec -> uth[1] * rand_norm();
-        spec->part[i].uz = spec -> ufl[2] + spec -> uth[2] * rand_norm();
-    }
-#else
+
     /**
      * Version 1 momentum initialization
      */
-
     // Initialize thermal component
     for (int i = start; i <= end; i++) {
         spec->part.ux[i] = spec -> uth[0] * rand_norm();
@@ -111,7 +104,7 @@ void spec_set_u( t_species* spec, const int start, const int end )
 
     // Normalize to the number of particles in each cell to get the
     // average momentum in each cell
-    for(int i =0; i< spec->nx; i++ ) {
+    for(int i = 0; i< spec->nx; i++ ) {
         const float norm = (npc[ i ] > 0) ? 1.0f/npc[i] : 0;
 
         net_u[ i ].x *= norm;
@@ -131,8 +124,6 @@ void spec_set_u( t_species* spec, const int start, const int end )
     // Free temporary memory
     free( npc );
     free( net_u );
-
-#endif
 }
 
 /**
@@ -460,6 +451,7 @@ void* aligned_realloc(void *ptr, size_t new_size, size_t old_size, size_t align)
         free(ptr);
         return NULL;
     }
+
     if (ptr == NULL) {
         void* new_ptr = NULL;
         if (posix_memalign(&new_ptr, align, new_size) != 0) {
@@ -723,21 +715,23 @@ void dep_current_esk( int ix0, int di,
         Wz[i] = qvz * (S0x[i] + DSx[i]/2.0f);
     }
 
-    float3* restrict const J = current -> J;
+    float* restrict const J_0x = current -> J_0x;
+    float* restrict const J_0y = current -> J_0y;
+    float* restrict const J_0z = current -> J_0z;
     // jx
     float c;
 
     c = - Wx[0];
-    J[ ix0 - 1 ].x += c;
+    J_0x[ ix0 - 1 ] += c;
     for (int i=1; i<4; i++) {
         c -=  Wx[i];
-        J[ ix0 + i ].x += c;
+        J_0x[ ix0 + i ] += c;
     }
 
     // jy, jz
     for (int i=0; i<4; i++) {
-        J[ ix0 + i - 1 ].y += Wy[ i ];
-        J[ ix0 + i - 1 ].z += Wz[ i ];
+        J_0y[ ix0 + i - 1 ] += Wy[ i ];
+        J_0z[ ix0 + i - 1 ] += Wz[ i ];
     }
 
 }
@@ -808,7 +802,9 @@ void dep_current_zamb( int ix0, int di,
     }
 
     // Deposit virtual particle currents
-    float3* restrict const J = current -> J;
+    float* restrict const J_0x = current -> J_0x;
+    float* restrict const J_0y = current -> J_0y;
+    float* restrict const J_0z = current -> J_0z;
 
     for (int k = 0; k < vnp; k++) {
         float S0x[2], S1x[2];
@@ -819,11 +815,11 @@ void dep_current_zamb( int ix0, int di,
         S1x[0] = 1.0f - vp[k].x1;
         S1x[1] = vp[k].x1;
 
-        J[ vp[k].ix     ].x += qnx * vp[k].dx;
-        J[ vp[k].ix     ].y += vp[k].qvy * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
-        J[ vp[k].ix + 1 ].y += vp[k].qvy * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
-        J[ vp[k].ix     ].z += vp[k].qvz * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
-        J[ vp[k].ix  +1 ].z += vp[k].qvz * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
+        J_0x[ vp[k].ix     ] += qnx * vp[k].dx;
+        J_0y[ vp[k].ix     ] += vp[k].qvy * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
+        J_0y[ vp[k].ix + 1 ] += vp[k].qvy * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
+        J_0z[ vp[k].ix     ] += vp[k].qvz * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
+        J_0z[ vp[k].ix  +1 ] += vp[k].qvz * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
     }
 
 }
@@ -880,21 +876,18 @@ void spec_sort( t_species* spec )
     memset(npic, 0, ncell * sizeof(int));
 
     // Generate sorted index
-    // #pragma omp parallel for num_threads(2)
     for (int i=0; i<spec->np; i++) {
         idx[i] = spec->part.ix[i];
         npic[idx[i]]++;
     }
 
     int isum = 0;
-    // #pragma omp parallel for num_threads(2) reduction(+:isum)
     for (int i=0; i<ncell; i++) {
         int j = npic[i];
         npic[i] = isum;
         isum += j;
     }
 
-    // #pragma omp parallel for num_threads(2)
     for (int i=0; i< spec->np; i++) {
         int j = idx[i];
         idx[i] = npic[j]++;
@@ -940,7 +933,8 @@ void spec_sort( t_species* spec )
  * @param Ep    E-field interpolated at particle position
  * @param Bp    B-field interpolated at particle position
  */
-void interpolate_fld( const float3* restrict const E, const float3* restrict const B,
+void interpolate_fld( const float* restrict const E_part_x, const float* restrict const E_part_y, const float* restrict const E_part_z,
+                      const float* restrict const B_part_x, const float* restrict const B_part_y, const float* restrict const B_part_z,
               const t_part_buffer part, int idx, float3* restrict const Ep, float3* restrict const Bp )
 {
     int i, ih;
@@ -954,13 +948,13 @@ void interpolate_fld( const float3* restrict const E, const float3* restrict con
 
     ih += i;
 
-    Ep->x = E[ih].x * (1.0f - w1h) + E[ih+1].x * w1h;
-    Ep->y = E[i ].y * (1.0f -  w1) + E[i+1 ].y * w1;
-    Ep->z = E[i ].z * (1.0f -  w1) + E[i+1 ].z * w1;
+    Ep->x = E_part_x[ih] * (1.0f - w1h) + E_part_x[ih+1]* w1h;
+    Ep->y = E_part_y[i] * (1.0f -  w1) + E_part_y[i+1 ] * w1;
+    Ep->z = E_part_z[i ] * (1.0f -  w1) + E_part_z[i+1 ] * w1;
 
-    Bp->x = B[i ].x * (1.0f  - w1) + B[i+1 ].x * w1;
-    Bp->y = B[ih].y * (1.0f - w1h) + B[ih+1].y * w1h;
-    Bp->z = B[ih].z * (1.0f - w1h) + B[ih+1].z * w1h;
+    Bp->x = B_part_x[i ] * (1.0f  - w1) + B_part_x[i+1 ] * w1;
+    Bp->y = B_part_y[ih] * (1.0f - w1h) + B_part_y[ih+1] * w1h;
+    Bp->z = B_part_z[ih] * (1.0f - w1h) + B_part_z[ih+1] * w1h;
 
 }
 
@@ -1030,7 +1024,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         uz = spec -> part.uz[i];
 
         // interpolate fields
-        interpolate_fld( emf -> E_part, emf -> B_part, spec -> part, i, &Ep, &Bp );
+        interpolate_fld(emf -> E_part_x, emf -> E_part_y, emf -> E_part_z, emf -> B_part_x, emf -> B_part_y, emf -> B_part_z, spec -> part, i, &Ep, &Bp);
         // Ep.x = Ep.y = Ep.z = Bp.x = Bp.y = Bp.z = 0;
 
         // advance u using Boris scheme
@@ -1148,11 +1142,11 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
     }
 
     // Sort species at every n_sort time steps
-    /*
+    
     if ( spec -> n_sort > 0 ) {
         if ( ! (spec -> iter % spec -> n_sort) ) spec_sort( spec );
     }
-    */
+    
 
     // Timing info
     _spec_npush += spec -> np;

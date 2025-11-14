@@ -61,16 +61,13 @@ void emf_new( t_emf *emf, int nx, float box, const float dt )
 	int gc[2] = {1,2};
 
 	// Allocate global arrays
-	size_t size = (gc[0] + nx + gc[1]) * sizeof( float3 ) ;
+	size_t size = gc[0] + nx + gc[1];
+	alloc_float3Buffer(&emf->E_buf, size);
+	alloc_float3Buffer(&emf->B_buf, size);
 
-	emf->E_buf = malloc( size );
-	emf->B_buf = malloc( size );
-
-	assert( emf->E_buf && emf->B_buf );
-
-	// zero fields
-	memset( emf->E_buf, 0, size );
-	memset( emf->B_buf, 0, size );
+	// Zero fields
+	mem_set_float3Buffer(&emf->E_buf, size, 0.0f);
+	mem_set_float3Buffer(&emf->B_buf, size, 0.0f);
 
 	// store nx and gc values
 	emf->nx = nx;
@@ -81,8 +78,12 @@ void emf_new( t_emf *emf, int nx, float box, const float dt )
     emf -> dt = dt;
 
 	// Make E and B point to cell [0]
-	emf->E = emf->E_buf + gc[0];
-	emf->B = emf->B_buf + gc[0];
+	emf->E_x = &emf->E_buf.x[gc[0]];
+	emf->E_y = &emf->E_buf.y[gc[0]];
+	emf->E_z = &emf->E_buf.z[gc[0]];
+	emf->B_x = &emf->B_buf.x[gc[0]];
+	emf->B_y = &emf->B_buf.y[gc[0]];
+	emf->B_z = &emf->B_buf.z[gc[0]];
 
 	// Set cell sizes and box limits
 	emf -> box = box;
@@ -110,8 +111,13 @@ void emf_new( t_emf *emf, int nx, float box, const float dt )
 	// Disable external fields by default
 	emf -> ext_fld.E_type = EMF_FLD_TYPE_NONE;
 	emf -> ext_fld.B_type = EMF_FLD_TYPE_NONE;
-	emf -> E_part = emf->E;
-	emf -> B_part = emf->B;
+
+	emf->E_part_x = emf->E_x;
+	emf->E_part_y = emf->E_y;
+	emf->E_part_z = emf->E_z;
+	emf->B_part_x = emf->B_x;
+	emf->B_part_y = emf->B_y;
+	emf->B_part_z = emf->B_z;
 }
 
 /**
@@ -124,22 +130,34 @@ void emf_new( t_emf *emf, int nx, float box, const float dt )
  */
 void emf_delete( t_emf *emf )
 {
-	free( emf->E_buf );
-	free( emf->B_buf );
 
-	emf->E_buf = NULL;
-	emf->B_buf = NULL;
+	// Delete fields
 
+	free_float3Buffer(&emf->E_buf);
+	free_float3Buffer(&emf->B_buf);
+
+	emf->E_x = NULL;
+	emf->E_y = NULL;
+	emf->E_z = NULL;
+	emf->B_x = NULL;
+	emf->B_y = NULL;	
+	emf->B_z = NULL;
+
+	// Delete external fields
 	if ( emf -> ext_fld.E_type > EMF_FLD_TYPE_NONE ) {
-		free( emf -> ext_fld.E_part_buf );
+		free_float3Buffer(&emf -> ext_fld.E_part_buf);
 	}
 
 	if ( emf -> ext_fld.B_type > EMF_FLD_TYPE_NONE ) {
-		free( emf -> ext_fld.B_part_buf );
+		free_float3Buffer(&emf -> ext_fld.B_part_buf);
 	}
 
-	emf->E_part = NULL;
-	emf->B_part = NULL;
+	emf->E_part_x = NULL;
+	emf->E_part_y = NULL;
+	emf->E_part_z = NULL;
+	emf->B_part_x = NULL;
+	emf->B_part_y = NULL;
+	emf->B_part_z = NULL;
 }
 
 /*********************************************************************************************
@@ -226,8 +244,10 @@ void emf_add_laser( t_emf* const emf, t_emf_laser* laser )
 	float dx;
 	float cos_pol, sin_pol;
 
-	float3* restrict E = emf -> E;
-	float3* restrict B = emf -> B;
+	float* restrict E_y = emf -> E_y;
+	float* restrict E_z = emf -> E_z;
+	float* restrict B_y = emf -> B_y;
+	float* restrict B_z = emf -> B_z;
 
 	dx = emf -> dx;
 
@@ -246,12 +266,12 @@ void emf_add_laser( t_emf* const emf, t_emf_laser* laser )
 		lenv_2 = amp * lon_env( laser, z_2 );
 
 		// E[i + j*nrow].x += 0.0
-		E[i].y += +lenv * cos( k * z ) * cos_pol;
-		E[i].z += +lenv * cos( k * z ) * sin_pol;
+		E_y[i] += +lenv * cos( k * z ) * cos_pol;
+		E_z[i] += +lenv * cos( k * z ) * sin_pol;
 
 		// E[i + j*nrow].x += 0.0
-		B[i].y += -lenv_2 * cos( k * z_2 ) * sin_pol;
-		B[i].z += +lenv_2 * cos( k * z_2 ) * cos_pol;
+		B_y[i] += -lenv_2 * cos( k * z_2 ) * sin_pol;
+		B_z[i] += +lenv_2 * cos( k * z_2 ) * cos_pol;
 
 	}
 
@@ -289,25 +309,35 @@ void emf_report( const t_emf *emf, const char field, const int fc )
 	}
 
 	// Choose field to save
-	float3 * restrict f;
+	float* restrict f_x;
+	float* restrict f_y;
+	float* restrict f_z;
 	switch (field) {
 		case EFLD:
-			f = emf->E;
+			f_x = emf->E_x;
+			f_y = emf->E_y;
+			f_z = emf->E_z;
             snprintf(vfname,16,"E%1d",fc);
             snprintf(vflabel,16,"E_%c",comp[fc]);
 			break;
 		case BFLD:
-			f = emf->B;
+			f_x = emf->B_x;
+			f_y = emf->B_y;
+			f_z = emf->B_z;
             snprintf(vfname,16,"B%1d",fc);
             snprintf(vflabel,16,"B_%c",comp[fc]);
 			break;
 		case EPART:
-			f = emf->E_part;
+			f_x = emf->E_part_x;
+			f_y = emf->E_part_y;
+			f_z = emf->E_part_z;
             snprintf(vfname,16,"E%1d-part",fc);
             snprintf(vflabel,16,"E_{%cp}",comp[fc]);
 			break;
 		case BPART:
-			f = emf->B_part;
+			f_x = emf->B_part_x;
+			f_y = emf->B_part_y;
+			f_z = emf->B_part_z;
             snprintf(vfname,16,"B%1d-part",fc);
             snprintf(vflabel,16,"B_{%cp}",comp[fc]);
 			break;
@@ -321,17 +351,17 @@ void emf_report( const t_emf *emf, const char field, const int fc )
 	switch (fc) {
 		case 0:
 			for ( int i = 0; i < emf->nx; i++ ) {
-				buf[i] = f[i].x;
+				buf[i] = f_x[i];
 			}
 			break;
 		case 1:
 			for ( int i = 0; i < emf->nx; i++ ) {
-				buf[i] = f[i].y;
+				buf[i] = f_y[i];
 			}
 			break;
 		case 2:
 			for ( int i = 0; i < emf->nx; i++ ) {
-				buf[i] = f[i].z;
+				buf[i] = f_z[i];
 			}
 			break;
 	}
@@ -384,26 +414,26 @@ void mur_abc( t_emf *emf ) {
 
 	if ( emf -> bc_type == EMF_BC_OPEN) {
 		// lower boundary
-        emf -> mur_fld[0].y = emf -> mur_tmp[0].y + S * (emf -> E[0].y - emf -> mur_fld[0].y);
-        emf -> mur_fld[0].z = emf -> mur_tmp[0].z + S * (emf -> E[0].z - emf -> mur_fld[0].z);
+        emf -> mur_fld[0].y = emf -> mur_tmp[0].y + S * (emf -> E_y[0] - emf -> mur_fld[0].y);
+        emf -> mur_fld[0].z = emf -> mur_tmp[0].z + S * (emf -> E_z[0] - emf -> mur_fld[0].z);
 
-        emf ->  E[-1].y = emf -> mur_fld[0].y;
-        emf ->  E[-1].z = emf -> mur_fld[0].z;
+        emf ->  E_y[-1] = emf -> mur_fld[0].y;
+        emf ->  E_z[-1] = emf -> mur_fld[0].z;
 
         // Store Eperp for next iteration
-        emf -> mur_tmp[0].y = emf -> E[0].y;
-        emf -> mur_tmp[0].z = emf -> E[0].z;
+        emf -> mur_tmp[0].y = emf -> E_y[0];
+        emf -> mur_tmp[0].z = emf -> E_z[0];
 
 		// upper boundary
-        emf -> mur_fld[1].y = emf -> mur_tmp[1].y + S * (emf -> E[nx-1].y - emf -> mur_fld[1].y);
-        emf -> mur_fld[1].z = emf -> mur_tmp[1].z + S * (emf -> E[nx-1].z - emf -> mur_fld[1].z);
+        emf -> mur_fld[1].y = emf -> mur_tmp[1].y + S * (emf -> E_y[nx-1] - emf -> mur_fld[1].y);
+        emf -> mur_fld[1].z = emf -> mur_tmp[1].z + S * (emf -> E_z[nx-1] - emf -> mur_fld[1].z);
 
-        emf ->  E[nx].y = emf -> mur_fld[1].y;
-        emf ->  E[nx].z = emf -> mur_fld[1].z;
+        emf ->  E_y[nx] = emf -> mur_fld[1].y;
+        emf ->  E_z[nx] = emf -> mur_fld[1].z;
 
         // Store Eperp for next iteration
-        emf -> mur_tmp[1].y = emf -> E[nx-1].y;
-        emf -> mur_tmp[1].z = emf -> E[nx-1].z;
+        emf -> mur_tmp[1].y = emf -> E_y[nx-1];
+        emf -> mur_tmp[1].z = emf -> E_z[nx-1];
 	}
 
 }
@@ -422,16 +452,18 @@ void mur_abc( t_emf *emf ) {
  */
 void yee_b( t_emf *emf, const float dt )
 {
-    float3* const restrict B = emf -> B;
-    const float3* const restrict E = emf -> E;
+	float* const restrict B_y = emf -> B_y;
+	float* const restrict B_z = emf -> B_z;
+	const float* const restrict E_y = emf -> E_y;
+	const float* const restrict E_z = emf -> E_z;
 
 	float dt_dx = dt / emf->dx;
 
 	// Canonical implementation
 	for (int i=-1; i<=emf->nx; i++) {
 		// B[ i ].x += 0;  // Bx does not evolve in 1D
-		B[ i ].y += (   dt_dx * ( E[i+1].z - E[ i ].z) );
-		B[ i ].z += ( - dt_dx * ( E[i+1].y - E[ i ].y) );
+		B_y[ i ] += (   dt_dx * ( E_z[i+1] - E_z[ i ]) );
+		B_z[ i ] += ( - dt_dx * ( E_y[i+1] - E_y[ i ]) );
 	}
 }
 
@@ -446,16 +478,21 @@ void yee_e( t_emf *emf, const t_current *current, const float dt )
 {
 	float dt_dx = dt / emf->dx;
 
-    float3* const restrict E = emf -> E;
-    const float3* const restrict B = emf -> B;
-    const float3* const restrict J = current -> J;
+	float* const restrict E_x = emf -> E_x;
+	float* const restrict E_y = emf -> E_y;
+	float* const restrict E_z = emf -> E_z;
+	const float* const restrict B_y = emf -> B_y;
+	const float* const restrict B_z = emf -> B_z;
+	const float* const restrict J_0x = current -> J_0x;
+	const float* const restrict J_0y = current -> J_0y;
+	const float* const restrict J_0z = current -> J_0z;
     const int nx = emf->nx;
 
 	// Canonical implementation
 	for (int i = 0; i <= nx+1; i++) {
-		E[i].x += (                                - dt * J[i].x );
-		E[i].y += ( - dt_dx * ( B[i].z - B[i-1].z) - dt * J[i].y );
-		E[i].z += ( + dt_dx * ( B[i].y - B[i-1].y) - dt * J[i].z );
+		E_x[i] += (                                - dt * J_0x[i]);
+		E_y[i] += ( - dt_dx * ( B_z[i] - B_z[i-1]) - dt * J_0y[i]);
+		E_z[i] += ( + dt_dx * ( B_y[i] - B_y[i-1]) - dt * J_0z[i]);
 	}
 
 }
@@ -470,8 +507,12 @@ void yee_e( t_emf *emf, const t_current *current, const float dt )
  */
 void emf_update_gc( t_emf *emf )
 {
-    float3* const restrict E = emf -> E;
-    float3* const restrict B = emf -> B;
+	float* const restrict E_x = emf -> E_x;
+	float* const restrict E_y = emf -> E_y;
+	float* const restrict E_z = emf -> E_z;
+	float* const restrict B_x = emf -> B_x;
+	float* const restrict B_y = emf -> B_y;
+	float* const restrict B_z = emf -> B_z;
     const int nx = emf->nx;
 
 	if ( emf -> bc_type == EMF_BC_PERIODIC ) {
@@ -479,24 +520,24 @@ void emf_update_gc( t_emf *emf )
 
 		// lower
 		for (int i=-emf->gc[0]; i<0; i++) {
-			E[ i ].x = E[ nx + i ].x;
-			E[ i ].y = E[ nx + i ].y;
-			E[ i ].z = E[ nx + i ].z;
+			E_x[ i ] = E_x[ nx + i ];
+			E_y[ i ] = E_y[ nx + i ];
+			E_z[ i ] = E_z[ nx + i ];
 
-			B[ i ].x = B[ nx + i ].x;
-			B[ i ].y = B[ nx + i ].y;
-			B[ i ].z = B[ nx + i ].z;
+			B_x[ i ] = B_x[ nx + i ];
+			B_y[ i ] = B_y[ nx + i ];
+			B_z[ i ] = B_z[ nx + i ];
 		}
 
 		// upper
 		for (int i=0; i<emf->gc[1]; i++) {
-			E[ nx + i ].x = E[ i ].x;
-			E[ nx + i ].y = E[ i ].y;
-			E[ nx + i ].z = E[ i ].z;
+			E_x[ nx + i ] = E_x[ i ];
+			E_y[ nx + i ] = E_y[ i ];
+			E_z[ nx + i ] = E_z[ i ];
 
-			B[ nx + i ].x = B[ i ].x;
-			B[ nx + i ].y = B[ i ].y;
-			B[ nx + i ].z = B[ i ].z;
+			B_x[ nx + i ] = B_x[ i ];
+			B_y[ nx + i ] = B_y[ i ];
+			B_z[ nx + i ] = B_z[ i ];
 		}
 	}
 
@@ -514,20 +555,32 @@ void emf_update_gc( t_emf *emf )
 void emf_move_window( t_emf *emf ){
 	if ( ( emf -> iter * emf -> dt ) > emf->dx*( emf -> n_move + 1 ) ) {
 
-	    float3* const restrict E = emf -> E;
-	    float3* const restrict B = emf -> B;
+		float* const restrict E_x = emf -> E_x;
+		float* const restrict E_y = emf -> E_y;
+		float* const restrict E_z = emf -> E_z;
+		float* const restrict B_x = emf -> B_x;
+		float* const restrict B_y = emf -> B_y;
+		float* const restrict B_z = emf -> B_z;
 
 		// Shift data left 1 cell and zero rightmost cells
 
 		for (int i = -emf->gc[0]; i < emf->nx+emf->gc[1] - 1; i++) {
-			E[ i ] = E[ i + 1 ];
-			B[ i ] = B[ i + 1 ];
+			E_x[ i ] = E_x[ i + 1 ];
+			E_y[ i ] = E_y[ i + 1 ];
+			E_z[ i ] = E_z[ i + 1 ];
+			B_x[ i ] = B_x[ i + 1 ];
+			B_y[ i ] = B_y[ i + 1 ];
+			B_z[ i ] = B_z[ i + 1 ];
 		}
 
 	    const float3 zero_fld = {0.,0.,0.};
 		for(int i = emf->nx - 1; i < emf->nx+emf->gc[1]; i ++) {
-			E[ i ] = zero_fld;
-			B[ i ] = zero_fld;
+			E_x[ i ] = zero_fld.x;
+			E_y[ i ] = zero_fld.y;
+			E_z[ i ] = zero_fld.z;
+			B_x[ i ] = zero_fld.x;
+			B_y[ i ] = zero_fld.y;
+			B_z[ i ] = zero_fld.z;
 		}
 
 		// Increase moving window counter
@@ -591,18 +644,22 @@ void emf_advance( t_emf *emf, const t_current *current )
 void emf_get_energy( const t_emf *emf, double energy[] )
 {
 	int i;
-    float3* const restrict E = emf -> E;
-    float3* const restrict B = emf -> B;
+    float* const restrict E_x = emf -> E_x;
+    float* const restrict E_y = emf -> E_y;
+    float* const restrict E_z = emf -> E_z;
+    float* const restrict B_x = emf -> B_x;
+    float* const restrict B_y = emf -> B_y;
+	float* const restrict B_z = emf -> B_z;
 
 	for( i = 0; i<6; i++) energy[i] = 0;
 
 	for( i = 0; i < emf -> nx; i ++ ) {
-		energy[0] += E[i].x * E[i].x;
-		energy[1] += E[i].y * E[i].y;
-		energy[2] += E[i].z * E[i].z;
-		energy[3] += B[i].x * B[i].x;
-		energy[4] += B[i].y * B[i].y;
-		energy[5] += B[i].z * B[i].z;
+		energy[0] += E_x[i] * E_x[i];
+		energy[1] += E_y[i] * E_y[i];
+		energy[2] += E_z[i] * E_z[i];
+		energy[3] += B_x[i] * B_x[i];
+		energy[4] += B_y[i] * B_y[i];
+		energy[5] += B_z[i] * B_z[i];
 	}
 
 	for( i = 0; i<6; i++) energy[i] *= 0.5 * emf -> dx;
@@ -627,8 +684,9 @@ void emf_set_ext_fld( t_emf* const emf, t_emf_ext_fld* ext_fld ) {
 
 	if (emf -> ext_fld.E_type == EMF_FLD_TYPE_NONE) {
 		// Particle fields just point to the self-consistent fields
-		emf -> E_part = emf -> E;
-		emf -> ext_fld.E_part_buf = NULL;
+		emf -> E_part_x = emf -> E_x;
+		emf -> E_part_y = emf -> E_y;
+		emf -> E_part_z = emf -> E_z;
 	} else {
 	    switch( emf -> ext_fld.E_type ) {
 	        case( EMF_FLD_TYPE_UNIFORM ):
@@ -646,18 +704,21 @@ void emf_set_ext_fld( t_emf* const emf, t_emf_ext_fld* ext_fld ) {
 	    }
 
 		// Allocate space for additional field grids
-        size_t size = (emf->gc[0] + emf->nx + emf->gc[1]) * sizeof( float3 ) ;
+        size_t size = emf->gc[0] + emf->nx + emf->gc[1];
 	
-		emf->ext_fld.E_part_buf = malloc( size );
-        emf->E_part = emf->ext_fld.E_part_buf + emf->gc[0];
+		alloc_float3Buffer(&emf->ext_fld.E_part_buf, size);
+		emf->E_part_x = &emf->ext_fld.E_part_buf.x[emf->gc[0]];
+		emf->E_part_y = &emf->ext_fld.E_part_buf.y[emf->gc[0]];
+		emf->E_part_z = &emf->ext_fld.E_part_buf.z[emf->gc[0]];
 	}
 
 	emf -> ext_fld.B_type = ext_fld -> B_type;
 
 	if ( emf -> ext_fld.B_type == EMF_FLD_TYPE_NONE ) {
 		// Particle fields just point to the self-consistent fields
-		emf -> B_part = emf -> B;
-		emf -> ext_fld.B_part_buf = NULL;
+		emf -> B_part_x = emf -> B_x;
+		emf -> B_part_y = emf -> B_y;
+		emf -> B_part_z = emf -> B_z;
 	} else {
 	    switch( emf -> ext_fld.B_type ) {
 	        case( EMF_FLD_TYPE_UNIFORM ):
@@ -675,10 +736,11 @@ void emf_set_ext_fld( t_emf* const emf, t_emf_ext_fld* ext_fld ) {
 	    }
 
 		// Allocate space for additional field grids
-        size_t size = (emf->gc[0] + emf->nx + emf->gc[1]) * sizeof( float3 ) ;
-	
-		emf->ext_fld.B_part_buf = malloc( size );
-        emf->B_part = emf->ext_fld.B_part_buf + emf->gc[0];
+        size_t size = emf->gc[0] + emf->nx + emf->gc[1];
+		alloc_float3Buffer(&emf->ext_fld.B_part_buf, size);
+		emf->B_part_x = &emf->ext_fld.B_part_buf.x[emf->gc[0]];
+		emf->B_part_y = &emf->ext_fld.B_part_buf.y[emf->gc[0]];
+		emf->B_part_z = &emf->ext_fld.B_part_buf.z[emf->gc[0]];
 	}
 
     // Initialize values on E/B_part grids
@@ -694,28 +756,34 @@ void emf_set_ext_fld( t_emf* const emf, t_emf_ext_fld* ext_fld ) {
 void emf_update_part_fld( t_emf* const emf ) {
 
     // Restrict pointers to E_part
-    float3* const restrict E_part = emf->E_part;
+    float* const restrict E_part_x = emf->E_part_x;
+    float* const restrict E_part_y = emf->E_part_y;
+    float* const restrict E_part_z = emf->E_part_z;
 
     switch (emf->ext_fld.E_type)
     {
     case EMF_FLD_TYPE_UNIFORM: {
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
-            float3 e = emf -> E[i];
+            float3 e = {emf->E_x[i], emf->E_y[i], emf->E_z[i]};
             e.x += emf->ext_fld.E_0.x;
             e.y += emf->ext_fld.E_0.y;
             e.z += emf->ext_fld.E_0.z;
-            E_part[i] = e;
+			E_part_x[i] = e.x;
+			E_part_y[i] = e.y;
+			E_part_z[i] = e.z;
         }
         break; }
     case EMF_FLD_TYPE_CUSTOM: {
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
             float3 ext_E = (*emf->ext_fld.E_custom)(i,emf->dx,emf->ext_fld.E_custom_data);
 
-            float3 e = emf -> E[i];
+			float3 e = {emf->E_x[i], emf->E_y[i], emf->E_z[i]};
             e.x += ext_E.x;
             e.y += ext_E.y;
             e.z += ext_E.z;
-            E_part[i] = e;
+			E_part_x[i] = e.x;
+			E_part_y[i] = e.y;
+			E_part_z[i] = e.z;
         }
         break; }
     case EMF_FLD_TYPE_NONE:
@@ -723,17 +791,22 @@ void emf_update_part_fld( t_emf* const emf ) {
     }
 
     // Restrict pointers to B_part
-    float3* const restrict B_part = emf->B_part;
+    float* const restrict B_part_x = emf->B_part_x;
+    float* const restrict B_part_y = emf->B_part_y;
+    float* const restrict B_part_z = emf->B_part_z;
 
     switch (emf->ext_fld.B_type)
     {
     case EMF_FLD_TYPE_UNIFORM: {
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
-            float3 b = emf -> B[i];
+            
+			float3 b = {emf->B_x[i], emf->B_y[i], emf->B_z[i]};
             b.x += emf->ext_fld.B_0.x;
             b.y += emf->ext_fld.B_0.y;
             b.z += emf->ext_fld.B_0.z;
-            B_part[i] = b;
+            B_part_x[i] = b.x;
+			B_part_y[i] = b.y;
+			B_part_z[i] = b.z;
         }
 
     }
@@ -742,11 +815,13 @@ void emf_update_part_fld( t_emf* const emf ) {
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
             float3 ext_B = (*emf->ext_fld.B_custom)(i,emf->dx,emf->ext_fld.B_custom_data);
 
-            float3 b = emf -> B[i];
+            float3 b = {emf->B_x[i], emf->B_y[i], emf->B_z[i]};
             b.x += ext_B.x;
             b.y += ext_B.y;
             b.z += ext_B.z;
-            B_part[i] = b;
+            B_part_x[i] = b.x;
+			B_part_y[i] = b.y;
+			B_part_z[i] = b.z;
         }
     }
         break; 
@@ -769,8 +844,12 @@ void emf_init_fld( t_emf* const emf, t_emf_init_fld* init_fld )
         exit(-1);
     }
 
-    float3* const restrict E = emf->E;
-    float3* const restrict B = emf->B;
+	float* const restrict E_x = emf->E_x;
+	float* const restrict E_y = emf->E_y;
+	float* const restrict E_z = emf->E_z;
+	float* const restrict B_x = emf->B_x;
+	float* const restrict B_y = emf->B_y;
+	float* const restrict B_z = emf->B_z;
 
     switch ( init_fld -> E_type ) {
     case EMF_FLD_TYPE_NONE:
@@ -778,7 +857,9 @@ void emf_init_fld( t_emf* const emf, t_emf_init_fld* init_fld )
 
     case EMF_FLD_TYPE_UNIFORM:
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
-            E[ i ] = init_fld -> E_0;
+			E_x[i] = init_fld -> E_0.x;
+			E_y[i] = init_fld -> E_0.y;
+			E_z[i] = init_fld -> E_0.z;
         }
         break;
 
@@ -786,7 +867,9 @@ void emf_init_fld( t_emf* const emf, t_emf_init_fld* init_fld )
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
             float3 init_E = (init_fld->E_custom)
                 (i,emf->dx, init_fld->E_custom_data);
-            E[ i ] = init_E;
+            E_x[i] = init_E.x;
+			E_y[i] = init_E.y;
+			E_z[i] = init_E.z;
         }
         break;
     }    
@@ -797,7 +880,9 @@ void emf_init_fld( t_emf* const emf, t_emf_init_fld* init_fld )
 
     case EMF_FLD_TYPE_UNIFORM:
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
-            B[ i ] = init_fld -> B_0;
+            B_x[i] = init_fld -> B_0.x;
+			B_y[i] = init_fld -> B_0.y;
+			B_z[i] = init_fld -> B_0.z;
         }
         break;
 
@@ -805,7 +890,9 @@ void emf_init_fld( t_emf* const emf, t_emf_init_fld* init_fld )
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
             float3 init_B = (init_fld->B_custom)
                 (i,emf->dx, init_fld->B_custom_data);
-            B[ i ] = init_B;
+            B_x[i] = init_B.x;
+			B_y[i] = init_B.y;
+			B_z[i] = init_B.z;
         }
         break;
     }

@@ -41,8 +41,9 @@ typedef struct EMF_ExternalField {
     void *E_custom_data; ///< Additional data to be passed to the E_custom function
     void *B_custom_data; ///< Additional data to be passed to the B_custom function
 
-    float3 *E_part_buf; ///< E field seen by particles
-    float3 *B_part_buf; ///< B field seen by particles
+    float3Buffer E_part_buf; ///< E field seen by particles
+    float3Buffer B_part_buf; ///< B field seen by particles
+
 } t_emf_ext_fld;
 
 /**
@@ -93,19 +94,27 @@ enum emf_boundary {
  */
 typedef struct EMF {
 
-    float3 *E;  ///< Pointer to grid cell 0 of E field
-    float3 *B;  ///< Pointer to grid cell 0 of B field
+    float* E_x; ///< Pointer to grid cell 0 of E field
+    float* E_y; ///< Pointer to grid cell 0 of E field
+    float* E_z; ///< Pointer to grid cell 0 of E field
+    float* B_x; ///< Pointer to grid cell 0 of B field
+    float* B_y; ///< Pointer to grid cell 0 of B field
+    float* B_z; ///< Pointer to grid cell 0 of B field
 
-    float3 *E_buf;  ///< E field buffer (includes guard cells)
-    float3 *B_buf;  ///< B field buffer (includes guard cells)
+    float3Buffer E_buf;  ///< E field buffer (includes guard cells)
+    float3Buffer B_buf;  ///< B field buffer (includes guard cells)
 
     // Fields seen by particles
     // When using external fields these will be a combination of the simulation
     // fields and the externally imposed ones. When external fields are off
     // these just point to E and B.
     
-    float3 *E_part; ///< Pointer to grid cell 0 of particles E field
-    float3 *B_part; ///< Pointer to grid cell 0 of particles B field
+    float* E_part_x; ///< Pointer to grid cell 0 of particles E field
+    float* E_part_y; ///< Pointer to grid cell 0 of particles E field
+    float* E_part_z; ///< Pointer to grid cell 0 of particles E field
+    float* B_part_x; ///< Pointer to grid cell 0 of particles B field
+    float* B_part_y; ///< Pointer to grid cell 0 of particles B field
+    float* B_part_z; ///< Pointer to grid cell 0 of particles B field
 
     // Simulation box info
     int nx;  ///< Number of grid points (excluding guard cells) 

@@ -60,6 +60,7 @@
     "*.embeddedhtml": "html",
     "random.h": "c",
     "stdlib.h": "c",
-    "zdf.h": "c"
+    "zdf.h": "c",
+    "random": "c"
   }
 }
