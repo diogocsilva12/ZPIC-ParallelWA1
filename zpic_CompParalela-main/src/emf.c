@@ -210,8 +210,8 @@ float lon_env( const t_emf_laser* const laser, const float z )
 void emf_add_laser( t_emf* const emf, t_emf_laser* laser )
 {
 	// Validate laser parameters
-	if ( laser -> fwhm != 0 ) {
-		if ( laser -> fwhm <= 0 ) {
+	if (laser -> fwhm != 0) {
+		if (laser -> fwhm <= 0) {
 			fprintf(stderr, "Invalid laser FWHM, must be > 0, aborting.\n" );
 			exit(-1);
 		}
@@ -222,17 +222,17 @@ void emf_add_laser( t_emf* const emf, t_emf_laser* laser )
 		laser -> flat = 0.;
 	}
 
-	if ( laser -> rise <= 0 ) {
+	if (laser -> rise <= 0) {
 		fprintf(stderr, "Invalid laser RISE, must be > 0, aborting.\n" );
 		exit(-1);
 	}
 
-	if ( laser -> flat < 0 ) {
+	if (laser -> flat < 0) {
 		fprintf(stderr, "Invalid laser FLAT, must be >= 0, aborting.\n" );
 		exit(-1);
 	}
 
-	if ( laser -> fall <= 0 ) {
+	if (laser -> fall <= 0) {
 		fprintf(stderr, "Invalid laser FALL, must be > 0, aborting.\n" );
 		exit(-1);
 	}
@@ -244,17 +244,17 @@ void emf_add_laser( t_emf* const emf, t_emf_laser* laser )
 	float dx;
 	float cos_pol, sin_pol;
 
-	float* restrict E_y = emf -> E_y;
-	float* restrict E_z = emf -> E_z;
-	float* restrict B_y = emf -> B_y;
-	float* restrict B_z = emf -> B_z;
+	float* restrict const E_y = emf -> E_y;
+	float* restrict const E_z = emf -> E_z;
+	float* restrict const B_y = emf -> B_y;
+	float* restrict const B_z = emf -> B_z;
 
 	dx = emf -> dx;
 
 	amp = laser -> omega0 * laser -> a0;
 
-	cos_pol = cos( laser -> polarization );
-	sin_pol = sin( laser -> polarization );
+	cos_pol = cos(laser -> polarization);
+	sin_pol = sin(laser -> polarization);
 
 	k = laser -> omega0;
 
@@ -262,21 +262,21 @@ void emf_add_laser( t_emf* const emf, t_emf_laser* laser )
 		z = i * dx;
 		z_2 = z + dx/2;
 
-		lenv   = amp * lon_env( laser, z );
-		lenv_2 = amp * lon_env( laser, z_2 );
+		lenv   = amp * lon_env(laser, z);
+		lenv_2 = amp * lon_env(laser, z_2);
 
 		// E[i + j*nrow].x += 0.0
-		E_y[i] += +lenv * cos( k * z ) * cos_pol;
-		E_z[i] += +lenv * cos( k * z ) * sin_pol;
+		E_y[i] += +lenv * cos(k * z) * cos_pol;
+		E_z[i] += +lenv * cos(k * z) * sin_pol;
 
 		// E[i + j*nrow].x += 0.0
-		B_y[i] += -lenv_2 * cos( k * z_2 ) * sin_pol;
-		B_z[i] += +lenv_2 * cos( k * z_2 ) * cos_pol;
+		B_y[i] += -lenv_2 * cos(k * z_2) * sin_pol;
+		B_z[i] += +lenv_2 * cos(k * z_2) * cos_pol;
 
 	}
 
 	// Set guard cell values for periodic boundaries
-	if ( emf -> bc_type == EMF_BC_PERIODIC ) emf_update_gc( emf );
+	if (emf -> bc_type == EMF_BC_PERIODIC) emf_update_gc( emf );
 
 }
 
@@ -303,7 +303,7 @@ void emf_report( const t_emf *emf, const char field, const int fc )
 
 	char comp[] = {'x','y','z'};
 
-	if ( fc < 0 || fc > 2 ) {
+	if (fc < 0 || fc > 2) {
 		fprintf(stderr, "(*error*) Invalid field component (fc) selected, returning\n");
 		return;
 	}
@@ -312,6 +312,7 @@ void emf_report( const t_emf *emf, const char field, const int fc )
 	float* restrict f_x;
 	float* restrict f_y;
 	float* restrict f_z;
+
 	switch (field) {
 		case EFLD:
 			f_x = emf->E_x;
@@ -347,20 +348,23 @@ void emf_report( const t_emf *emf, const char field, const int fc )
 	}
 
 	// Pack the information
-	float buf[ emf->nx ];
+	float buf[emf->nx] __attribute__((aligned(64)));
 	switch (fc) {
 		case 0:
-			for ( int i = 0; i < emf->nx; i++ ) {
+			#pragma omp simd aligned(buf, f_x:64)
+			for (int i = 0; i < emf->nx; i++) {
 				buf[i] = f_x[i];
 			}
 			break;
 		case 1:
-			for ( int i = 0; i < emf->nx; i++ ) {
+			#pragma omp simd aligned(buf, f_y:64)
+			for (int i = 0; i < emf->nx; i++) {
 				buf[i] = f_y[i];
 			}
 			break;
 		case 2:
-			for ( int i = 0; i < emf->nx; i++ ) {
+			#pragma omp simd aligned(buf, f_z:64)
+			for (int i = 0; i < emf->nx; i++) {
 				buf[i] = f_z[i];
 			}
 			break;
@@ -392,7 +396,7 @@ void emf_report( const t_emf *emf, const char field, const int fc )
     	.time_units = "1/\\omega_p"
     };
 
-	zdf_save_grid( (float *) buf, zdf_float32, &info, &iter, "EMF" );
+	zdf_save_grid((float *) buf, zdf_float32, &info, &iter, "EMF");
 }
 
 /*********************************************************************************************
@@ -407,12 +411,12 @@ void emf_report( const t_emf *emf, const char field, const int fc )
  * 
  * @param emf 	EM Fields
  */
-void mur_abc( t_emf *emf ) {
+void mur_abc(t_emf *emf) {
 
     const int nx = emf->nx;
     float const S = (emf->dt - emf->dx) / (emf->dt + emf->dx);
 
-	if ( emf -> bc_type == EMF_BC_OPEN) {
+	if (emf -> bc_type == EMF_BC_OPEN) {
 		// lower boundary
         emf -> mur_fld[0].y = emf -> mur_tmp[0].y + S * (emf -> E_y[0] - emf -> mur_fld[0].y);
         emf -> mur_fld[0].z = emf -> mur_tmp[0].z + S * (emf -> E_z[0] - emf -> mur_fld[0].z);
@@ -460,11 +464,11 @@ void yee_b( t_emf *emf, const float dt )
 	float dt_dx = dt / emf->dx;
 
 	// Canonical implementation
-	#pragma GCC ivdep
-	for (int i=-1; i<=emf->nx; i++) {
+	#pragma omp simd 
+	for (int i=-1; i<= emf->nx; i++) {
 		// B[ i ].x += 0;  // Bx does not evolve in 1D
-		B_y[ i ] += (   dt_dx * ( E_z[i+1] - E_z[ i ]) );
-		B_z[ i ] += ( - dt_dx * ( E_y[i+1] - E_y[ i ]) );
+		B_y[i] += (   dt_dx * ( E_z[i+1] - E_z[i]) );
+		B_z[i] += ( - dt_dx * ( E_y[i+1] - E_y[i]) );
 	}
 }
 
@@ -490,7 +494,7 @@ void yee_e( t_emf *emf, const t_current *current, const float dt )
     const int nx = emf->nx;
 
 	// Canonical implementation
-	#pragma GCC ivdep
+	#pragma omp simd 
 	for (int i = 0; i <= nx+1; i++) {
 		E_x[i] += ( - dt * J_0x[i]);
 		E_y[i] += ( - dt_dx * ( B_z[i] - B_z[i-1]) - dt * J_0y[i]);
@@ -521,27 +525,27 @@ void emf_update_gc( t_emf *emf )
 		// x
 
 		// lower
-		#pragma GCC ivdep
+		#pragma omp simd aligned(E_x, E_y, E_z, B_x, B_y, B_z:64) if(emf->nx >= emf->gc[0])
 		for (int i=-emf->gc[0]; i<0; i++) {
-			E_x[ i ] = E_x[ nx + i ];
-			E_y[ i ] = E_y[ nx + i ];
-			E_z[ i ] = E_z[ nx + i ];
+			E_x[i] = E_x[nx + i];
+			E_y[i] = E_y[nx + i];
+			E_z[i] = E_z[nx + i];
 
-			B_x[ i ] = B_x[ nx + i ];
-			B_y[ i ] = B_y[ nx + i ];
-			B_z[ i ] = B_z[ nx + i ];
+			B_x[i] = B_x[nx + i];
+			B_y[i] = B_y[nx + i];
+			B_z[i] = B_z[nx + i];
 		}
 
 		// upper
-		#pragma GCC ivdep
+		#pragma omp simd aligned(E_x, E_y, E_z, B_x, B_y, B_z:64) if(emf->nx >= emf->gc[1])
 		for (int i=0; i<emf->gc[1]; i++) {
-			E_x[ nx + i ] = E_x[ i ];
-			E_y[ nx + i ] = E_y[ i ];
-			E_z[ nx + i ] = E_z[ i ];
+			E_x[nx + i] = E_x[i];
+			E_y[nx + i] = E_y[i];
+			E_z[nx + i] = E_z[i];
 
-			B_x[ nx + i ] = B_x[ i ];
-			B_y[ nx + i ] = B_y[ i ];
-			B_z[ nx + i ] = B_z[ i ];
+			B_x[nx + i] = B_x[i];
+			B_y[nx + i] = B_y[i];
+			B_z[nx + i] = B_z[i];
 		}
 	}
 
@@ -567,25 +571,30 @@ void emf_move_window( t_emf *emf ){
 		float* const restrict B_z = emf -> B_z;
 
 		// Shift data left 1 cell and zero rightmost cells
-		#pragma GCC ivdep
-		for (int i = -emf->gc[0]; i < emf->nx+emf->gc[1] - 1; i++) {
-			E_x[ i ] = E_x[ i + 1 ];
-			E_y[ i ] = E_y[ i + 1 ];
-			E_z[ i ] = E_z[ i + 1 ];
-			B_x[ i ] = B_x[ i + 1 ];
-			B_y[ i ] = B_y[ i + 1 ];
-			B_z[ i ] = B_z[ i + 1 ];
+		int start = -emf->gc[0];
+		int end = emf->nx+emf->gc[1] - 1;
+		
+		#pragma omp simd aligned(E_x, E_y, E_z, B_x, B_y, B_z:64)
+		for (int i = start; i < end; i++) {
+			E_x[i] = E_x[i + 1];
+			E_y[i] = E_y[i + 1];
+			E_z[i] = E_z[i + 1];
+			B_x[i] = B_x[i + 1];
+			B_y[i] = B_y[i + 1];
+			B_z[i] = B_z[i + 1];
 		}
 
-	    const float3 zero_fld = {0.,0.,0.};
-		#pragma GCC ivdep
-		for(int i = emf->nx - 1; i < emf->nx+emf->gc[1]; i ++) {
-			E_x[ i ] = zero_fld.x;
-			E_y[ i ] = zero_fld.y;
-			E_z[ i ] = zero_fld.z;
-			B_x[ i ] = zero_fld.x;
-			B_y[ i ] = zero_fld.y;
-			B_z[ i ] = zero_fld.z;
+		start = emf->nx - 1;
+		end = emf->nx+emf->gc[1];
+
+		#pragma omp simd aligned(E_x, E_y, E_z, B_x, B_y, B_z:64)
+		for(int i =  start; i < end; i ++) {
+			E_x[ i ] = 0.;
+			E_y[ i ] = 0.;
+			E_z[ i ] = 0.;
+			B_x[ i ] = 0.;
+			B_y[ i ] = 0.;
+			B_z[ i ] = 0.;
 		}
 
 		// Increase moving window counter
@@ -765,15 +774,25 @@ void emf_update_part_fld( t_emf* const emf ) {
     float* const restrict E_part_y = emf->E_part_y;
     float* const restrict E_part_z = emf->E_part_z;
 
+
     switch (emf->ext_fld.E_type)
     {
     case EMF_FLD_TYPE_UNIFORM: {
-		#pragma GCC ivdep
-        for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
-            float3 e = {emf->E_x[i], emf->E_y[i], emf->E_z[i]};
-            e.x += emf->ext_fld.E_0.x;
-            e.y += emf->ext_fld.E_0.y;
-            e.z += emf->ext_fld.E_0.z;
+
+		int start = -emf->gc[0];
+		int end = emf->nx+emf->gc[1];
+
+		float* const restrict E_x = emf->E_x;
+		float* const restrict E_y = emf->E_y;
+		float* const restrict E_z = emf->E_z;
+		float3 E_0 = emf->ext_fld.E_0;
+
+		#pragma omp simd aligned(E_part_x, E_part_y, E_part_z:64)
+        for (int i= start; i< end; i++) {
+            float3 e = {E_x[i], E_y[i], E_z[i]};
+            e.x += E_0.x;
+            e.y += E_0.y;
+            e.z += E_0.z;
 			E_part_x[i] = e.x;
 			E_part_y[i] = e.y;
 			E_part_z[i] = e.z;
@@ -863,7 +882,6 @@ void emf_init_fld( t_emf* const emf, t_emf_init_fld* init_fld )
         break;
 
     case EMF_FLD_TYPE_UNIFORM:
-		#pragma GCC ivdep
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
 			E_x[i] = init_fld -> E_0.x;
 			E_y[i] = init_fld -> E_0.y;
@@ -887,7 +905,6 @@ void emf_init_fld( t_emf* const emf, t_emf_init_fld* init_fld )
         break;
 
     case EMF_FLD_TYPE_UNIFORM:
-		#pragma GCC ivdep
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
             B_x[i] = init_fld -> B_0.x;
 			B_y[i] = init_fld -> B_0.y;

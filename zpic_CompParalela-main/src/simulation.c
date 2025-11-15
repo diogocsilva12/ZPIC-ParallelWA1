@@ -23,7 +23,7 @@
  * @param ndump 	Diagnostic frequency (number of iterations between diagnostic dumps)
  * @return 			1 if it is time to write a report, 0 otherwise
  */
-int report( int n, int ndump )
+int report(int n, int ndump)
 {
 	if (ndump > 0) {
 		return ! (n % ndump);
@@ -43,7 +43,7 @@ int report( int n, int ndump )
  * 
  * @param sim 	EM1D Simulation
  */
-void sim_iter( t_simulation* sim ) {
+void sim_iter(t_simulation* sim) {
 
 	// Advance particles and deposit current
 	current_zero( &sim -> current );
