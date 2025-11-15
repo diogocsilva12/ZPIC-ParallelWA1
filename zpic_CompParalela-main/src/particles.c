@@ -93,7 +93,7 @@ void spec_set_u( t_species* spec, const int start, const int end )
     float* restrict const part_uz = spec->part.uz;
 
     // Initialize thermal component
-    #pragma omp simd
+    #pragma GCC ivdep
     for (int i = 0; i < size_arr; i++) {
         int idx = i + start;
         part_ux[idx] = spec -> uth[0] * array_random_x[i];
@@ -102,8 +102,8 @@ void spec_set_u( t_species* spec, const int start, const int end )
     }
 
     // Calculate net momentum in each cell
-    float3 * restrict net_u = (float3 *) malloc( spec->nx * sizeof(float3));
-    int * restrict    npc   = (int *) malloc( spec->nx * sizeof(int));
+    float3* restrict net_u = (float3 *) malloc( spec->nx * sizeof(float3));
+    int* restrict    npc   = (int *) malloc(spec->nx * sizeof(int));
 
     // Zero momentum grids
     memset(net_u, 0, spec->nx * sizeof(float3) );
@@ -123,7 +123,7 @@ void spec_set_u( t_species* spec, const int start, const int end )
     // Normalize to the number of particles in each cell to get the
     // Average momentum in each cell
     
-    #pragma omp simd
+    #pragma GCC ivdep
     for(int i = 0; i< spec->nx; i++ ) {
         const float norm = (npc[i] > 0) ? 1.0f/npc[i] : 0;
         net_u[i].x *= norm;
@@ -132,7 +132,7 @@ void spec_set_u( t_species* spec, const int start, const int end )
     }
 
     // Subtract average momentum and add fluid component
-    #pragma omp simd
+    #pragma GCC ivdep
     for (int i = start; i <= end; i++) {
         const int idx  = spec -> part.ix[i];
 
@@ -268,7 +268,7 @@ void spec_set_x(t_species* spec, const int range[] ){
     float poscell[npc] __attribute__((aligned(64)));
 
     // Not profitable
-    #pragma omp simd
+    #pragma GCC ivdep 
     for (i=0; i<spec->ppc; i++) {
         poscell[i] = (i + 0.5) / npc;
     }
@@ -528,7 +528,7 @@ void spec_inject_particles( t_species* spec, const int range[] )
     int start = spec -> np;
 
     // Get maximum number of particles to inject
-    int np_inj = spec_np_inj( spec, range );
+    int np_inj = spec_np_inj(spec, range);
 
     // Check if buffer is large enough and if not reallocate
        // Increase by chunks of 1024 particles
@@ -539,10 +539,10 @@ void spec_inject_particles( t_species* spec, const int range[] )
 
 
     // Set particle positions
-    spec_set_x( spec, range );
+    spec_set_x(spec, range);
 
     // Set momentum of injected particles
-    spec_set_u( spec, start, spec -> np - 1 );
+    spec_set_u(spec, start, spec -> np - 1);
 }
 
 /**
@@ -570,7 +570,7 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
     int npc;
 
     // Species name
-    strncpy( spec -> name, name, MAX_SPNAME_LEN );
+    strncpy(spec -> name, name, MAX_SPNAME_LEN);
 
     spec->nx = nx;
     spec->ppc = ppc;
@@ -655,9 +655,11 @@ void spec_move_window(t_species *spec){
 
         // shift all particles left
         // particles leaving the box will be removed later
-        int i;
-        for(i = 0; i < spec->np; i++ ) {
-            spec->part.ix[i]--;
+        int* restrict const part_ix = spec->part.ix;
+        
+        #pragma GCC ivdep
+        for(int i = 0; i < spec->np; i++) {
+            part_ix[i]--;
         }
 
         // Increase moving window counter
@@ -763,7 +765,7 @@ void dep_current_esk( int ix0, int di,
  * @param di        Number of cells moved {-1,0,1}
  * @param x0        Initial position of particle inside cell
  * @param dx        Particle motion normalized to cell size
- * @param qnx       Normalization for x current (q * cell size / dt)
+ * @param qnx       NormaliFzation for x current (q * cell size / dt)
  * @param qvy       Y current ( q * vy )
  * @param qvz       Z current ( q * vz )
  * @param current   Electric current density
@@ -794,7 +796,7 @@ void dep_current_zamb( int ix0, int di,
     vp[0].ix = ix0;
 
     // x split
-    if ( di != 0 ) {
+    if (di != 0) {
 
         //int ib = ( di+1 )>>1;
         int ib = ( di == 1 );
@@ -1149,7 +1151,6 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
     } else {
         // Use periodic boundaries in x
         for (int i=0; i<spec->np; i++) {
-
             spec-> part.ix[i] += (( spec -> part.ix[i] < 0 ) ? nx0 : 0 ) - (( spec -> part.ix[i] >= nx0 ) ? nx0 : 0);
         }
     }
@@ -1159,6 +1160,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
     if ( spec -> n_sort > 0 ) {
         if ( ! (spec -> iter % spec -> n_sort) ) spec_sort( spec );
     }
+    
     
 
     // Timing info

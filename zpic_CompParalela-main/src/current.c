@@ -152,7 +152,7 @@ void current_update_gc(t_current *current)
         const int nx = current -> nx;
 
         // lower - add the values from upper boundary ( both gc and inside box )
-        #pragma omp simd aligned(J_0x, J_0y, J_0z:64) if (current->nx >= current->gc[0] + current->gc[1])
+        #pragma GCC ivdep
         for (int i=-current->gc[0]; i < current->gc[1]; i++) {
             J_0x[i] += J_0x[nx + i];
             J_0y[i] += J_0y[nx + i];
@@ -160,7 +160,7 @@ void current_update_gc(t_current *current)
         }
         
         // upper - just copy the values from the lower boundary 
-        #pragma omp simd aligned(J_0x, J_0y, J_0z:64) if (current->nx >= current->gc[0] + current->gc[1])
+        #pragma GCC ivdep
         for (int i=-current->gc[0]; i < current->gc[1]; i++) {
             J_0x[nx + i] = J_0x[i];
             J_0y[nx + i] = J_0y[i];
@@ -317,14 +317,14 @@ void kernel_x(t_current* const current, const float sa, const float sb){
     /*
        We vectorized this loop to avoid data dependencies
     */
-    #pragma omp simd aligned(tmp_x, tmp_y, tmp_z:64) 
+    #pragma GCC ivdep 
     for (int i = 0; i < current->nx; i++) {
         tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
         tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
         tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
     }
 
-    #pragma omp simd aligned(tmp_x, tmp_y, tmp_z:64)
+    #pragma GCC ivdep
     for(int i = 0; i < current->nx; i++) {
         J_0x[i] = tmp_x[i];
         J_0y[i] = tmp_y[i];
@@ -334,14 +334,14 @@ void kernel_x(t_current* const current, const float sa, const float sb){
     // Update x boundaries for periodic boundaries
     if (current -> bc_type == CURRENT_BC_PERIODIC) {
         
-        #pragma omp simd aligned(J_0x, J_0y, J_0z:64) if(current->nx >= current->gc[0])
+        #pragma GCC ivdep
         for(int i = -current->gc[0]; i<0; i++){
             J_0x[i] = J_0x[current->nx + i];
             J_0y[i] = J_0y[current->nx + i];
             J_0z[i] = J_0z[current->nx + i];
         }
 
-        #pragma omp simd aligned(J_0x, J_0y, J_0z:64) if(current->nx >= current->gc[1])
+        #pragma GCC ivdep
         for (int i=0; i<current->gc[1]; i++){
             J_0x[current->nx + i] = J_0x[i];
             J_0y[current->nx + i] = J_0y[i];

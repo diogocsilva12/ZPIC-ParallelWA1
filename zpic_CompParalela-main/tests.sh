@@ -22,7 +22,7 @@
 # --------- LOAD MODULES -----------------
 echo "[STARTING] Loading modules"
 modules=(
-    "GCC/14"
+    "GCC/13"
     "Score-P/8.4-gompi-2024a"
 )
 

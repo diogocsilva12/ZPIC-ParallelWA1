@@ -351,19 +351,19 @@ void emf_report( const t_emf *emf, const char field, const int fc )
 	float buf[emf->nx] __attribute__((aligned(64)));
 	switch (fc) {
 		case 0:
-			#pragma omp simd aligned(buf, f_x:64)
+			#pragma GCC ivdep
 			for (int i = 0; i < emf->nx; i++) {
 				buf[i] = f_x[i];
 			}
 			break;
 		case 1:
-			#pragma omp simd aligned(buf, f_y:64)
+			#pragma GCC ivdep
 			for (int i = 0; i < emf->nx; i++) {
 				buf[i] = f_y[i];
 			}
 			break;
 		case 2:
-			#pragma omp simd aligned(buf, f_z:64)
+			#pragma GCC ivdep
 			for (int i = 0; i < emf->nx; i++) {
 				buf[i] = f_z[i];
 			}
@@ -464,7 +464,7 @@ void yee_b( t_emf *emf, const float dt )
 	float dt_dx = dt / emf->dx;
 
 	// Canonical implementation
-	#pragma omp simd 
+	#pragma GCC ivdep 
 	for (int i=-1; i<= emf->nx; i++) {
 		// B[ i ].x += 0;  // Bx does not evolve in 1D
 		B_y[i] += (   dt_dx * ( E_z[i+1] - E_z[i]) );
@@ -494,7 +494,7 @@ void yee_e( t_emf *emf, const t_current *current, const float dt )
     const int nx = emf->nx;
 
 	// Canonical implementation
-	#pragma omp simd 
+	#pragma GCC ivdep 
 	for (int i = 0; i <= nx+1; i++) {
 		E_x[i] += ( - dt * J_0x[i]);
 		E_y[i] += ( - dt_dx * ( B_z[i] - B_z[i-1]) - dt * J_0y[i]);
@@ -525,7 +525,7 @@ void emf_update_gc( t_emf *emf )
 		// x
 
 		// lower
-		#pragma omp simd aligned(E_x, E_y, E_z, B_x, B_y, B_z:64) if(emf->nx >= emf->gc[0])
+		#pragma GCC ivdep
 		for (int i=-emf->gc[0]; i<0; i++) {
 			E_x[i] = E_x[nx + i];
 			E_y[i] = E_y[nx + i];
@@ -537,7 +537,7 @@ void emf_update_gc( t_emf *emf )
 		}
 
 		// upper
-		#pragma omp simd aligned(E_x, E_y, E_z, B_x, B_y, B_z:64) if(emf->nx >= emf->gc[1])
+		#pragma GCC ivdep
 		for (int i=0; i<emf->gc[1]; i++) {
 			E_x[nx + i] = E_x[i];
 			E_y[nx + i] = E_y[i];
@@ -574,7 +574,7 @@ void emf_move_window( t_emf *emf ){
 		int start = -emf->gc[0];
 		int end = emf->nx+emf->gc[1] - 1;
 		
-		#pragma omp simd aligned(E_x, E_y, E_z, B_x, B_y, B_z:64)
+		#pragma GCC ivdep
 		for (int i = start; i < end; i++) {
 			E_x[i] = E_x[i + 1];
 			E_y[i] = E_y[i + 1];
@@ -587,7 +587,7 @@ void emf_move_window( t_emf *emf ){
 		start = emf->nx - 1;
 		end = emf->nx+emf->gc[1];
 
-		#pragma omp simd aligned(E_x, E_y, E_z, B_x, B_y, B_z:64)
+		#pragma GCC ivdep
 		for(int i =  start; i < end; i ++) {
 			E_x[ i ] = 0.;
 			E_y[ i ] = 0.;
