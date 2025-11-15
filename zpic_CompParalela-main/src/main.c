@@ -29,16 +29,8 @@ along with the ZPIC Educational code suite. If not, see <http://www.gnu.org/lice
 #include "../lib/current.h"
 #include "../lib/particles.h"
 #include "../lib/timer.h"
-
-// Include Simulation parameters here
-//#include "input/twostream.c"
-//#include "input/magnetized.c"
-//#include "input/lwfa.c"
-//#include "input/beam.c"
-//#include "input/laser.c"
 #include "input/laser_particles.c"
-//#include "input/absorbing.c"
-//#include "input/density.c"
+
 
 int main (int argc, const char * argv[]) {
 
@@ -60,7 +52,6 @@ int main (int argc, const char * argv[]) {
 	kernel_tmpbuf_init(sim.current.nx);
 
 	for (n=0,t=0.0; t<=sim.tmax; n++, t=n*sim.dt) {
-  		// printf("n = %i, t = %f\n",n,t);
 		if (report ( n , sim.ndump ) )	sim_report( &sim );
 		sim_iter( &sim );
 

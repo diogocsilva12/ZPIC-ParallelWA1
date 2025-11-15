@@ -72,15 +72,33 @@ double spec_perf( void )
  */
 void spec_set_u( t_species* spec, const int start, const int end )
 {
-
     /**
      * Version 1 momentum initialization
-     */
+    */
+
+    // This vectorize was not profitable
+    int size_arr = end - start + 1;
+    double array_random_x[size_arr] __attribute__((aligned(64)));
+    double array_random_y[size_arr] __attribute__((aligned(64)));
+    double array_random_z[size_arr] __attribute__((aligned(64)));
+
+    for(int i = 0; i < size_arr; i++) {
+        array_random_x[i] = rand_norm();
+        array_random_y[i] = rand_norm();
+        array_random_z[i] = rand_norm();
+    }
+
+    float* restrict const part_ux = spec->part.ux;
+    float* restrict const part_uy = spec->part.uy;
+    float* restrict const part_uz = spec->part.uz;
+
     // Initialize thermal component
-    for (int i = start; i <= end; i++) {
-        spec->part.ux[i] = spec -> uth[0] * rand_norm();
-        spec->part.uy[i] = spec -> uth[1] * rand_norm();
-        spec->part.uz[i] = spec -> uth[2] * rand_norm();
+    #pragma omp simd
+    for (int i = 0; i < size_arr; i++) {
+        int idx = i + start;
+        part_ux[idx] = spec -> uth[0] * array_random_x[i];
+        part_uy[idx] = spec -> uth[1] * array_random_y[i];
+        part_uz[idx] = spec -> uth[2] * array_random_z[i];
     }
 
     // Calculate net momentum in each cell
@@ -95,35 +113,37 @@ void spec_set_u( t_species* spec, const int start, const int end )
     for (int i = start; i <= end; i++) {
         const int idx  = spec -> part.ix[i];
 
-        net_u[ idx ].x += spec->part.ux[i];
-        net_u[ idx ].y += spec->part.uy[i];
-        net_u[ idx ].z += spec->part.uz[i];
+        net_u[idx].x += spec->part.ux[i];
+        net_u[idx].y += spec->part.uy[i];
+        net_u[idx].z += spec->part.uz[i];
 
-        npc[ idx ] += 1;
+        npc[idx] += 1;
     }
 
     // Normalize to the number of particles in each cell to get the
-    // average momentum in each cell
+    // Average momentum in each cell
+    
+    #pragma omp simd
     for(int i = 0; i< spec->nx; i++ ) {
-        const float norm = (npc[ i ] > 0) ? 1.0f/npc[i] : 0;
-
-        net_u[ i ].x *= norm;
-        net_u[ i ].y *= norm;
-        net_u[ i ].z *= norm;
+        const float norm = (npc[i] > 0) ? 1.0f/npc[i] : 0;
+        net_u[i].x *= norm;
+        net_u[i].y *= norm;
+        net_u[i].z *= norm;
     }
 
     // Subtract average momentum and add fluid component
+    #pragma omp simd
     for (int i = start; i <= end; i++) {
         const int idx  = spec -> part.ix[i];
 
-        spec->part.ux[i] += spec -> ufl[0] - net_u[ idx ].x;
-        spec->part.uy[i] += spec -> ufl[1] - net_u[ idx ].y;
-        spec->part.uz[i] += spec -> ufl[2] - net_u[ idx ].z;
+        spec->part.ux[i] += spec -> ufl[0] - net_u[idx].x;
+        spec->part.uy[i] += spec -> ufl[1] - net_u[idx].y;
+        spec->part.uz[i] += spec -> ufl[2] - net_u[idx].z;
     }
 
     // Free temporary memory
-    free( npc );
-    free( net_u );
+    free(npc);
+    free(net_u);
 }
 
 /**
@@ -237,8 +257,7 @@ int spec_np_inj( t_species* spec, const int range[] )
  * @param spec      Particle species
  * @param range     Range of cells in which to inject
  */
-void spec_set_x( t_species* spec, const int range[] )
-{
+void spec_set_x(t_species* spec, const int range[] ){
 
     int i, k, ip;
     float start, end;
@@ -246,25 +265,26 @@ void spec_set_x( t_species* spec, const int range[] )
     // Calculate particle positions inside the cell
     const int npc = spec->ppc;
 
-    float poscell[npc];
+    float poscell[npc] __attribute__((aligned(64)));
 
+    // Not profitable
+    #pragma omp simd
     for (i=0; i<spec->ppc; i++) {
-        poscell[i]   = ( i + 0.5 ) / npc;
+        poscell[i] = (i + 0.5) / npc;
     }
 
     ip = spec -> np;
 
     // Set position of particles in the specified grid range according to the density profile
-    switch ( spec -> density.type ) {
+    switch (spec -> density.type) {
     case STEP: // Step like density profile
 
         // Get edge position normalized to cell size;
         start = spec -> density.start / spec -> dx - spec -> n_move;
 
         for (i = range[0]; i <= range[1]; i++) {
-
             for (k=0; k<npc; k++) {
-                if ( i + poscell[k] > start ) {
+                if (i + poscell[k] > start) {
                     spec->part.ix[ip] = i;
                     spec->part.x[ip] = poscell[k];
                     ip++;
@@ -611,7 +631,7 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
 
     const int range[2] = {0, nx-1};
 
-    spec_inject_particles( spec, range );
+    spec_inject_particles(spec, range);
 
     // Set default sorting frequency
     spec -> n_sort = 16;
@@ -629,14 +649,14 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
  * 
  * @param spec      Particle species
  */
-void spec_move_window( t_species *spec ){
+void spec_move_window(t_species *spec){
 
     if ((spec->iter * spec->dt ) > (spec->dx * (spec->n_move + 1)))  {
 
         // shift all particles left
         // particles leaving the box will be removed later
         int i;
-        for( i = 0; i < spec->np; i++ ) {
+        for(i = 0; i < spec->np; i++ ) {
             spec->part.ix[i]--;
         }
 
@@ -949,8 +969,8 @@ void interpolate_fld( const float* restrict const E_part_x, const float* restric
     ih += i;
 
     Ep->x = E_part_x[ih] * (1.0f - w1h) + E_part_x[ih+1]* w1h;
-    Ep->y = E_part_y[i] * (1.0f -  w1) + E_part_y[i+1 ] * w1;
-    Ep->z = E_part_z[i ] * (1.0f -  w1) + E_part_z[i+1 ] * w1;
+    Ep->y = E_part_y[i] * (1.0f -  w1) + E_part_y[i+1] * w1;
+    Ep->z = E_part_z[i] * (1.0f -  w1) + E_part_z[i+1] * w1;
 
     Bp->x = B_part_x[i ] * (1.0f  - w1) + B_part_x[i+1 ] * w1;
     Bp->y = B_part_y[ih] * (1.0f - w1h) + B_part_y[ih+1] * w1h;
@@ -994,55 +1014,51 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
 
     uint64_t t0;
     t0 = timer_ticks();
-
     const float tem   = 0.5 * spec->dt/spec -> m_q;
     const float dt_dx = spec->dt / spec->dx;
 
     // Auxiliary values for current deposition
     const float qnx = spec -> q *  spec->dx / spec->dt;
-
     const int nx0 = spec -> nx;
-
     double energy = 0;
 
+    // Restricts
+    int* restrict const part_ix = spec->part.ix;
+    float* restrict const part_x = spec->part.x;
+    float* restrict const part_ux = spec->part.ux;
+    float* restrict const part_uy = spec->part.uy;
+    float* restrict const part_uz = spec->part.uz;
+
+    float energy_cum[spec->np] __attribute__((aligned(64)));
+
+
     // Advance particles
-    for (int i=0; i<spec->np; i++) {
+    for (int i=0; i < spec->np; i++) {
 
         float3 Ep, Bp;
         float utx, uty, utz;
         float ux, uy, uz, u2;
         float gamma, rg, gtem, otsq;
-
         float x1;
-
         int di;
         float dx;
-
-        // Load particle momenta
-        ux = spec -> part.ux[i];
-        uy = spec -> part.uy[i];
-        uz = spec -> part.uz[i];
 
         // interpolate fields
         interpolate_fld(emf -> E_part_x, emf -> E_part_y, emf -> E_part_z, emf -> B_part_x, emf -> B_part_y, emf -> B_part_z, spec -> part, i, &Ep, &Bp);
         // Ep.x = Ep.y = Ep.z = Bp.x = Bp.y = Bp.z = 0;
 
-        // advance u using Boris scheme
         Ep.x *= tem;
         Ep.y *= tem;
         Ep.z *= tem;
 
-        utx = ux + Ep.x;
-        uty = uy + Ep.y;
-        utz = uz + Ep.z;
+        utx = part_ux[i] + Ep.x;
+        uty = part_uy[i] + Ep.y;
+        utz = part_uz[i] + Ep.z;
 
-        // Perform first half of the rotation
-        // Get time centered gamma
         u2 = utx*utx + uty*uty + utz*utz;
         gamma = sqrtf( 1 + u2 );
 
-        // Accumulate time centered energy
-        energy += u2 / ( 1 + gamma );
+        energy_cum[i] = u2 / (1 + gamma);
 
         gtem = tem / gamma;
 
@@ -1050,14 +1066,13 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         Bp.y *= gtem;
         Bp.z *= gtem;
 
-        otsq = 2.0f / ( 1.0f + Bp.x*Bp.x + Bp.y*Bp.y + Bp.z*Bp.z );
+        otsq = 2.0f / (1.0f + Bp.x*Bp.x + Bp.y*Bp.y + Bp.z*Bp.z);
 
         ux = utx + uty*Bp.z - utz*Bp.y;
         uy = uty + utz*Bp.x - utx*Bp.z;
         uz = utz + utx*Bp.y - uty*Bp.x;
 
         // Perform second half of the rotation
-
         Bp.x *= otsq;
         Bp.y *= otsq;
         Bp.z *= otsq;
@@ -1072,9 +1087,9 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         uz = utz + Ep.z;
 
         // Store new momenta
-        spec -> part.ux[i] = ux;
-        spec -> part.uy[i] = uy;
-        spec -> part.uz[i] = uz;
+        part_ux[i] = ux;
+        part_uy[i] = uy;
+        part_uz[i] = uz;
 
         // push particle
         rg = 1.0f / sqrtf(1.0f + ux*ux + uy*uy + uz*uz);
@@ -1096,11 +1111,15 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
                          current);
 
         // Store results
-        spec -> part.x[i] = x1;
-        spec -> part.ix[i] += di;
+        part_x[i] = x1;
+        part_ix[i] += di;
 
     }
 
+    for (int i=0; i < spec->np; i++) {
+        energy += energy_cum[i];
+    }
+    
     // Store energy
     spec -> energy = spec-> q * spec -> m_q * energy * spec -> dx;
 
@@ -1476,7 +1495,7 @@ void spec_rep_pha( const t_species *spec, const int rep_type,
     memset( buf, 0, pha_nx[0] * pha_nx[1] * sizeof( float ));
 
     // Deposit the phasespace
-    spec_deposit_pha( spec, rep_type, pha_nx, pha_range, buf );
+    spec_deposit_pha(spec, rep_type, pha_nx, pha_range, buf);
 
     int quant1 = rep_type & 0x000F;
     int quant2 = (rep_type & 0x00F0)>>4;

@@ -460,6 +460,7 @@ void yee_b( t_emf *emf, const float dt )
 	float dt_dx = dt / emf->dx;
 
 	// Canonical implementation
+	#pragma GCC ivdep
 	for (int i=-1; i<=emf->nx; i++) {
 		// B[ i ].x += 0;  // Bx does not evolve in 1D
 		B_y[ i ] += (   dt_dx * ( E_z[i+1] - E_z[ i ]) );
@@ -489,8 +490,9 @@ void yee_e( t_emf *emf, const t_current *current, const float dt )
     const int nx = emf->nx;
 
 	// Canonical implementation
+	#pragma GCC ivdep
 	for (int i = 0; i <= nx+1; i++) {
-		E_x[i] += (                                - dt * J_0x[i]);
+		E_x[i] += ( - dt * J_0x[i]);
 		E_y[i] += ( - dt_dx * ( B_z[i] - B_z[i-1]) - dt * J_0y[i]);
 		E_z[i] += ( + dt_dx * ( B_y[i] - B_y[i-1]) - dt * J_0z[i]);
 	}
@@ -519,6 +521,7 @@ void emf_update_gc( t_emf *emf )
 		// x
 
 		// lower
+		#pragma GCC ivdep
 		for (int i=-emf->gc[0]; i<0; i++) {
 			E_x[ i ] = E_x[ nx + i ];
 			E_y[ i ] = E_y[ nx + i ];
@@ -530,6 +533,7 @@ void emf_update_gc( t_emf *emf )
 		}
 
 		// upper
+		#pragma GCC ivdep
 		for (int i=0; i<emf->gc[1]; i++) {
 			E_x[ nx + i ] = E_x[ i ];
 			E_y[ nx + i ] = E_y[ i ];
@@ -563,7 +567,7 @@ void emf_move_window( t_emf *emf ){
 		float* const restrict B_z = emf -> B_z;
 
 		// Shift data left 1 cell and zero rightmost cells
-
+		#pragma GCC ivdep
 		for (int i = -emf->gc[0]; i < emf->nx+emf->gc[1] - 1; i++) {
 			E_x[ i ] = E_x[ i + 1 ];
 			E_y[ i ] = E_y[ i + 1 ];
@@ -574,6 +578,7 @@ void emf_move_window( t_emf *emf ){
 		}
 
 	    const float3 zero_fld = {0.,0.,0.};
+		#pragma GCC ivdep
 		for(int i = emf->nx - 1; i < emf->nx+emf->gc[1]; i ++) {
 			E_x[ i ] = zero_fld.x;
 			E_y[ i ] = zero_fld.y;
@@ -763,6 +768,7 @@ void emf_update_part_fld( t_emf* const emf ) {
     switch (emf->ext_fld.E_type)
     {
     case EMF_FLD_TYPE_UNIFORM: {
+		#pragma GCC ivdep
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
             float3 e = {emf->E_x[i], emf->E_y[i], emf->E_z[i]};
             e.x += emf->ext_fld.E_0.x;
@@ -798,8 +804,9 @@ void emf_update_part_fld( t_emf* const emf ) {
     switch (emf->ext_fld.B_type)
     {
     case EMF_FLD_TYPE_UNIFORM: {
+		
+		#pragma GCC ivdep
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
-            
 			float3 b = {emf->B_x[i], emf->B_y[i], emf->B_z[i]};
             b.x += emf->ext_fld.B_0.x;
             b.y += emf->ext_fld.B_0.y;
@@ -856,6 +863,7 @@ void emf_init_fld( t_emf* const emf, t_emf_init_fld* init_fld )
         break;
 
     case EMF_FLD_TYPE_UNIFORM:
+		#pragma GCC ivdep
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
 			E_x[i] = init_fld -> E_0.x;
 			E_y[i] = init_fld -> E_0.y;
@@ -879,6 +887,7 @@ void emf_init_fld( t_emf* const emf, t_emf_init_fld* init_fld )
         break;
 
     case EMF_FLD_TYPE_UNIFORM:
+		#pragma GCC ivdep
         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
             B_x[i] = init_fld -> B_0.x;
 			B_y[i] = init_fld -> B_0.y;

@@ -100,7 +100,7 @@ void current_new(t_current *current, int nx, float box, float dt)
 
     // Zero initial current
     // This is only relevant for diagnostics, current is always zeroed before deposition
-    current_zero( current );
+    current_zero(current);
     
 }
 
@@ -144,24 +144,24 @@ void current_zero(t_current *current)
  */
 void current_update_gc(t_current *current)
 {
-    if ( current -> bc_type == CURRENT_BC_PERIODIC ) {
+    if (current -> bc_type == CURRENT_BC_PERIODIC) {
         
         float* restrict const J_0x = current -> J_0x;
         float* restrict const J_0y = current -> J_0y;
         float* restrict const J_0z = current -> J_0z;
         const int nx = current -> nx;
 
-        #pragma GCC ivdep
         // lower - add the values from upper boundary ( both gc and inside box )
-        for (int i=-current->gc[0]; i<current->gc[1]; i++) {
+        #pragma omp simd aligned(J_0x, J_0y, J_0z:64) if (current->nx >= current->gc[0] + current->gc[1])
+        for (int i=-current->gc[0]; i < current->gc[1]; i++) {
             J_0x[i] += J_0x[nx + i];
             J_0y[i] += J_0y[nx + i];
             J_0z[i] += J_0z[nx + i];
         }
         
-        #pragma GCC ivdep
         // upper - just copy the values from the lower boundary 
-        for (int i=-current->gc[0]; i<current->gc[1]; i++) {
+        #pragma omp simd aligned(J_0x, J_0y, J_0z:64) if (current->nx >= current->gc[0] + current->gc[1])
+        for (int i=-current->gc[0]; i < current->gc[1]; i++) {
             J_0x[nx + i] = J_0x[i];
             J_0y[nx + i] = J_0y[i];
             J_0z[nx + i] = J_0z[i];
@@ -222,12 +222,12 @@ void current_report( const t_current *current, const int jc )
             }
             break;
         case 1:
-            for ( int i = 0; i < current->nx; i++ ) {
+            for (int i = 0; i < current->nx; i++) {
                 buf[i] = fy[i];
             }
             break;
         case 2:
-            for ( int i = 0; i < current->nx; i++ ) {
+            for (int i = 0; i < current->nx; i++) {
                 buf[i] = fz[i];
             }
             break;
@@ -236,7 +236,7 @@ void current_report( const t_current *current, const int jc )
 	char vfname[16];	// Dataset name
 	char vflabel[16];	// Dataset label (for plots)
 
-    snprintf( vfname, 3, "J%1u", jc );
+    snprintf(vfname, 3, "J%1u", jc);
 	char comp[] = {'x','y','z'};
     snprintf(vflabel,4,"J_%c",comp[jc]);
 
@@ -281,7 +281,7 @@ void current_report( const t_current *current, const int jc )
  * @param sa a value of the compensator kernel
  * @param sb b value of the compensator kernel
  */
-void get_smooth_comp( int n, float* sa, float* sb) {
+void get_smooth_comp(int n, float* sa, float* sb) {
     float a,b,total;
 
     a = -1;
@@ -317,14 +317,14 @@ void kernel_x(t_current* const current, const float sa, const float sb){
     /*
        We vectorized this loop to avoid data dependencies
     */
-    #pragma GCC ivdep
+    #pragma omp simd aligned(tmp_x, tmp_y, tmp_z:64) 
     for (int i = 0; i < current->nx; i++) {
         tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
         tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
         tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
     }
 
-    #pragma GCC ivdep
+    #pragma omp simd aligned(tmp_x, tmp_y, tmp_z:64)
     for(int i = 0; i < current->nx; i++) {
         J_0x[i] = tmp_x[i];
         J_0y[i] = tmp_y[i];
@@ -333,18 +333,19 @@ void kernel_x(t_current* const current, const float sa, const float sb){
    
     // Update x boundaries for periodic boundaries
     if (current -> bc_type == CURRENT_BC_PERIODIC) {
-        #pragma GCC ivdep
+        
+        #pragma omp simd aligned(J_0x, J_0y, J_0z:64) if(current->nx >= current->gc[0])
         for(int i = -current->gc[0]; i<0; i++){
             J_0x[i] = J_0x[current->nx + i];
             J_0y[i] = J_0y[current->nx + i];
             J_0z[i] = J_0z[current->nx + i];
         }
 
-        #pragma GCC ivdep
+        #pragma omp simd aligned(J_0x, J_0y, J_0z:64) if(current->nx >= current->gc[1])
         for (int i=0; i<current->gc[1]; i++){
-            J_0x[current->nx + i] = J_0x[ i ];
-            J_0y[current->nx + i] = J_0y[ i ];
-            J_0z[current->nx + i] = J_0z[ i ];
+            J_0x[current->nx + i] = J_0x[i];
+            J_0y[current->nx + i] = J_0y[i];
+            J_0z[current->nx + i] = J_0z[i];
         }
     }
 }
