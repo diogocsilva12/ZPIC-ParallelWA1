@@ -183,7 +183,7 @@ void sim_report_energy( t_simulation* sim )
 	int i;
 
 	double emf_energy[6];
-	double part_energy[ sim -> n_species ];
+	double part_energy[sim -> n_species];
 
 	emf_get_energy( &sim -> emf, emf_energy );
 	double tot_emf = emf_energy[0];

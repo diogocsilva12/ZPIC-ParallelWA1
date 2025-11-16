@@ -67,6 +67,7 @@ int main (int argc, const char * argv[]) {
 	t1 = timer_ticks();
 	fprintf(stderr, "\nSimulation ended.\n\n");
 	sim_report_energy( &sim );
+	
 	sim_report_energy_ret( &sim, &en_out );
 	printf("Initial energy: %e, Final energy: %e\n", en_in, en_out);
 	double ratio=100*fabs((en_in-en_out)/en_out);
@@ -75,10 +76,10 @@ int main (int argc, const char * argv[]) {
 
 
 	// Simulation times
-	sim_timings( &sim, t0, t1 );
+	sim_timings(&sim, t0, t1);
 
 	// Cleanup data
-	sim_delete( &sim );
+	sim_delete(&sim);
     
 	return 0;
 }
