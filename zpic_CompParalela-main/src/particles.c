@@ -9,7 +9,6 @@
  * 
 */
 
-#define _POSIX_C_SOURCE 200112L
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -247,7 +246,6 @@ void spec_set_x( t_species* spec, const int range[] )
     const int npc = spec->ppc;
 
     float poscell[npc];
-
     for (i=0; i<spec->ppc; i++) {
         poscell[i]   = ( i + 0.5 ) / npc;
     }
@@ -1163,7 +1161,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         if (spec -> moving_window )	spec_move_window( spec );
 
         int i = 0;
-        while ( i < spec -> np ) {
+        while (i < spec -> np) {
             if (( spec -> part.ix[i] < 0 ) || ( spec -> part.ix[i] >= nx0 )) {
                 spec -> part.ix[i] = spec -> part.ix[ -- spec -> np ];
                 spec -> part.x[i] = spec -> part.x[ spec -> np ];

@@ -61,6 +61,7 @@
     "random.h": "c",
     "stdlib.h": "c",
     "zdf.h": "c",
-    "random": "c"
+    "random": "c",
+    "format": "c"
   }
 }

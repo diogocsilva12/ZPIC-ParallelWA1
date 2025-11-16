@@ -150,18 +150,17 @@ void current_update_gc(t_current *current)
         float* restrict const J_0y = current -> J_0y;
         float* restrict const J_0z = current -> J_0z;
         const int nx = current -> nx;
-        const int gc0 = current->gc[0];
-        const int gc1 = current->gc[1];
 
-        //removed code reduncancy by combining loops
-        #pragma GCC ivdep
-        for (int i = -gc0; i < gc1; i++) {
-            //lower guard cells
+        // lower - add the values from upper boundary ( both gc and inside box )
+        for (int i=-current->gc[0]; i < current->gc[1]; i++) {
             J_0x[i] += J_0x[nx + i];
             J_0y[i] += J_0y[nx + i];
             J_0z[i] += J_0z[nx + i];
-            
-            //copy values from lower to upper guard cells
+        }
+        
+        // upper - just copy the values from the lower boundary 
+        
+        for (int i=-current->gc[0]; i < current->gc[1]; i++) {
             J_0x[nx + i] = J_0x[i];
             J_0y[nx + i] = J_0y[i];
             J_0z[nx + i] = J_0z[i];
@@ -209,7 +208,8 @@ void current_report( const t_current *current, const int jc )
         return;
     }
 
-    float buf[current->nx] __attribute__((aligned(64)));
+    // Pack the information
+    float buf[current->nx];
     const float* restrict const fx = current->J_0x;
     const float* restrict const fy = current->J_0y;
     const float* restrict const fz = current->J_0z;
@@ -217,19 +217,16 @@ void current_report( const t_current *current, const int jc )
 
 switch (jc) {
         case 0:
-            #pragma omp parallel for simd schedule(static)
             for (int i = 0; i < nx; i++) {
                 buf[i] = fx[i];
             }
             break;
         case 1:
-            #pragma omp parallel for simd schedule(static)
             for (int i = 0; i < nx; i++) {
                 buf[i] = fy[i];
             }
             break;
         case 2:
-            #pragma omp parallel for simd schedule(static)
             for (int i = 0; i < nx; i++) {
                 buf[i] = fz[i];
             }
@@ -320,7 +317,7 @@ void kernel_x(t_current* const current, const float sa, const float sb){
     #pragma omp parallel
     {
         // Convolution
-        #pragma omp for simd schedule(static) nowait
+        #pragma omp for simd
         for (int i = 0; i < nx; i++) {
             tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
             tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
@@ -328,36 +325,33 @@ void kernel_x(t_current* const current, const float sa, const float sb){
         }
 
         // Copy back
-        #pragma omp for simd schedule(static) nowait
+        #pragma omp for simd
         for(int i = 0; i < nx; i++) {
             J_0x[i] = tmp_x[i];
             J_0y[i] = tmp_y[i];
             J_0z[i] = tmp_z[i];
         }
-   
+        
+        #pragma omp single
         //Boundaries only process 3 elements, so single thread is enough
         if (current -> bc_type == CURRENT_BC_PERIODIC) {
             //Single Thread to update guard cells
-            #pragma omp single nowait
-            {
-                const int gc0 = current->gc[0];
-                const int gc1 = current->gc[1];
-                
-                // Lower
-                #pragma GCC ivdep
-                for(int i = -gc0; i < 0; i++){
-                    J_0x[i] = J_0x[nx + i];
-                    J_0y[i] = J_0y[nx + i];
-                    J_0z[i] = J_0z[nx + i];
-                }
 
-                // Upper
-                #pragma GCC ivdep
-                for (int i = 0; i < gc1; i++){
-                    J_0x[nx + i] = J_0x[i];
-                    J_0y[nx + i] = J_0y[i];
-                    J_0z[nx + i] = J_0z[i];
-                }
+            const int gc0 = current->gc[0];
+            const int gc1 = current->gc[1];
+            
+            // Lower
+            for(int i = -gc0; i < 0; i++){
+                J_0x[i] = J_0x[nx + i];
+                J_0y[i] = J_0y[nx + i];
+                J_0z[i] = J_0z[nx + i];
+            }
+
+            // Upper
+            for (int i = 0; i < gc1; i++){
+                J_0x[nx + i] = J_0x[i];
+                J_0y[nx + i] = J_0y[i];
+                J_0z[nx + i] = J_0z[i];
             }
         }
     }
