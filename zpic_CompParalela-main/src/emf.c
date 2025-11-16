@@ -569,7 +569,6 @@ void emf_move_window( t_emf *emf ){
 		int start = -emf->gc[0];
 		int end = emf->nx+emf->gc[1] - 1;
 		
-		#pragma omp simd	
 		for (int i = start; i < end; i++) {
 			E_x[i] = E_x[i + 1];
 			E_y[i] = E_y[i + 1];
