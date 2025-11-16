@@ -456,20 +456,22 @@ void mur_abc(t_emf *emf) {
  */
 void yee_b( t_emf *emf, const float dt )
 {
-	float* const restrict B_y = emf -> B_y;
-	float* const restrict B_z = emf -> B_z;
-	const float* const restrict E_y = emf -> E_y;
-	const float* const restrict E_z = emf -> E_z;
+    float* const restrict B_y = emf -> B_y;
+    float* const restrict B_z = emf -> B_z;
+    const float* const restrict E_y = emf -> E_y;
+    const float* const restrict E_z = emf -> E_z;
 
-	float dt_dx = dt / emf->dx;
+    const float dt_dx = dt / emf->dx;
+    const int nx = emf->nx;
 
-	// Canonical implementation
-	#pragma GCC ivdep 
-	for (int i=-1; i<= emf->nx; i++) {
-		// B[ i ].x += 0;  // Bx does not evolve in 1D
-		B_y[i] += (   dt_dx * ( E_z[i+1] - E_z[i]) );
-		B_z[i] += ( - dt_dx * ( E_y[i+1] - E_y[i]) );
-	}
+    #pragma omp parallel
+    {
+        #pragma omp for simd schedule(static)
+        for (int i = -1; i <= nx; i++) {
+            B_y[i] +=   dt_dx * ( E_z[i+1] - E_z[i] );
+            B_z[i] += - dt_dx * ( E_y[i+1] - E_y[i] );
+        }
+    }
 }
 
 /**
@@ -481,26 +483,27 @@ void yee_b( t_emf *emf, const float dt )
  */
 void yee_e( t_emf *emf, const t_current *current, const float dt )
 {
-	float dt_dx = dt / emf->dx;
+    const float dt_dx = dt / emf->dx;
 
-	float* const restrict E_x = emf -> E_x;
-	float* const restrict E_y = emf -> E_y;
-	float* const restrict E_z = emf -> E_z;
-	const float* const restrict B_y = emf -> B_y;
-	const float* const restrict B_z = emf -> B_z;
-	const float* const restrict J_0x = current -> J_0x;
-	const float* const restrict J_0y = current -> J_0y;
-	const float* const restrict J_0z = current -> J_0z;
+    float* const restrict E_x = emf -> E_x;
+    float* const restrict E_y = emf -> E_y;
+    float* const restrict E_z = emf -> E_z;
+    const float* const restrict B_y = emf -> B_y;
+    const float* const restrict B_z = emf -> B_z;
+    const float* const restrict J_0x = current -> J_0x;
+    const float* const restrict J_0y = current -> J_0y;
+    const float* const restrict J_0z = current -> J_0z;
     const int nx = emf->nx;
 
-	// Canonical implementation
-	#pragma GCC ivdep 
-	for (int i = 0; i <= nx+1; i++) {
-		E_x[i] += ( - dt * J_0x[i]);
-		E_y[i] += ( - dt_dx * ( B_z[i] - B_z[i-1]) - dt * J_0y[i]);
-		E_z[i] += ( + dt_dx * ( B_y[i] - B_y[i-1]) - dt * J_0z[i]);
-	}
-
+    #pragma omp parallel
+    {
+        #pragma omp for simd schedule(static)
+        for (int i = 0; i <= nx+1; i++) {
+            E_x[i] += - dt    * J_0x[i];
+            E_y[i] += - dt_dx * ( B_z[i] - B_z[i-1] ) - dt * J_0y[i];
+            E_z[i] +=   dt_dx * ( B_y[i] - B_y[i-1] ) - dt * J_0z[i];
+        }
+    }
 }
 
 /**
@@ -513,42 +516,41 @@ void yee_e( t_emf *emf, const t_current *current, const float dt )
  */
 void emf_update_gc( t_emf *emf )
 {
-	float* const restrict E_x = emf -> E_x;
-	float* const restrict E_y = emf -> E_y;
-	float* const restrict E_z = emf -> E_z;
-	float* const restrict B_x = emf -> B_x;
-	float* const restrict B_y = emf -> B_y;
-	float* const restrict B_z = emf -> B_z;
+    float* const restrict E_x = emf -> E_x;
+    float* const restrict E_y = emf -> E_y;
+    float* const restrict E_z = emf -> E_z;
+    float* const restrict B_x = emf -> B_x;
+    float* const restrict B_y = emf -> B_y;
+    float* const restrict B_z = emf -> B_z;
     const int nx = emf->nx;
 
-	if ( emf -> bc_type == EMF_BC_PERIODIC ) {
-		// x
+    if ( emf -> bc_type == EMF_BC_PERIODIC ) {
+        const int gc_lower = emf->gc[0];
+        const int gc_upper = emf->gc[1];
 
-		// lower
-		#pragma GCC ivdep
-		for (int i=-emf->gc[0]; i<0; i++) {
-			E_x[i] = E_x[nx + i];
-			E_y[i] = E_y[nx + i];
-			E_z[i] = E_z[nx + i];
+        #pragma omp parallel
+        {
+            #pragma omp for simd nowait
+            for (int i = -gc_lower; i < 0; i++) {
+                E_x[i] = E_x[nx + i];
+                E_y[i] = E_y[nx + i];
+                E_z[i] = E_z[nx + i];
+                B_x[i] = B_x[nx + i];
+                B_y[i] = B_y[nx + i];
+                B_z[i] = B_z[nx + i];
+            }
 
-			B_x[i] = B_x[nx + i];
-			B_y[i] = B_y[nx + i];
-			B_z[i] = B_z[nx + i];
-		}
-
-		// upper
-		#pragma GCC ivdep
-		for (int i=0; i<emf->gc[1]; i++) {
-			E_x[nx + i] = E_x[i];
-			E_y[nx + i] = E_y[i];
-			E_z[nx + i] = E_z[i];
-
-			B_x[nx + i] = B_x[i];
-			B_y[nx + i] = B_y[i];
-			B_z[nx + i] = B_z[i];
-		}
-	}
-
+            #pragma omp for simd
+            for (int i = 0; i < gc_upper; i++) {
+                E_x[nx + i] = E_x[i];
+                E_y[nx + i] = E_y[i];
+                E_z[nx + i] = E_z[i];
+                B_x[nx + i] = B_x[i];
+                B_y[nx + i] = B_y[i];
+                B_z[nx + i] = B_z[i];
+            }
+        }
+    }
 }
 
 /**

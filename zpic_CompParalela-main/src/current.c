@@ -307,6 +307,7 @@ void kernel_x(t_current* const current, const float sa, const float sb){
     float* restrict const J_0x = current -> J_0x;
     float* restrict const J_0y = current -> J_0y;
     float* restrict const J_0z = current -> J_0z;
+    const int nx = current->nx;
 
     //  Get temporary buffer (Used to avoid data dependencies)
     float3Buffer* tmp = kernel_tmpbuf_get();
@@ -314,38 +315,44 @@ void kernel_x(t_current* const current, const float sa, const float sb){
     float* restrict const tmp_y = tmp->y;
     float* restrict const tmp_z = tmp->z;
 
-    /*
-       We vectorized this loop to avoid data dependencies
-    */
-    #pragma GCC ivdep 
-    for (int i = 0; i < current->nx; i++) {
-        tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
-        tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
-        tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
-    }
-
-    #pragma GCC ivdep
-    for(int i = 0; i < current->nx; i++) {
-        J_0x[i] = tmp_x[i];
-        J_0y[i] = tmp_y[i];
-        J_0z[i] = tmp_z[i];
-    }
-   
-    // Update x boundaries for periodic boundaries
-    if (current -> bc_type == CURRENT_BC_PERIODIC) {
-        
-        #pragma GCC ivdep
-        for(int i = -current->gc[0]; i<0; i++){
-            J_0x[i] = J_0x[current->nx + i];
-            J_0y[i] = J_0y[current->nx + i];
-            J_0z[i] = J_0z[current->nx + i];
+    //For performance: Parallel region with multiple worksharing constructs to reduce overhead
+    #pragma omp parallel
+    {
+        //Convolution pass - READ from J_0*, WRITE to tmp (no race condition)
+        #pragma omp for simd schedule(static) nowait
+        for (int i = 0; i < nx; i++) {
+            tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
+            tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
+            tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
         }
 
-        #pragma GCC ivdep
-        for (int i=0; i<current->gc[1]; i++){
-            J_0x[current->nx + i] = J_0x[i];
-            J_0y[current->nx + i] = J_0y[i];
-            J_0z[current->nx + i] = J_0z[i];
+        //Implicit barrier here (ensures convolution finished before copy) - lets us use the nowait clauses above
+        //Copy back - READ from tmp, WRITE to J_0*
+        #pragma omp for simd schedule(static) nowait
+        for(int i = 0; i < nx; i++) {
+            J_0x[i] = tmp_x[i];
+            J_0y[i] = tmp_y[i];
+            J_0z[i] = tmp_z[i];
+        }
+   
+        //Update boundaries (if periodic)
+        if (current -> bc_type == CURRENT_BC_PERIODIC) {
+            
+            // Lower boundary
+            #pragma omp for simd schedule(static) nowait
+            for(int i = -current->gc[0]; i < 0; i++){
+                J_0x[i] = J_0x[nx + i];
+                J_0y[i] = J_0y[nx + i];
+                J_0z[i] = J_0z[nx + i];
+            }
+
+            // Upper boundary
+            #pragma omp for simd schedule(static) nowait
+            for (int i = 0; i < current->gc[1]; i++){
+                J_0x[nx + i] = J_0x[i];
+                J_0y[nx + i] = J_0y[i];
+                J_0z[nx + i] = J_0z[i];
+            }
         }
     }
 }

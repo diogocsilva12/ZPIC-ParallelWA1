@@ -72,38 +72,20 @@ double spec_perf( void )
  */
 void spec_set_u( t_species* spec, const int start, const int end )
 {
+
     /**
      * Version 1 momentum initialization
-    */
-
-    // This vectorize was not profitable
-    int size_arr = end - start + 1;
-    double array_random_x[size_arr] __attribute__((aligned(64)));
-    double array_random_y[size_arr] __attribute__((aligned(64)));
-    double array_random_z[size_arr] __attribute__((aligned(64)));
-
-    for(int i = 0; i < size_arr; i++) {
-        array_random_x[i] = rand_norm();
-        array_random_y[i] = rand_norm();
-        array_random_z[i] = rand_norm();
-    }
-
-    float* restrict const part_ux = spec->part.ux;
-    float* restrict const part_uy = spec->part.uy;
-    float* restrict const part_uz = spec->part.uz;
-
+     */
     // Initialize thermal component
-    #pragma GCC ivdep
-    for (int i = 0; i < size_arr; i++) {
-        int idx = i + start;
-        part_ux[idx] = spec -> uth[0] * array_random_x[i];
-        part_uy[idx] = spec -> uth[1] * array_random_y[i];
-        part_uz[idx] = spec -> uth[2] * array_random_z[i];
+    for (int i = start; i <= end; i++) {
+        spec->part.ux[i] = spec -> uth[0] * rand_norm();
+        spec->part.uy[i] = spec -> uth[1] * rand_norm();
+        spec->part.uz[i] = spec -> uth[2] * rand_norm();
     }
 
     // Calculate net momentum in each cell
-    float3* restrict net_u = (float3 *) malloc( spec->nx * sizeof(float3));
-    int* restrict    npc   = (int *) malloc(spec->nx * sizeof(int));
+    float3 * restrict net_u = (float3 *) malloc( spec->nx * sizeof(float3));
+    int * restrict    npc   = (int *) malloc( spec->nx * sizeof(int));
 
     // Zero momentum grids
     memset(net_u, 0, spec->nx * sizeof(float3) );
@@ -113,37 +95,35 @@ void spec_set_u( t_species* spec, const int start, const int end )
     for (int i = start; i <= end; i++) {
         const int idx  = spec -> part.ix[i];
 
-        net_u[idx].x += spec->part.ux[i];
-        net_u[idx].y += spec->part.uy[i];
-        net_u[idx].z += spec->part.uz[i];
+        net_u[ idx ].x += spec->part.ux[i];
+        net_u[ idx ].y += spec->part.uy[i];
+        net_u[ idx ].z += spec->part.uz[i];
 
-        npc[idx] += 1;
+        npc[ idx ] += 1;
     }
 
     // Normalize to the number of particles in each cell to get the
-    // Average momentum in each cell
-    
-    #pragma GCC ivdep
+    // average momentum in each cell
     for(int i = 0; i< spec->nx; i++ ) {
-        const float norm = (npc[i] > 0) ? 1.0f/npc[i] : 0;
-        net_u[i].x *= norm;
-        net_u[i].y *= norm;
-        net_u[i].z *= norm;
+        const float norm = (npc[ i ] > 0) ? 1.0f/npc[i] : 0;
+
+        net_u[ i ].x *= norm;
+        net_u[ i ].y *= norm;
+        net_u[ i ].z *= norm;
     }
 
     // Subtract average momentum and add fluid component
-    #pragma GCC ivdep
     for (int i = start; i <= end; i++) {
         const int idx  = spec -> part.ix[i];
 
-        spec->part.ux[i] += spec -> ufl[0] - net_u[idx].x;
-        spec->part.uy[i] += spec -> ufl[1] - net_u[idx].y;
-        spec->part.uz[i] += spec -> ufl[2] - net_u[idx].z;
+        spec->part.ux[i] += spec -> ufl[0] - net_u[ idx ].x;
+        spec->part.uy[i] += spec -> ufl[1] - net_u[ idx ].y;
+        spec->part.uz[i] += spec -> ufl[2] - net_u[ idx ].z;
     }
 
     // Free temporary memory
-    free(npc);
-    free(net_u);
+    free( npc );
+    free( net_u );
 }
 
 /**
@@ -257,7 +237,8 @@ int spec_np_inj( t_species* spec, const int range[] )
  * @param spec      Particle species
  * @param range     Range of cells in which to inject
  */
-void spec_set_x(t_species* spec, const int range[] ){
+void spec_set_x( t_species* spec, const int range[] )
+{
 
     int i, k, ip;
     float start, end;
@@ -265,26 +246,25 @@ void spec_set_x(t_species* spec, const int range[] ){
     // Calculate particle positions inside the cell
     const int npc = spec->ppc;
 
-    float poscell[npc] __attribute__((aligned(64)));
+    float poscell[npc];
 
-    // Not profitable
-    #pragma GCC ivdep 
     for (i=0; i<spec->ppc; i++) {
-        poscell[i] = (i + 0.5) / npc;
+        poscell[i]   = ( i + 0.5 ) / npc;
     }
 
     ip = spec -> np;
 
     // Set position of particles in the specified grid range according to the density profile
-    switch (spec -> density.type) {
+    switch ( spec -> density.type ) {
     case STEP: // Step like density profile
 
         // Get edge position normalized to cell size;
         start = spec -> density.start / spec -> dx - spec -> n_move;
 
         for (i = range[0]; i <= range[1]; i++) {
+
             for (k=0; k<npc; k++) {
-                if (i + poscell[k] > start) {
+                if ( i + poscell[k] > start ) {
                     spec->part.ix[ip] = i;
                     spec->part.x[ip] = poscell[k];
                     ip++;
@@ -528,7 +508,7 @@ void spec_inject_particles( t_species* spec, const int range[] )
     int start = spec -> np;
 
     // Get maximum number of particles to inject
-    int np_inj = spec_np_inj(spec, range);
+    int np_inj = spec_np_inj( spec, range );
 
     // Check if buffer is large enough and if not reallocate
        // Increase by chunks of 1024 particles
@@ -539,10 +519,10 @@ void spec_inject_particles( t_species* spec, const int range[] )
 
 
     // Set particle positions
-    spec_set_x(spec, range);
+    spec_set_x( spec, range );
 
     // Set momentum of injected particles
-    spec_set_u(spec, start, spec -> np - 1);
+    spec_set_u( spec, start, spec -> np - 1 );
 }
 
 /**
@@ -570,7 +550,7 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
     int npc;
 
     // Species name
-    strncpy(spec -> name, name, MAX_SPNAME_LEN);
+    strncpy( spec -> name, name, MAX_SPNAME_LEN );
 
     spec->nx = nx;
     spec->ppc = ppc;
@@ -631,7 +611,7 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
 
     const int range[2] = {0, nx-1};
 
-    spec_inject_particles(spec, range);
+    spec_inject_particles( spec, range );
 
     // Set default sorting frequency
     spec -> n_sort = 16;
@@ -649,17 +629,15 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
  * 
  * @param spec      Particle species
  */
-void spec_move_window(t_species *spec){
+void spec_move_window( t_species *spec ){
 
     if ((spec->iter * spec->dt ) > (spec->dx * (spec->n_move + 1)))  {
 
         // shift all particles left
         // particles leaving the box will be removed later
-        int* restrict const part_ix = spec->part.ix;
-        
-        #pragma GCC ivdep
-        for(int i = 0; i < spec->np; i++) {
-            part_ix[i]--;
+        int i;
+        for( i = 0; i < spec->np; i++ ) {
+            spec->part.ix[i]--;
         }
 
         // Increase moving window counter
@@ -765,7 +743,7 @@ void dep_current_esk( int ix0, int di,
  * @param di        Number of cells moved {-1,0,1}
  * @param x0        Initial position of particle inside cell
  * @param dx        Particle motion normalized to cell size
- * @param qnx       NormaliFzation for x current (q * cell size / dt)
+ * @param qnx       Normalization for x current (q * cell size / dt)
  * @param qvy       Y current ( q * vy )
  * @param qvz       Z current ( q * vz )
  * @param current   Electric current density
@@ -796,7 +774,7 @@ void dep_current_zamb( int ix0, int di,
     vp[0].ix = ix0;
 
     // x split
-    if (di != 0) {
+    if ( di != 0 ) {
 
         //int ib = ( di+1 )>>1;
         int ib = ( di == 1 );
@@ -971,8 +949,8 @@ void interpolate_fld( const float* restrict const E_part_x, const float* restric
     ih += i;
 
     Ep->x = E_part_x[ih] * (1.0f - w1h) + E_part_x[ih+1]* w1h;
-    Ep->y = E_part_y[i] * (1.0f -  w1) + E_part_y[i+1] * w1;
-    Ep->z = E_part_z[i] * (1.0f -  w1) + E_part_z[i+1] * w1;
+    Ep->y = E_part_y[i] * (1.0f -  w1) + E_part_y[i+1 ] * w1;
+    Ep->z = E_part_z[i ] * (1.0f -  w1) + E_part_z[i+1 ] * w1;
 
     Bp->x = B_part_x[i ] * (1.0f  - w1) + B_part_x[i+1 ] * w1;
     Bp->y = B_part_y[ih] * (1.0f - w1h) + B_part_y[ih+1] * w1h;
@@ -1013,157 +991,201 @@ int ltrim( float x )
  */
 void spec_advance( t_species* spec, t_emf* emf, t_current* current )
 {
-
     uint64_t t0;
     t0 = timer_ticks();
+
     const float tem   = 0.5 * spec->dt/spec -> m_q;
     const float dt_dx = spec->dt / spec->dx;
-
-    // Auxiliary values for current deposition
     const float qnx = spec -> q *  spec->dx / spec->dt;
     const int nx0 = spec -> nx;
+
     double energy = 0;
 
-    // Restricts
-    int* restrict const part_ix = spec->part.ix;
-    float* restrict const part_x = spec->part.x;
-    float* restrict const part_ux = spec->part.ux;
-    float* restrict const part_uy = spec->part.uy;
-    float* restrict const part_uz = spec->part.uz;
+    // Tamanho do grid de corrente (incluindo guard cells)
+    const int current_size = current->nx + current->gc[0] + current->gc[1];
 
-    float energy_cum[spec->np] __attribute__((aligned(64)));
+    #pragma omp parallel reduction(+:energy)
+    {
+        // Criar buffers de corrente PRIVADOS por thread
+        float* J_local_x = (float*) calloc(current_size, sizeof(float));
+        float* J_local_y = (float*) calloc(current_size, sizeof(float));
+        float* J_local_z = (float*) calloc(current_size, sizeof(float));
 
+        double energy_local = 0;
 
-    // Advance particles
-    for (int i=0; i < spec->np; i++) {
+        // Particle push paralelo
+        #pragma omp for schedule(static)
+        for (int i=0; i<spec->np; i++) {
 
-        float3 Ep, Bp;
-        float utx, uty, utz;
-        float ux, uy, uz, u2;
-        float gamma, rg, gtem, otsq;
-        float x1;
-        int di;
-        float dx;
+            float3 Ep, Bp;
+            float utx, uty, utz;
+            float ux, uy, uz, u2;
+            float gamma, rg, gtem, otsq;
+            float x1;
+            int di;
+            float dx;
 
-        // interpolate fields
-        interpolate_fld(emf -> E_part_x, emf -> E_part_y, emf -> E_part_z, emf -> B_part_x, emf -> B_part_y, emf -> B_part_z, spec -> part, i, &Ep, &Bp);
-        // Ep.x = Ep.y = Ep.z = Bp.x = Bp.y = Bp.z = 0;
+            ux = spec -> part.ux[i];
+            uy = spec -> part.uy[i];
+            uz = spec -> part.uz[i];
 
-        Ep.x *= tem;
-        Ep.y *= tem;
-        Ep.z *= tem;
+            interpolate_fld(emf -> E_part_x, emf -> E_part_y, emf -> E_part_z, 
+                          emf -> B_part_x, emf -> B_part_y, emf -> B_part_z, 
+                          spec -> part, i, &Ep, &Bp);
 
-        utx = part_ux[i] + Ep.x;
-        uty = part_uy[i] + Ep.y;
-        utz = part_uz[i] + Ep.z;
+            Ep.x *= tem;
+            Ep.y *= tem;
+            Ep.z *= tem;
 
-        u2 = utx*utx + uty*uty + utz*utz;
-        gamma = sqrtf( 1 + u2 );
+            utx = ux + Ep.x;
+            uty = uy + Ep.y;
+            utz = uz + Ep.z;
 
-        energy_cum[i] = u2 / (1 + gamma);
+            u2 = utx*utx + uty*uty + utz*utz;
+            gamma = sqrtf( 1 + u2 );
 
-        gtem = tem / gamma;
+            energy_local += u2 / ( 1 + gamma );
 
-        Bp.x *= gtem;
-        Bp.y *= gtem;
-        Bp.z *= gtem;
+            gtem = tem / gamma;
 
-        otsq = 2.0f / (1.0f + Bp.x*Bp.x + Bp.y*Bp.y + Bp.z*Bp.z);
+            Bp.x *= gtem;
+            Bp.y *= gtem;
+            Bp.z *= gtem;
 
-        ux = utx + uty*Bp.z - utz*Bp.y;
-        uy = uty + utz*Bp.x - utx*Bp.z;
-        uz = utz + utx*Bp.y - uty*Bp.x;
+            otsq = 2.0f / ( 1.0f + Bp.x*Bp.x + Bp.y*Bp.y + Bp.z*Bp.z );
 
-        // Perform second half of the rotation
-        Bp.x *= otsq;
-        Bp.y *= otsq;
-        Bp.z *= otsq;
+            ux = utx + uty*Bp.z - utz*Bp.y;
+            uy = uty + utz*Bp.x - utx*Bp.z;
+            uz = utz + utx*Bp.y - uty*Bp.x;
 
-        utx += uy*Bp.z - uz*Bp.y;
-        uty += uz*Bp.x - ux*Bp.z;
-        utz += ux*Bp.y - uy*Bp.x;
+            Bp.x *= otsq;
+            Bp.y *= otsq;
+            Bp.z *= otsq;
 
-        // Perform second half of electric field acceleration
-        ux = utx + Ep.x;
-        uy = uty + Ep.y;
-        uz = utz + Ep.z;
+            utx += uy*Bp.z - uz*Bp.y;
+            uty += uz*Bp.x - ux*Bp.z;
+            utz += ux*Bp.y - uy*Bp.x;
 
-        // Store new momenta
-        part_ux[i] = ux;
-        part_uy[i] = uy;
-        part_uz[i] = uz;
+            ux = utx + Ep.x;
+            uy = uty + Ep.y;
+            uz = utz + Ep.z;
 
-        // push particle
-        rg = 1.0f / sqrtf(1.0f + ux*ux + uy*uy + uz*uz);
+            spec -> part.ux[i] = ux;
+            spec -> part.uy[i] = uy;
+            spec -> part.uz[i] = uz;
 
-        dx = dt_dx * rg * ux;
+            rg = 1.0f / sqrtf(1.0f + ux*ux + uy*uy + uz*uz);
+            dx = dt_dx * rg * ux;
+            x1 = spec -> part.x[i] + dx;
+            di = ltrim(x1);
+            x1 -= di;
 
-        x1 = spec -> part.x[i] + dx;
+            float qvy = spec->q * uy * rg;
+            float qvz = spec->q * uz * rg;
 
-        di = ltrim(x1);
+            // Depositar em buffer LOCAL (inline do dep_current_zamb)
+            int ix0 = spec->part.ix[i];
+            float x0 = spec -> part.x[i];
 
-        x1 -= di;
+            typedef struct { float x0, x1, dx, qvy, qvz; int ix; } t_vp;
+            t_vp vp[3];
+            int vnp = 1;
 
-        float qvy = spec->q * uy * rg;
-        float qvz = spec->q * uz * rg;
+            vp[0].x0 = x0;
+            vp[0].dx = dx;
+            vp[0].x1 = x0+dx;
+            vp[0].qvy = qvy/2.0;
+            vp[0].qvz = qvz/2.0;
+            vp[0].ix = ix0;
 
-        dep_current_zamb(spec->part.ix[i], di,
-                         spec -> part.x[i], dx,
-                         qnx, qvy, qvz,
-                         current);
+            if ( di != 0 ) {
+                int ib = ( di == 1 );
+                float delta = (x0+dx-ib)/dx;
 
-        // Store results
-        part_x[i] = x1;
-        part_ix[i] += di;
+                vp[1].x0 = 1-ib;
+                vp[1].x1 = (x0 + dx) - di;
+                vp[1].dx = dx*delta;
+                vp[1].ix = ix0 + di;
+                vp[1].qvy = vp[0].qvy*delta;
+                vp[1].qvz = vp[0].qvz*delta;
 
+                vp[0].x1 = ib;
+                vp[0].dx *= (1.0f-delta);
+                vp[0].qvy *= (1.0f-delta);
+                vp[0].qvz *= (1.0f-delta);
+
+                vnp++;
+            }
+
+            // Depositar nos buffers LOCAIS
+            for (int k = 0; k < vnp; k++) {
+                float S0x[2], S1x[2];
+                S0x[0] = 1.0f - vp[k].x0;
+                S0x[1] = vp[k].x0;
+                S1x[0] = 1.0f - vp[k].x1;
+                S1x[1] = vp[k].x1;
+
+                int idx = vp[k].ix + current->gc[0]; // offset para guard cells
+
+                J_local_x[ idx     ] += qnx * vp[k].dx;
+                J_local_y[ idx     ] += vp[k].qvy * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
+                J_local_y[ idx + 1 ] += vp[k].qvy * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
+                J_local_z[ idx     ] += vp[k].qvz * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
+                J_local_z[ idx + 1 ] += vp[k].qvz * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
+            }
+
+            spec -> part.x[i] = x1;
+            spec -> part.ix[i] += di;
+        }
+
+        // Merge dos buffers locais no grid global (região crítica)
+        #pragma omp critical
+        {
+            for(int i = 0; i < current_size; i++) {
+                current->J_0x[i - current->gc[0]] += J_local_x[i];
+                current->J_0y[i - current->gc[0]] += J_local_y[i];
+                current->J_0z[i - current->gc[0]] += J_local_z[i];
+            }
+        }
+
+        free(J_local_x);
+        free(J_local_y);
+        free(J_local_z);
+
+        energy += energy_local;
     }
 
-    for (int i=0; i < spec->np; i++) {
-        energy += energy_cum[i];
-    }
-    
-    // Store energy
     spec -> energy = spec-> q * spec -> m_q * energy * spec -> dx;
-
-    // Advance internal iteration number
     spec -> iter += 1;
 
-    // Check for particles leaving the box
+    // Boundary conditions (serial)
     if ( spec -> moving_window || spec -> bc_type == PART_BC_OPEN ){
-
-        // Move simulation window if needed
         if (spec -> moving_window )	spec_move_window( spec );
 
-        // Use absorbing boundaries along x
         int i = 0;
         while ( i < spec -> np ) {
             if (( spec -> part.ix[i] < 0 ) || ( spec -> part.ix[i] >= nx0 )) {
                 spec -> part.ix[i] = spec -> part.ix[ -- spec -> np ];
-                spec -> part.x[i] = spec -> part.x[ -- spec -> np ];
-                spec -> part.ux[i] = spec -> part.ux[ -- spec -> np ];
-                spec -> part.uy[i] = spec -> part.uy[ -- spec -> np ];
-                spec -> part.uz[i] = spec -> part.uz[ -- spec -> np ];
+                spec -> part.x[i] = spec -> part.x[ spec -> np ];
+                spec -> part.ux[i] = spec -> part.ux[ spec -> np ];
+                spec -> part.uy[i] = spec -> part.uy[ spec -> np ];
+                spec -> part.uz[i] = spec -> part.uz[ spec -> np ];
                 continue;
             }
             i++;
         }
-
     } else {
-        // Use periodic boundaries in x
+        #pragma omp parallel for
         for (int i=0; i<spec->np; i++) {
-            spec-> part.ix[i] += (( spec -> part.ix[i] < 0 ) ? nx0 : 0 ) - (( spec -> part.ix[i] >= nx0 ) ? nx0 : 0);
+            spec-> part.ix[i] += (( spec -> part.ix[i] < 0 ) ? nx0 : 0 ) - 
+                                 (( spec -> part.ix[i] >= nx0 ) ? nx0 : 0);
         }
     }
 
-    // Sort species at every n_sort time steps
-    
     if ( spec -> n_sort > 0 ) {
         if ( ! (spec -> iter % spec -> n_sort) ) spec_sort( spec );
     }
-    
-    
 
-    // Timing info
     _spec_npush += spec -> np;
     _spec_time += timer_interval_seconds( t0, timer_ticks() );
 }
@@ -1497,7 +1519,7 @@ void spec_rep_pha( const t_species *spec, const int rep_type,
     memset( buf, 0, pha_nx[0] * pha_nx[1] * sizeof( float ));
 
     // Deposit the phasespace
-    spec_deposit_pha(spec, rep_type, pha_nx, pha_range, buf);
+    spec_deposit_pha( spec, rep_type, pha_nx, pha_range, buf );
 
     int quant1 = rep_type & 0x000F;
     int quant2 = (rep_type & 0x00F0)>>4;

@@ -1,0 +1,35 @@
+Simulation ended.
+
+Time for spec. advance = 16.364907 s
+Time for emf   advance = 3.953927 s
+Total simulation time  = 23.217256 s
+
+Particle advance [nsec/part] = 86.351632 
+Particle advance [Mpart/sec] = 11.580557 
+Starting simulation ...
+
+n = 0, t = 0.0
+Energy (fields | particles | total) = 3.000000e+02 0.000000e+00 3.000000e+02
+n = 42106, t = 40.000702
+Energy (fields | particles | total) = 2.985474e+02 1.624786e+00 3.001721e+02
+Initial energy: 3.000000e+02, Final energy: 3.001721e+02
+
+Final energy different from Initial Energy. Change in total energy is: 0.06 % 
+
+ Performance counter stats for './zpic':
+
+        368,075.14 msec task-clock                #   15.830 CPUs utilized          
+            20,379      context-switches          #    0.055 K/sec                  
+               947      cpu-migrations            #    0.003 K/sec                  
+               224      page-faults               #    0.001 K/sec                  
+   736,063,162,841      cycles                    #    2.000 GHz                    
+ 1,426,820,409,349      instructions              #    1.94  insn per cycle         
+   <not supported>      branches                                                    
+        52,475,001      branch-misses                                               
+
+      23.252050951 seconds time elapsed
+
+     366.832962000 seconds user
+       1.308868000 seconds sys
+
+

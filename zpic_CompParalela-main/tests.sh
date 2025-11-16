@@ -13,6 +13,7 @@
 #SBATCH -t 00:10:00    # 10 minutes max run
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
 #SBATCH --output=tests/slurm_logs/compile_out.o%j
 #SBATCH --error=tests/slurm_logs/compile_err.e%j
 #SBATCH --exclusive
@@ -22,7 +23,7 @@
 # --------- LOAD MODULES -----------------
 echo "[STARTING] Loading modules"
 modules=(
-    "GCC/13"
+    "GCC/14"
     "Score-P/8.4-gompi-2024a"
 )
 
@@ -89,7 +90,7 @@ case $TEST_NAME in
     perf_stat)
         echo "Running perf test with CONFIG=$CONFIG and CORES=$CORES"
         make clean
-        make CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" OMP_PARALLEL="$PARALLEL"
+        make CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
         mkdir -p tests/perf
         PERF_DIR="tests/perf/perf_stat_${CONFIG}_${CORES}_threads.txt"
         srun -c $CORES perf stat ./zpic &> "$PERF_DIR"
@@ -98,10 +99,28 @@ case $TEST_NAME in
     perf_record)
         echo "Running perf record with CONFIG=$CONFIG and CORES=$CORES"
         make clean
-        make CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" DEBUG="Y" OMP_PARALLEL="$PARALLEL"
+        make CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" DEBUG="Y" PARALLEL="$PARALLEL"
         mkdir -p tests/perf
-        PERF_DIR="tests/perf/perf_record_${CONFIG}_${CORES}_threads.data"
-        srun -c "$CORES" perf record -g --call-graph dwarf -o "$PERF_DIR" -- ./zpic
+        
+        TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+        PERF_DATA="tests/perf/perf_record_${CONFIG}_${CORES}_threads.data"
+        PERF_SCRIPT="tests/perf/measurement_${TIMESTAMP}.perf"
+        PERF_DIR="tests/perf/perf_stat_${CONFIG}_${CORES}_threads.txt"
+        srun -c $CORES perf stat ./zpic &> "$PERF_DIR"
+
+        echo "Recording performance data..."
+        srun -c "$CORES" perf record -g --call-graph dwarf -F 99 -o "$PERF_DATA" -- ./zpic
+        
+        echo "Converting to script format..."
+        perf script -i "$PERF_DATA" -F +pid > "$PERF_SCRIPT"
+        
+        echo "Perf data saved to $PERF_DATA"
+        echo "Perf script saved to $PERF_SCRIPT"
+        
+        # Generate quick summary
+        echo ""
+        echo "Quick analysis:"
+        perf report -i "$PERF_DATA" --stdio --no-children | head -30
         ;;
     *)
         echo "Unknown test name: $TEST_NAME"

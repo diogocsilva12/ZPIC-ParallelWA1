@@ -1,0 +1,3 @@
+tests/perf/*data
+tests/perf/*data.old
+perf_record_*_threads.data.old

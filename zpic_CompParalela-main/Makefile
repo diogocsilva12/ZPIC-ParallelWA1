@@ -40,36 +40,38 @@ OMP_PROC_BIND?=close
 
 MAKEFLAGS += --no-print-directory
 
-CC ?= gcc # Compiler (Other options would include Fujistu Compiler for A64FX )
+CC ?= gcc # Compiler
 
 CFLAGS_DEFAULT = -std=c99 -pedantic -Wall
 CFLAGS_OPT_2 = -O2 -march=native -flto
-CFLAGS_OPT_3 = -O3 -march=native  -flto
+CFLAGS_OPT_3 = -O3 -march=native -flto
 CFLAGS_OPT_FULL = -Ofast -march=native -flto
-  # Allows FMA's and Cross file optimizations (For future work add more accordingly to hotspots that might be needed to be fixed) 
+
+# ✅ ADD OPENMP FLAG
+CFLAGS_PARALLEL = -fopenmp
+
 LDFLAGS = -lm
 
-# Inputs by user ! CONFIG = <config>, PARALLEL = <Y/N>
+# Inputs by user
 CONFIG ?= DEFAULT 
 PARALLEL ?= N
 DEBUG ?= N
 
-# Choose CFLAGS
+# Choose CFLAGS based on CONFIG
 ifeq ($(CONFIG), NO_OPT)
-	CFLAGS = $(CFLAGS_DEFAULT)
+    CFLAGS = $(CFLAGS_DEFAULT)
 else ifeq ($(CONFIG), OPT_2)
-	CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_2)
+    CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_2)
 else ifeq ($(CONFIG), OPT_3)
-	CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_3)
+    CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_3)
 else ifeq ($(CONFIG), OPT_FULL)
-	CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_FULL)
-else 
-	CFLAGS = $(CFLAGS_DEFAULT)
+    CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_FULL)
 endif
 
-# Choose programming model (Sequential vs Parallelism) 
+# ADD OPENMP IF PARALLEL=Y
 ifeq ($(PARALLEL), Y)
-	CFLAGS += -fopenmp
+    CFLAGS += $(CFLAGS_PARALLEL)
+    LDFLAGS += -fopenmp
 endif
 
 
