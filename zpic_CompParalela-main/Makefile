@@ -34,7 +34,7 @@
 
 OMP_NUM_THREADS?=48 # ! Change this to achieve best performance
 OMP_PLACES?=cores
-OMP_PROC_BIND?=spread
+OMP_PROC_BIND?=close 
 
 # ======================= FLAGS and Inputs ============================================ #
 
