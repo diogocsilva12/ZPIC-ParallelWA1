@@ -34,7 +34,7 @@
 
 OMP_NUM_THREADS?=48 # ! Change this to achieve best performance
 OMP_PLACES?=cores
-OMP_PROC_BIND?=close 
+OMP_PROC_BIND?=spread
 
 # ======================= FLAGS and Inputs ============================================ #
 
@@ -45,9 +45,11 @@ CC ?= gcc # Compiler
 CFLAGS_DEFAULT = -std=c99 -pedantic -Wall
 CFLAGS_OPT_2 = -O2 -march=native -flto
 CFLAGS_OPT_3 = -O3 -march=native -flto
-CFLAGS_OPT_FULL = -Ofast -march=native -flto
+CFLAGS_OPT_FULL = -Ofast -march=armv8.2-a+sve -mtune=a64fx -flto \
+                  -ffast-math -funroll-loops -ftree-vectorize \
+                  -ftree-vectorizer-verbose=2 
 
-# ✅ ADD OPENMP FLAG
+# ADD OPENMP FLAG
 CFLAGS_PARALLEL = -fopenmp
 
 LDFLAGS = -lm

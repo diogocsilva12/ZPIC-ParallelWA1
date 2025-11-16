@@ -204,3 +204,8 @@ Final energy different from Initial Energy. Change in total energy is: 0.06 %
        1.687010000 seconds sys
 
 The optimizations made in the current.c file had a significant impact on the performance of the simulation. The time for spec. advance was reduced from 16.364907 s to 15.574608 s, and the total simulation time decreased from 23.217256 s to 23.144861 s.
+
+### 6th Run 
+Parallelized spec_deposit_charge with atomics
+Parallelized spec adv 
+

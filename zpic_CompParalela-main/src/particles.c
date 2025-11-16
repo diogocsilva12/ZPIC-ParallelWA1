@@ -1004,15 +1004,20 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
 
     #pragma omp parallel reduction(+:energy)
     {
-        //Create private buffers for current deposition
+            // Simplesmente use calloc (já inicializa com zeros)
         float* J_local_x = (float*) calloc(current_size, sizeof(float));
         float* J_local_y = (float*) calloc(current_size, sizeof(float));
         float* J_local_z = (float*) calloc(current_size, sizeof(float));
+        
+        if (!J_local_x || !J_local_y || !J_local_z) {
+            fprintf(stderr, "Error allocating local current buffers\n");
+            exit(1);
+        }
 
         double energy_local = 0;
 
-        // Particle push paralelo
-        #pragma omp for schedule(static)
+        //
+        #pragma omp for schedule(dynamic, 256) nowait  
         for (int i=0; i<spec->np; i++) {
 
             float3 Ep, Bp;
@@ -1115,7 +1120,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
                 vnp++;
             }
 
-            // Depositar nos buffers LOCAIS
+            //store in the local buffer
             for (int k = 0; k < vnp; k++) {
                 float S0x[2], S1x[2];
                 S0x[0] = 1.0f - vp[k].x0;
@@ -1136,12 +1141,18 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             spec -> part.ix[i] += di;
         }
 
-        // Merge dos buffers locais no grid global (região crítica)
-        #pragma omp critical
-        {
-            for(int i = 0; i < current_size; i++) {
+        //Merge dos buffers 
+        for(int i = 0; i < current_size; i++) {
+            if (J_local_x[i] != 0.0f) {
+                #pragma omp atomic
                 current->J_0x[i - current->gc[0]] += J_local_x[i];
+            }
+            if (J_local_y[i] != 0.0f) {
+                #pragma omp atomic
                 current->J_0y[i - current->gc[0]] += J_local_y[i];
+            }
+            if (J_local_z[i] != 0.0f) {
+                #pragma omp atomic
                 current->J_0z[i - current->gc[0]] += J_local_z[i];
             }
         }
