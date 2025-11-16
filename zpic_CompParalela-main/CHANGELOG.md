@@ -157,3 +157,50 @@ Final energy different from Initial Energy. Change in total energy is: 0.06 %
 
      366.832962000 seconds user
        1.308868000 seconds sys
+
+### 5th Run 
+
+Spec advance .  A função que chama o kernel x o update gc os yee b yee e e mais duas do ficheiro emf c
+
+Parallelized current_report
+Removed code redundancy in the current_update_gc function
+Kernel_x -> Boundaries only process 3 elements, so single thread is enough
+
+Final Run with all optimizations in current.c : 
+
+
+Simulation ended.
+
+Time for spec. advance = 15.574608 s
+Time for emf   advance = 4.848840 s
+Total simulation time  = 23.144861 s
+
+Particle advance [nsec/part] = 82.181513 
+Particle advance [Mpart/sec] = 12.168187 
+Starting simulation ...
+
+n = 0, t = 0.0
+Energy (fields | particles | total) = 3.000000e+02 0.000000e+00 3.000000e+02
+n = 42106, t = 40.000702
+Energy (fields | particles | total) = 2.985474e+02 1.624786e+00 3.001722e+02
+Initial energy: 3.000000e+02, Final energy: 3.001722e+02
+
+Final energy different from Initial Energy. Change in total energy is: 0.06 % 
+
+ Performance counter stats for './zpic':
+
+        368,033.19 msec task-clock                #   15.876 CPUs utilized          
+            10,374      context-switches          #    0.028 K/sec                  
+               294      cpu-migrations            #    0.001 K/sec                  
+               224      page-faults               #    0.001 K/sec                  
+   736,016,471,454      cycles                    #    2.000 GHz                    
+ 1,414,075,210,275      instructions              #    1.92  insn per cycle         
+   <not supported>      branches                                                    
+        52,470,306      branch-misses                                               
+
+      23.181077256 seconds time elapsed
+
+     366.382632000 seconds user
+       1.687010000 seconds sys
+
+The optimizations made in the current.c file had a significant impact on the performance of the simulation. The time for spec. advance was reduced from 16.364907 s to 15.574608 s, and the total simulation time decreased from 23.217256 s to 23.144861 s.

@@ -150,18 +150,18 @@ void current_update_gc(t_current *current)
         float* restrict const J_0y = current -> J_0y;
         float* restrict const J_0z = current -> J_0z;
         const int nx = current -> nx;
+        const int gc0 = current->gc[0];
+        const int gc1 = current->gc[1];
 
-        // lower - add the values from upper boundary ( both gc and inside box )
+        //removed code reduncancy by combining loops
         #pragma GCC ivdep
-        for (int i=-current->gc[0]; i < current->gc[1]; i++) {
+        for (int i = -gc0; i < gc1; i++) {
+            //lower guard cells
             J_0x[i] += J_0x[nx + i];
             J_0y[i] += J_0y[nx + i];
             J_0z[i] += J_0z[nx + i];
-        }
-        
-        // upper - just copy the values from the lower boundary 
-        #pragma GCC ivdep
-        for (int i=-current->gc[0]; i < current->gc[1]; i++) {
+            
+            //copy values from lower to upper guard cells
             J_0x[nx + i] = J_0x[i];
             J_0y[nx + i] = J_0y[i];
             J_0z[nx + i] = J_0z[i];
@@ -204,40 +204,43 @@ void current_update( t_current *current )
  */
 void current_report( const t_current *current, const int jc )
 {
-	if (jc < 0 || jc > 2) {
-		fprintf(stderr, "(*error*) Invalid current component (jc) selected, returning\n");
-		return;
-	}
+    if (jc < 0 || jc > 2) {
+        fprintf(stderr, "(*error*) Invalid current component (jc) selected, returning\n");
+        return;
+    }
 
-    // Pack the information
     float buf[current->nx] __attribute__((aligned(64)));
     const float* restrict const fx = current->J_0x;
     const float* restrict const fy = current->J_0y;
     const float* restrict const fz = current->J_0z;
+    const int nx = current->nx;
 
-    switch (jc) {
+switch (jc) {
         case 0:
-            for (int i = 0; i < current->nx; i++) {
+            #pragma omp parallel for simd schedule(static)
+            for (int i = 0; i < nx; i++) {
                 buf[i] = fx[i];
             }
             break;
         case 1:
-            for (int i = 0; i < current->nx; i++) {
+            #pragma omp parallel for simd schedule(static)
+            for (int i = 0; i < nx; i++) {
                 buf[i] = fy[i];
             }
             break;
         case 2:
-            for (int i = 0; i < current->nx; i++) {
+            #pragma omp parallel for simd schedule(static)
+            for (int i = 0; i < nx; i++) {
                 buf[i] = fz[i];
             }
             break;
     }
 
-	char vfname[16];	// Dataset name
-	char vflabel[16];	// Dataset label (for plots)
+    char vfname[16];
+    char vflabel[16];
 
     snprintf(vfname, 3, "J%1u", jc);
-	char comp[] = {'x','y','z'};
+    char comp[] = {'x','y','z'};
     snprintf(vflabel,4,"J_%c",comp[jc]);
 
     t_zdf_grid_axis axis[1];
@@ -309,16 +312,14 @@ void kernel_x(t_current* const current, const float sa, const float sb){
     float* restrict const J_0z = current -> J_0z;
     const int nx = current->nx;
 
-    //  Get temporary buffer (Used to avoid data dependencies)
     float3Buffer* tmp = kernel_tmpbuf_get();
     float* restrict const tmp_x = tmp->x;
     float* restrict const tmp_y = tmp->y;
     float* restrict const tmp_z = tmp->z;
 
-    //For performance: Parallel region with multiple worksharing constructs to reduce overhead
     #pragma omp parallel
     {
-        //Convolution pass - READ from J_0*, WRITE to tmp (no race condition)
+        // Convolution
         #pragma omp for simd schedule(static) nowait
         for (int i = 0; i < nx; i++) {
             tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
@@ -326,8 +327,7 @@ void kernel_x(t_current* const current, const float sa, const float sb){
             tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
         }
 
-        //Implicit barrier here (ensures convolution finished before copy) - lets us use the nowait clauses above
-        //Copy back - READ from tmp, WRITE to J_0*
+        // Copy back
         #pragma omp for simd schedule(static) nowait
         for(int i = 0; i < nx; i++) {
             J_0x[i] = tmp_x[i];
@@ -335,23 +335,29 @@ void kernel_x(t_current* const current, const float sa, const float sb){
             J_0z[i] = tmp_z[i];
         }
    
-        //Update boundaries (if periodic)
+        //Boundaries only process 3 elements, so single thread is enough
         if (current -> bc_type == CURRENT_BC_PERIODIC) {
-            
-            // Lower boundary
-            #pragma omp for simd schedule(static) nowait
-            for(int i = -current->gc[0]; i < 0; i++){
-                J_0x[i] = J_0x[nx + i];
-                J_0y[i] = J_0y[nx + i];
-                J_0z[i] = J_0z[nx + i];
-            }
+            //Single Thread to update guard cells
+            #pragma omp single nowait
+            {
+                const int gc0 = current->gc[0];
+                const int gc1 = current->gc[1];
+                
+                // Lower
+                #pragma GCC ivdep
+                for(int i = -gc0; i < 0; i++){
+                    J_0x[i] = J_0x[nx + i];
+                    J_0y[i] = J_0y[nx + i];
+                    J_0z[i] = J_0z[nx + i];
+                }
 
-            // Upper boundary
-            #pragma omp for simd schedule(static) nowait
-            for (int i = 0; i < current->gc[1]; i++){
-                J_0x[nx + i] = J_0x[i];
-                J_0y[nx + i] = J_0y[i];
-                J_0z[nx + i] = J_0z[i];
+                // Upper
+                #pragma GCC ivdep
+                for (int i = 0; i < gc1; i++){
+                    J_0x[nx + i] = J_0x[i];
+                    J_0y[nx + i] = J_0y[i];
+                    J_0z[nx + i] = J_0z[i];
+                }
             }
         }
     }

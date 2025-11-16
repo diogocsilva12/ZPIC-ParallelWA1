@@ -1006,7 +1006,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
 
     #pragma omp parallel reduction(+:energy)
     {
-        // Criar buffers de corrente PRIVADOS por thread
+        //Create private buffers for current deposition
         float* J_local_x = (float*) calloc(current_size, sizeof(float));
         float* J_local_y = (float*) calloc(current_size, sizeof(float));
         float* J_local_z = (float*) calloc(current_size, sizeof(float));
@@ -1175,7 +1175,6 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             i++;
         }
     } else {
-        #pragma omp parallel for
         for (int i=0; i<spec->np; i++) {
             spec-> part.ix[i] += (( spec -> part.ix[i] < 0 ) ? nx0 : 0 ) - 
                                  (( spec -> part.ix[i] >= nx0 ) ? nx0 : 0);
