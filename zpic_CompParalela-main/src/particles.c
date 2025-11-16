@@ -9,7 +9,6 @@
  * 
 */
 
-#define _POSIX_C_SOURCE 200112L
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -78,9 +77,9 @@ void spec_set_u( t_species* spec, const int start, const int end )
 
     // This vectorize was not profitable
     int size_arr = end - start + 1;
-    double array_random_x[size_arr] __attribute__((aligned(64)));
-    double array_random_y[size_arr] __attribute__((aligned(64)));
-    double array_random_z[size_arr] __attribute__((aligned(64)));
+    double array_random_x[size_arr];
+    double array_random_y[size_arr];
+    double array_random_z[size_arr];
 
     for(int i = 0; i < size_arr; i++) {
         array_random_x[i] = rand_norm();
@@ -93,7 +92,6 @@ void spec_set_u( t_species* spec, const int start, const int end )
     float* restrict const part_uz = spec->part.uz;
 
     // Initialize thermal component
-    #pragma GCC ivdep
     for (int i = 0; i < size_arr; i++) {
         int idx = i + start;
         part_ux[idx] = spec -> uth[0] * array_random_x[i];
@@ -123,7 +121,6 @@ void spec_set_u( t_species* spec, const int start, const int end )
     // Normalize to the number of particles in each cell to get the
     // Average momentum in each cell
     
-    #pragma GCC ivdep
     for(int i = 0; i< spec->nx; i++ ) {
         const float norm = (npc[i] > 0) ? 1.0f/npc[i] : 0;
         net_u[i].x *= norm;
@@ -132,7 +129,6 @@ void spec_set_u( t_species* spec, const int start, const int end )
     }
 
     // Subtract average momentum and add fluid component
-    #pragma GCC ivdep
     for (int i = start; i <= end; i++) {
         const int idx  = spec -> part.ix[i];
 
@@ -265,10 +261,7 @@ void spec_set_x(t_species* spec, const int range[] ){
     // Calculate particle positions inside the cell
     const int npc = spec->ppc;
 
-    float poscell[npc] __attribute__((aligned(64)));
-
-    // Not profitable
-    #pragma GCC ivdep 
+    float poscell[npc];
     for (i=0; i<spec->ppc; i++) {
         poscell[i] = (i + 0.5) / npc;
     }
@@ -657,7 +650,7 @@ void spec_move_window(t_species *spec){
         // particles leaving the box will be removed later
         int* restrict const part_ix = spec->part.ix;
         
-        #pragma GCC ivdep
+        #pragma omp simd
         for(int i = 0; i < spec->np; i++) {
             part_ix[i]--;
         }
@@ -1031,7 +1024,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
     float* restrict const part_uy = spec->part.uy;
     float* restrict const part_uz = spec->part.uz;
 
-    float energy_cum[spec->np] __attribute__((aligned(64)));
+    float energy_cum[spec->np];
 
 
     // Advance particles

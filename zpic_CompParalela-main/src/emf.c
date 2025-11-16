@@ -348,22 +348,19 @@ void emf_report( const t_emf *emf, const char field, const int fc )
 	}
 
 	// Pack the information
-	float buf[emf->nx] __attribute__((aligned(64)));
+	float buf[emf->nx];
 	switch (fc) {
 		case 0:
-			#pragma GCC ivdep
 			for (int i = 0; i < emf->nx; i++) {
 				buf[i] = f_x[i];
 			}
 			break;
 		case 1:
-			#pragma GCC ivdep
 			for (int i = 0; i < emf->nx; i++) {
 				buf[i] = f_y[i];
 			}
 			break;
 		case 2:
-			#pragma GCC ivdep
 			for (int i = 0; i < emf->nx; i++) {
 				buf[i] = f_z[i];
 			}
@@ -463,8 +460,8 @@ void yee_b( t_emf *emf, const float dt )
 
 	float dt_dx = dt / emf->dx;
 
-	// Canonical implementation
-	#pragma GCC ivdep 
+	// Canonical implementatio
+	#pragma omp simd 
 	for (int i=-1; i<= emf->nx; i++) {
 		// B[ i ].x += 0;  // Bx does not evolve in 1D
 		B_y[i] += (   dt_dx * ( E_z[i+1] - E_z[i]) );
@@ -491,10 +488,10 @@ void yee_e( t_emf *emf, const t_current *current, const float dt )
 	const float* const restrict J_0x = current -> J_0x;
 	const float* const restrict J_0y = current -> J_0y;
 	const float* const restrict J_0z = current -> J_0z;
-    const int nx = emf->nx;
+        const int nx = emf->nx;
 
 	// Canonical implementation
-	#pragma GCC ivdep 
+	#pragma omp simd
 	for (int i = 0; i <= nx+1; i++) {
 		E_x[i] += ( - dt * J_0x[i]);
 		E_y[i] += ( - dt_dx * ( B_z[i] - B_z[i-1]) - dt * J_0y[i]);
@@ -525,7 +522,6 @@ void emf_update_gc( t_emf *emf )
 		// x
 
 		// lower
-		#pragma GCC ivdep
 		for (int i=-emf->gc[0]; i<0; i++) {
 			E_x[i] = E_x[nx + i];
 			E_y[i] = E_y[nx + i];
@@ -537,7 +533,6 @@ void emf_update_gc( t_emf *emf )
 		}
 
 		// upper
-		#pragma GCC ivdep
 		for (int i=0; i<emf->gc[1]; i++) {
 			E_x[nx + i] = E_x[i];
 			E_y[nx + i] = E_y[i];
@@ -574,7 +569,7 @@ void emf_move_window( t_emf *emf ){
 		int start = -emf->gc[0];
 		int end = emf->nx+emf->gc[1] - 1;
 		
-		#pragma GCC ivdep
+		#pragma omp simd	
 		for (int i = start; i < end; i++) {
 			E_x[i] = E_x[i + 1];
 			E_y[i] = E_y[i + 1];
@@ -586,8 +581,8 @@ void emf_move_window( t_emf *emf ){
 
 		start = emf->nx - 1;
 		end = emf->nx+emf->gc[1];
-
-		#pragma GCC ivdep
+		
+		#pragma omp simd
 		for(int i =  start; i < end; i ++) {
 			E_x[ i ] = 0.;
 			E_y[ i ] = 0.;
@@ -787,7 +782,7 @@ void emf_update_part_fld( t_emf* const emf ) {
 		float* const restrict E_z = emf->E_z;
 		float3 E_0 = emf->ext_fld.E_0;
 
-		#pragma omp simd aligned(E_part_x, E_part_y, E_part_z:64)
+	#pragma omp simd
         for (int i= start; i< end; i++) {
             float3 e = {E_x[i], E_y[i], E_z[i]};
             e.x += E_0.x;
@@ -815,7 +810,6 @@ void emf_update_part_fld( t_emf* const emf ) {
         break;
     }
 
-    // Restrict pointers to B_part
     float* const restrict B_part_x = emf->B_part_x;
     float* const restrict B_part_y = emf->B_part_y;
     float* const restrict B_part_z = emf->B_part_z;
@@ -823,9 +817,11 @@ void emf_update_part_fld( t_emf* const emf ) {
     switch (emf->ext_fld.B_type)
     {
     case EMF_FLD_TYPE_UNIFORM: {
-		
-		#pragma GCC ivdep
-        for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
+	
+	int start = -emf->gc[0];
+	int end = emf->nx + emf->gc[1];	
+	#pragma omp simd
+        for (int i=start; i<end; i++) {
 			float3 b = {emf->B_x[i], emf->B_y[i], emf->B_z[i]};
             b.x += emf->ext_fld.B_0.x;
             b.y += emf->ext_fld.B_0.y;

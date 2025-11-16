@@ -57,11 +57,6 @@ if [ "$CORES" -gt 48 ] || [ "$CORES" -lt 1 ]; then
     CORES=1
 fi
 
-if [ "$CORES" -gt 1 ]; then
-    PARALLEL="Y"
-else
-    PARALLEL="N"
-fi
 
 
 
@@ -89,7 +84,7 @@ case $TEST_NAME in
     perf_stat)
         echo "Running perf test with CONFIG=$CONFIG and CORES=$CORES"
         make clean
-        make CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" OMP_PARALLEL="$PARALLEL"
+        make CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
         mkdir -p tests/perf
         PERF_DIR="tests/perf/perf_stat_${CONFIG}_${CORES}_threads.txt"
         srun -c $CORES perf stat ./zpic &> "$PERF_DIR"
@@ -98,7 +93,7 @@ case $TEST_NAME in
     perf_record)
         echo "Running perf record with CONFIG=$CONFIG and CORES=$CORES"
         make clean
-        make CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" DEBUG="Y" OMP_PARALLEL="$PARALLEL"
+        make CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" DEBUG="Y" PARALLEL="$PARALLEL"
         mkdir -p tests/perf
         PERF_DIR="tests/perf/perf_record_${CONFIG}_${CORES}_threads.data"
         srun -c "$CORES" perf record -g --call-graph dwarf -o "$PERF_DIR" -- ./zpic
