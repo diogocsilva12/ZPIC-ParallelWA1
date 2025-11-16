@@ -999,12 +999,12 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
 
     double energy = 0;
 
-    // Tamanho do grid de corrente (incluindo guard cells)
+    //grid size including guard cells
     const int current_size = current->nx + current->gc[0] + current->gc[1];
 
     #pragma omp parallel reduction(+:energy)
     {
-            // Simplesmente use calloc (já inicializa com zeros)
+            //calloc initialized to zero
         float* J_local_x = (float*) calloc(current_size, sizeof(float));
         float* J_local_y = (float*) calloc(current_size, sizeof(float));
         float* J_local_z = (float*) calloc(current_size, sizeof(float));
@@ -1086,7 +1086,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             float qvy = spec->q * uy * rg;
             float qvz = spec->q * uz * rg;
 
-            // Depositar em buffer LOCAL (inline do dep_current_zamb)
+            // Deposit in LOCAL buffer (inline of dep_current_zamb)
             int ix0 = spec->part.ix[i];
             float x0 = spec -> part.x[i];
 
@@ -1120,7 +1120,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
                 vnp++;
             }
 
-            // Depositar nos buffers LOCAIS
+            // Deposit in LOCAL buffers
             for (int k = 0; k < vnp; k++) {
                 float S0x[2], S1x[2];
                 S0x[0] = 1.0f - vp[k].x0;
@@ -1141,19 +1141,21 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             spec -> part.ix[i] += di;
         }
 
-        // Merge dos buffers locais no grid global (região crítica)
-        for(int i = 0; i < current_size; i++) {
-            if (J_local_x[i] != 0.0f) {
+        // Merge local buffers into global grid (critical region)
+        //this helps with performance when many threads are used
+        const int gc0 = current->gc[0];
+        #pragma omp simd
+        for(int i = gc0; i < current_size - gc0; i++) {
+            const int idx = i - gc0;
+            
+            // Faça atomics em batch (menos overhead)
+            if (J_local_x[i] != 0.0f || J_local_y[i] != 0.0f || J_local_z[i] != 0.0f) {
                 #pragma omp atomic
-                current->J_0x[i - current->gc[0]] += J_local_x[i];
-            }
-            if (J_local_y[i] != 0.0f) {
+                current->J_0x[idx] += J_local_x[i];
                 #pragma omp atomic
-                current->J_0y[i - current->gc[0]] += J_local_y[i];
-            }
-            if (J_local_z[i] != 0.0f) {
+                current->J_0y[idx] += J_local_y[i];
                 #pragma omp atomic
-                current->J_0z[i - current->gc[0]] += J_local_z[i];
+                current->J_0z[idx] += J_local_z[i];
             }
         }
 
