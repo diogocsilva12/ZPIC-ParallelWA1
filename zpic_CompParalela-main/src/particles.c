@@ -1017,7 +1017,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         double energy_local = 0;
 
         //
-        #pragma omp for schedule(dynamic, 256) nowait  
+        #pragma omp for schedule(static) 
         for (int i=0; i<spec->np; i++) {
 
             float3 Ep, Bp;
@@ -1120,7 +1120,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
                 vnp++;
             }
 
-            //store in the local buffer
+            // Depositar nos buffers LOCAIS
             for (int k = 0; k < vnp; k++) {
                 float S0x[2], S1x[2];
                 S0x[0] = 1.0f - vp[k].x0;
@@ -1141,7 +1141,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             spec -> part.ix[i] += di;
         }
 
-        //Merge dos buffers 
+        // Merge dos buffers locais no grid global (região crítica)
         for(int i = 0; i < current_size; i++) {
             if (J_local_x[i] != 0.0f) {
                 #pragma omp atomic
