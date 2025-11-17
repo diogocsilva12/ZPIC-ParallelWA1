@@ -1,6 +1,11 @@
-/*
- *  current.h
- *  zpic
+/** 
+ *  @file current.h
+ *  @author Diogo Silva, Ricardo Fonseca, Tomás Pereira
+ *  @brief Electric current density
+ *  @date 2025/11/24
+ * 
+ *  @copyright Copyright (c) 2022
+ *
  *
  *  Created by Ricardo Fonseca on 12/8/10.
  *  Copyright 2010 Centro de Física dos Plasmas. All rights reserved.
@@ -43,7 +48,6 @@ typedef struct Smooth {
 
 /**
  * @brief Current density object
- * ! Vectorize this 
  */
 typedef struct Current {
 	
@@ -73,33 +77,76 @@ typedef struct Current {
 /**
  * @brief Initializes Electric current density object
  * 
- * @param current 	Electric current density
- * @param nx 		Number of cells
- * @param box 		Physical box size
- * @param dt 		Simulation time step
-  */
-void current_new( t_current *current, int nx, float box, float dt );
+ * @param current   Electric current density
+ * @param nx        Number of grid cells
+ * @param box       Physical box size
+ * @param dt        Simulation time step
+*/ 
+void current_new(t_current *current, int nx, float box, float dt);
 
 /**
  * @brief Frees dynamic memory from electric current density
  * 
  * @param current Electric current density object
  */
-void current_delete( t_current *current );
+void current_delete(t_current *current);
 
 /**
  * @brief Sets all electric current density values to zero
  * 
  * @param current Electric current density object
  */
-void current_zero( t_current *current );
+void current_zero(t_current *current);
 
 /**
  * @brief Advances electric current density 1 time step
  * 
- * @param current Electric current density object
+ * The routine will:
+ * 1. Update the guard cells
+ * 2. Apply digitial filtering (if configured)
+ * 3. Advance iteration number
+ * 
+ * @param current Electric current density
+*/
+void current_update(t_current *current);
+
+/**
+ * @brief Updates guard cell values
+ * 
+ * When using periodic boundaries the electric current that was added to
+ * the upper guard cells will be added to the corresponding lower grid
+ * cells, and the values then copied to the upper grid cells
+ * 
+ * @param current Electric current density
  */
-void current_update( t_current *current );
+void current_update_gc(t_current *current);
+
+/**
+ * @brief Applies digital filtering to the current density
+ * 
+ * Filtering is applied through a sequence of 3 point kernel convolutions.
+ * The routine will apply a binomial kernel ([1,2,1]) n times, followed by
+ * an optional compensator kernel.
+ * 
+ * Filtering parameters are set by the `current -> smooth` variable.
+ * 
+ * @param current Electric current density
+ */
+void current_smooth(t_current* const current);
+
+/**
+ * @brief Gets the value of the compensator kernel for an n pass binomial kernel
+ * 
+ * This kernel eliminates the $k^2$ dependency of the transfer function
+ * near $k = 0$. The resulting kernel will be in the form [a,b,a], with
+ * the values of a and b being determined by this function. The result
+ * is normalized.
+ * 
+ * @param n Number of binomial passes
+ * @param sa a value of the compensator kernel
+ * @param sb b value of the compensator kernel
+ */
+void get_smooth_comp(int n, float* sa, float* sb);
 
 /**
  * @brief Saves electric current density diagnostic information to disk
@@ -107,9 +154,36 @@ void current_update( t_current *current );
  * @param current Electric current density object
  * @param jc Current component to save, must be one of {0,1,2}
  */
-void current_report( const t_current *current, const int jc );
+void current_report(const t_current *current, const int jc);
 
+/**
+ * @brief Applies a 3 point kernel convolution along x
+ * 
+ * The kernel has the form [a,b,a]. The routine accounts for periodic
+ * boundaries.
+ * 
+ * @param current 
+ * @param sa kernel a value
+ * @param sb kernel b value
+*/
+void kernel_x(t_current* const current, const float sa, const float sb);
+
+/**
+ * @brief Allocates a temporary buffer of size nx (Number of grid cells)
+ * @brief Our approach works because number of grid cells is constant during the simulation
+ * @param nx Number of grid cells
+ * @note This temporary buffer also avoids multiple alloc_float3Buffer calls which stress cache too much for kernel_x function
+*/
 void kernel_tmpbuf_init(int nx);
+
+/**
+ * @brief Free the temporary buffer (call once after simulation ends)
+*/
 void kernel_tmpbuf_cleanup();
+
+/**
+ * @brief Return pointer to temporary buffer
+*/
+float3Buffer* kernel_tmpbuf_get();
 
 #endif
