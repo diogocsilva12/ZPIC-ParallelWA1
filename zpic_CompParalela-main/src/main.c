@@ -19,10 +19,8 @@ along with the ZPIC Educational code suite. If not, see <http://www.gnu.org/lice
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <math.h>
 #include <omp.h>
-
 #include "../lib/zpic.h"
 #include "../lib/simulation.h"
 #include "../lib/emf.h"
@@ -32,7 +30,7 @@ along with the ZPIC Educational code suite. If not, see <http://www.gnu.org/lice
 #include "input/laser_particles.c"
 
 
-int main (int argc, const char * argv[]) {
+int main(int argc, const char * argv[]){
 
 	// Initialize simulation
 	t_simulation sim;
@@ -49,37 +47,41 @@ int main (int argc, const char * argv[]) {
 	t0 = timer_ticks();
   	printf("n = 0, t = 0.0\n");
 
+	// Report at timestep (0)
+	sim_report_energy_ret( &sim, &en_in);
+    sim_report_energy (&sim);
+
+	// Create temporary buffer for kernel_x
 	kernel_tmpbuf_init(sim.current.nx);
 
-	for (n=0,t=0.0; t<=sim.tmax; n++, t=n*sim.dt) {
-		if (report ( n , sim.ndump ) )	sim_report( &sim );
-		sim_iter( &sim );
-
-    	if (n==0){
-    	 	sim_report_energy_ret( &sim, &en_in);
-    	 	sim_report_energy (&sim);
-    	}
+	// Simulation main loop
+	for (n=0; t<=sim.tmax; n++){
+		if (report(n, sim.ndump ))	sim_report(&sim);
+		sim_iter(&sim);
 	}
 
+	// Delete temporary buffer for kernel_x
 	kernel_tmpbuf_cleanup();
 
-	printf("n = %i, t = %f\n",n,t);
+	// Report at final timestep
+	printf("n = %i, t = %f\n",n,t); 
 	t1 = timer_ticks();
 	fprintf(stderr, "\nSimulation ended.\n\n");
 	sim_report_energy( &sim );
-	
 	sim_report_energy_ret( &sim, &en_out );
 	printf("Initial energy: %e, Final energy: %e\n", en_in, en_out);
+
+	// Check energy conservation
 	double ratio=100*fabs((en_in-en_out)/en_out);
 	printf("\nFinal energy different from Initial Energy. Change in total energy is: %.2f %% \n",ratio);
-	if (ratio>5) { printf("ERROR: Large Change\n"); return 1; }
+	if (ratio>5) { printf("ERROR: Large Change\n"); return EXIT_FAILURE; }
 
 
 	// Simulation times
 	sim_timings(&sim, t0, t1);
 
-	// Cleanup data
+	// Delete simulation
 	sim_delete(&sim);
     
-	return 0;
+	return EXIT_SUCCESS;
 }
