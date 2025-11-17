@@ -1,6 +1,14 @@
 #ifndef __SIMULATION__
 #define __SIMULATION__
 
+/**
+ * @brief EM1D PIC Simulation
+ * @file simulation.h
+ * @author Diogo Silva, Ricardo Fonseca, Tomás Pereira
+ * @version 0.2
+ * @date 2025/11/24
+*/
+
 #include <stdint.h>
 #include "particles.h"
 #include "emf.h"
@@ -37,7 +45,7 @@ typedef struct Simulation {
  * 
  * @param sim	EM1D simulation 
  */
-void sim_init( t_simulation* sim );
+void sim_init(t_simulation* sim);
 
 /**
  * @brief Saves diagnostic information
@@ -49,22 +57,28 @@ void sim_init( t_simulation* sim );
  * 
  * @param sim 	EM1D simulation
  */
-void sim_report( t_simulation* sim );
+void sim_report(t_simulation* sim);
 
 /**
  * @brief Advance simulation 1 iteration
  * 
+ * A complete iteration consists of:
+ * 1. Zeroing current density
+ * 2. Advancing particle species and depositing electric current
+ * 3. Updating electric current boundary
+ * 4. Advancing the EM fields
+ * 
  * @param sim 	EM1D Simulation
  */
-void sim_iter( t_simulation* sim );
+void sim_iter(t_simulation* sim);
 
 /**
  * @brief Print report on simulation energy (fields/particles/total)
  * 
  * @param sim 	EM1D Simulation
  */
-void sim_report_energy( t_simulation* sim );
-void sim_report_energy_ret( t_simulation* sim, double* energy );
+void sim_report_energy(t_simulation* sim);
+void sim_report_energy_ret(t_simulation* sim, double* energy);
 
 /**
  * @brief Initialize simulation object
@@ -79,7 +93,7 @@ void sim_report_energy_ret( t_simulation* sim, double* energy );
  * @param species 		Array of particle species, may be NULL (no particles)
  * @param n_species 	Number of particle specis
  */
-void sim_new( t_simulation* sim, int nx, float box, float dt, float tmax, int ndump, t_species* species, int n_species );
+void sim_new(t_simulation* sim, int nx, float box, float dt, float tmax, int ndump, t_species* species, int n_species);
 
 /**
  * @brief Prints out report on simulation timings
@@ -88,7 +102,7 @@ void sim_new( t_simulation* sim, int nx, float box, float dt, float tmax, int nd
  * @param t0 	Simulation start time (ticks)
  * @param t1 	Simulation end time (ticks)
  */
-void sim_timings( t_simulation* sim, uint64_t t0, uint64_t t1 );
+void sim_timings(t_simulation* sim, uint64_t t0, uint64_t t1);
 
 /**
  * @brief Adds laser pulse to simulation
@@ -96,21 +110,21 @@ void sim_timings( t_simulation* sim, uint64_t t0, uint64_t t1 );
  * @param sim 		EM1D simulation
  * @param laser 	Laser parameters
  */
-void sim_add_laser( t_simulation* sim,  t_emf_laser* laser );
+void sim_add_laser(t_simulation* sim,  t_emf_laser* laser);
 
 /**
  * @brief Frees dynamic memory 
  * 
  * @param sim 		EM1D Simulation
  */
-void sim_delete( t_simulation* sim );
+void sim_delete(t_simulation* sim);
 
 /**
  * @brief Sets a moving window algorithm for the simulation
  * 
  * @param sim 
  */
-void sim_set_moving_window( t_simulation* sim );
+void sim_set_moving_window(t_simulation* sim);
 
 /**
  * @brief Sets electric current digital filtering (smoothing) parameters
@@ -118,7 +132,7 @@ void sim_set_moving_window( t_simulation* sim );
  * @param sim 		EM1D Simulation
  * @param smooth 	Digital filtering parameters
  */
-void sim_set_smooth( t_simulation* sim,  t_smooth* smooth );
+void sim_set_smooth(t_simulation* sim,  t_smooth* smooth);
 
 /**
  * @brief Sets external EM fields for the simulation
@@ -126,7 +140,7 @@ void sim_set_smooth( t_simulation* sim,  t_smooth* smooth );
  * @param sim 		EM1D simulation
  * @param ext_fld 	External EM fields parameters
  */
-void sim_set_ext_fld( t_simulation* sim, t_emf_ext_fld* ext_fld );
+void sim_set_ext_fld(t_simulation* sim, t_emf_ext_fld* ext_fld);
 
 /**
  * @brief Checks if the `sim_report()` function should be called 
@@ -135,6 +149,6 @@ void sim_set_ext_fld( t_simulation* sim, t_emf_ext_fld* ext_fld );
  * @param ndump 	Diagnostic frequency (number of iterations between diagnostic dumps)
  * @return 			1 if `sim_report()` function should be called, 0 otherwise
  */
-int report( int n, int ndump );
+int report(int n, int ndump);
 
 #endif

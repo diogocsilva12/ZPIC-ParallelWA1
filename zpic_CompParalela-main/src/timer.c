@@ -48,7 +48,7 @@ double timer_interval_seconds(uint64_t start, uint64_t end)
  * 
  * @return double 
  */
-double timer_cpu_seconds( void )
+double timer_cpu_seconds(void)
 {
     struct timeval tv;
     double wtime;
@@ -69,7 +69,7 @@ double timer_cpu_seconds( void )
  * 
  * @return Timer resolution 
  */
-double timer_resolution( void )
+double timer_resolution(void)
 {
 	struct timeval tv1, tv2;
 	gettimeofday(&tv1, NULL);

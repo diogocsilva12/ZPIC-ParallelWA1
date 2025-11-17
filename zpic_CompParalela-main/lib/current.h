@@ -3,7 +3,7 @@
  *  @author Diogo Silva, Ricardo Fonseca, Tomás Pereira
  *  @brief Electric current density
  *  @date 2025/11/24
- * 
+ * 	@version 0.2
  *  @copyright Copyright (c) 2022
  *
  *

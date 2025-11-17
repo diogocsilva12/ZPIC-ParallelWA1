@@ -34,7 +34,7 @@ int main(int argc, const char * argv[]){
 
 	// Initialize simulation
 	t_simulation sim;
-	sim_init( &sim );
+	sim_init(&sim);
 
     // Run simulation
 	int n;
@@ -48,7 +48,7 @@ int main(int argc, const char * argv[]){
   	printf("n = 0, t = 0.0\n");
 
 	// Report at timestep (0)
-	sim_report_energy_ret( &sim, &en_in);
+	sim_report_energy_ret(&sim, &en_in);
     sim_report_energy (&sim);
 
 	// Create temporary buffer for kernel_x
@@ -56,7 +56,7 @@ int main(int argc, const char * argv[]){
 
 	// Simulation main loop
 	for (n=0; t<=sim.tmax; n++){
-		if (report(n, sim.ndump ))	sim_report(&sim);
+		if (report(n, sim.ndump))	sim_report(&sim);
 		sim_iter(&sim);
 	}
 
