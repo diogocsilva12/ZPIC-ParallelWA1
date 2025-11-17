@@ -1,4 +1,0 @@
-src/emf.c: In function ‘emf_update_part_fld’:
-src/emf.c:790: warning: ignoring ‘#pragma omp simd’ [-Wunknown-pragmas]
-  790 |                 #pragma omp simd aligned(E_part_x, E_part_y, E_part_z:64)
-      | 

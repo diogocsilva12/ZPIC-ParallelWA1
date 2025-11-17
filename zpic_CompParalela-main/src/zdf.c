@@ -16,7 +16,6 @@
  * @brief  Use 2008 edition of the POSIX standard (IEEE Standard 1003.1-2008)
  * 
  */
-#define _POSIX_C_SOURCE 200809L
 
 /**
  * @brief  Use 64 bit file interface

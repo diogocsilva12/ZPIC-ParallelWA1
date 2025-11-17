@@ -332,8 +332,8 @@ void kernel_x(t_current* const current, const float sa, const float sb){
             J_0z[i] = tmp_z[i];
         }
         
-        #pragma omp single
         //Boundaries only process 3 elements, so single thread is enough
+	#pragma omp single
         if (current -> bc_type == CURRENT_BC_PERIODIC) {
             //Single Thread to update guard cells
 

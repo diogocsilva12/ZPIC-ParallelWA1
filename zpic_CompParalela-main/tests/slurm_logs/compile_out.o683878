@@ -1,9 +1,0 @@
-[STARTING] Loading modules
-[LOAD_MODULE] FJSVstclanga/1.0.21.02a
-[LOAD_MODULE] GCC/14
-[LOAD_MODULE] Score-P/8.4-gompi-2024a
-Running perf test with CONFIG=OPT_FULL and CORES=1
-rm -f zpic src/zdf.o src/current.o src/simulation.o src/particles.o src/main.o src/random.o src/zpic.o src/emf.o src/timer.o
-rm -rf docs
-cc -c -std=c99 -pedantic -Wall -march=a64fx -O3 -Kfast,simd -Kopenmp -Ilib src/zdf.c -o src/zdf.o
-Perf stats saved to 

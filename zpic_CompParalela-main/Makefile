@@ -45,12 +45,12 @@ CC ?= gcc # Compiler
 CFLAGS_DEFAULT = -std=c99 -pedantic -Wall
 CFLAGS_OPT_2 = -O2 -march=native -flto
 CFLAGS_OPT_3 = -O3 -march=native -flto
-CFLAGS_OPT_FULL = -Ofast -march=native -flto
+CFLAGS_OPT_FULL = -O3 -ffast-math -mcpu=a64fx   -fstrict-aliasing \
+    -funroll-loops
 
-# ✅ ADD OPENMP FLAG
 CFLAGS_PARALLEL = -fopenmp
 
-LDFLAGS = -lm
+LDFLAGS = -lm 
 
 # Inputs by user
 CONFIG ?= DEFAULT 
@@ -65,7 +65,7 @@ else ifeq ($(CONFIG), OPT_2)
 else ifeq ($(CONFIG), OPT_3)
     CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_3)
 else ifeq ($(CONFIG), OPT_FULL)
-    CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_FULL)
+     CFLAGS =   $(CFLAGS_OPT_FULL)
 endif
 
 # ADD OPENMP IF PARALLEL=Y

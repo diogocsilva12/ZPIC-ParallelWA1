@@ -20,6 +20,7 @@ along with the ZPIC Educational code suite. If not, see <http://www.gnu.org/lice
 #ifndef __ZDF__
 #define __ZDF__
 
+
 #if !(defined _WIN32 || defined _WIN64)
 
   #if __SIZEOF_FLOAT__ != 4
@@ -31,6 +32,7 @@ along with the ZPIC Educational code suite. If not, see <http://www.gnu.org/lice
   #endif
 
 #endif
+
 
 #include <stdint.h>
 #include <stdio.h>
