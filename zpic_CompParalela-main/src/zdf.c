@@ -21,6 +21,7 @@
  * @brief  Use 64 bit file interface
  * 
  */
+#define _POSIX_C_SOURCE 200809L
 #define _FILE_OFFSET_BITS 64
 
 #include "../lib/zdf.h"

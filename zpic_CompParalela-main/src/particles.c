@@ -1199,8 +1199,8 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
     // Boundary conditions (serial)
     if ( spec -> moving_window || spec -> bc_type == PART_BC_OPEN ){
         if (spec -> moving_window )	spec_move_window( spec );
-	int i = 0;
-	       while (i < spec -> np) {
+	    int i = 0;
+        while (i < spec -> np) {
             if (( spec -> part.ix[i] < 0 ) || ( spec -> part.ix[i] >= nx0 )) {
                 spec -> part.ix[i] = spec -> part.ix[ -- spec -> np ];
                 spec -> part.x[i] = spec -> part.x[ spec -> np ];
