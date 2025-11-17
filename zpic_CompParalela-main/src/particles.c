@@ -76,6 +76,7 @@ void spec_set_u( t_species* spec, const int start, const int end )
      * Version 1 momentum initialization
      */
     // Initialize thermal component
+    #pragma omp parallel for	
     for (int i = start; i <= end; i++) {
         spec->part.ux[i] = spec -> uth[0] * rand_norm();
         spec->part.uy[i] = spec -> uth[1] * rand_norm();
@@ -103,6 +104,7 @@ void spec_set_u( t_species* spec, const int start, const int end )
 
     // Normalize to the number of particles in each cell to get the
     // average momentum in each cell
+    #pragma omp parallel for
     for(int i = 0; i< spec->nx; i++ ) {
         const float norm = (npc[ i ] > 0) ? 1.0f/npc[i] : 0;
 
@@ -258,9 +260,9 @@ void spec_set_x( t_species* spec, const int range[] )
 
         // Get edge position normalized to cell size;
         start = spec -> density.start / spec -> dx - spec -> n_move;
-
+	
         for (i = range[0]; i <= range[1]; i++) {
-
+	     
             for (k=0; k<npc; k++) {
                 if ( i + poscell[k] > start ) {
                     spec->part.ix[ip] = i;
@@ -996,23 +998,38 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
     const float dt_dx = spec->dt / spec->dx;
     const float qnx = spec -> q *  spec->dx / spec->dt;
     const int nx0 = spec -> nx;
-
     double energy = 0;
 
-    // Tamanho do grid de corrente (incluindo guard cells)
+    int* restrict const part_ix = spec -> part.ix;
+    float* restrict const part_x = spec -> part.x;
+    float* restrict const part_ux = spec -> part.ux;
+    float* restrict const part_uy = spec -> part.uy;
+    float* restrict const part_uz = spec -> part.uz;
+    float* restrict const E_part_x = emf -> E_part_x;
+    float* restrict const E_part_y = emf -> E_part_y;
+    float* restrict const E_part_z = emf -> E_part_z;
+    float* restrict const B_part_x = emf -> B_part_x;
+    float* restrict const B_part_y = emf -> B_part_y;
+    float* restrict const B_part_z = emf -> B_part_z;
+
+    //grid size including guard cells
     const int current_size = current->nx + current->gc[0] + current->gc[1];
 
     #pragma omp parallel reduction(+:energy)
     {
-        //Create private buffers for current deposition
-        float* J_local_x = (float*) calloc(current_size, sizeof(float));
-        float* J_local_y = (float*) calloc(current_size, sizeof(float));
-        float* J_local_z = (float*) calloc(current_size, sizeof(float));
+        //calloc initialized to zero
+        float3Buffer J_local;
+        alloc_float3Buffer(&J_local, current_size);
+        mem_set_float3Buffer(&J_local, current_size, 0.0f);
+
+        float* restrict const J_local_x = J_local.x;
+        float* restrict const J_local_y = J_local.y;
+        float* restrict const J_local_z = J_local.z;
 
         double energy_local = 0;
 
-        // Particle push paralelo
-        #pragma omp for schedule(static)
+        //
+        #pragma omp for
         for (int i=0; i<spec->np; i++) {
 
             float3 Ep, Bp;
@@ -1023,13 +1040,28 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             int di;
             float dx;
 
-            ux = spec -> part.ux[i];
-            uy = spec -> part.uy[i];
-            uz = spec -> part.uz[i];
+            ux = part_ux[i];
+            uy = part_uy[i];
+            uz = part_uz[i];
 
-            interpolate_fld(emf -> E_part_x, emf -> E_part_y, emf -> E_part_z, 
-                          emf -> B_part_x, emf -> B_part_y, emf -> B_part_z, 
-                          spec -> part, i, &Ep, &Bp);
+            int iz, ih;
+            float w1, w1h;
+
+            iz = part_ix[i];
+
+            w1 = part_x[i];
+            ih = (w1 <0.5f)? -1 : 0;
+            w1h = w1 + ((w1 <0.5f)?0.5f:-0.5f);
+
+            ih += iz;
+
+            Ep.x = E_part_x[ih] * (1.0f - w1h) + E_part_x[ih+1]* w1h;
+            Ep.y = E_part_y[iz] * (1.0f -  w1) + E_part_y[iz+1] * w1;
+            Ep.z = E_part_z[iz] * (1.0f -  w1) + E_part_z[iz+1] * w1;
+
+            Bp.x = B_part_x[iz] * (1.0f  - w1) + B_part_x[iz+1] * w1;
+            Bp.y = B_part_y[ih] * (1.0f - w1h) + B_part_y[ih+1] * w1h;
+            Bp.z = B_part_z[ih] * (1.0f - w1h) + B_part_z[ih+1] * w1h;
 
             Ep.x *= tem;
             Ep.y *= tem;
@@ -1040,7 +1072,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             utz = uz + Ep.z;
 
             u2 = utx*utx + uty*uty + utz*utz;
-            gamma = sqrtf( 1 + u2 );
+            gamma = sqrtf(1 + u2);
 
             energy_local += u2 / ( 1 + gamma );
 
@@ -1068,20 +1100,20 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             uy = uty + Ep.y;
             uz = utz + Ep.z;
 
-            spec -> part.ux[i] = ux;
-            spec -> part.uy[i] = uy;
-            spec -> part.uz[i] = uz;
+            part_ux[i] = ux;
+            part_uy[i] = uy;
+            part_uz[i] = uz;
 
             rg = 1.0f / sqrtf(1.0f + ux*ux + uy*uy + uz*uz);
             dx = dt_dx * rg * ux;
-            x1 = spec -> part.x[i] + dx;
+            x1 = part_x[i] + dx;
             di = ltrim(x1);
             x1 -= di;
 
             float qvy = spec->q * uy * rg;
             float qvz = spec->q * uz * rg;
 
-            // Depositar em buffer LOCAL (inline do dep_current_zamb)
+            // Deposit in LOCAL buffer (inline of dep_current_zamb)
             int ix0 = spec->part.ix[i];
             float x0 = spec -> part.x[i];
 
@@ -1115,7 +1147,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
                 vnp++;
             }
 
-            // Depositar nos buffers LOCAIS
+            // Deposit in LOCAL buffers
             for (int k = 0; k < vnp; k++) {
                 float S0x[2], S1x[2];
                 S0x[0] = 1.0f - vp[k].x0;
@@ -1125,24 +1157,32 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
 
                 int idx = vp[k].ix + current->gc[0]; // offset para guard cells
 
-                J_local_x[ idx     ] += qnx * vp[k].dx;
-                J_local_y[ idx     ] += vp[k].qvy * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
-                J_local_y[ idx + 1 ] += vp[k].qvy * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
-                J_local_z[ idx     ] += vp[k].qvz * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
-                J_local_z[ idx + 1 ] += vp[k].qvz * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
+                J_local_x[idx] += qnx * vp[k].dx;
+                J_local_y[idx] += vp[k].qvy * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
+                J_local_y[idx + 1] += vp[k].qvy * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
+                J_local_z[idx] += vp[k].qvz * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
+                J_local_z[idx + 1] += vp[k].qvz * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
             }
 
-            spec -> part.x[i] = x1;
-            spec -> part.ix[i] += di;
+            part_x[i] = x1;
+            part_ix[i] += di;
         }
 
-        // Merge dos buffers locais no grid global (região crítica)
-        #pragma omp critical
-        {
-            for(int i = 0; i < current_size; i++) {
-                current->J_0x[i - current->gc[0]] += J_local_x[i];
-                current->J_0y[i - current->gc[0]] += J_local_y[i];
-                current->J_0z[i - current->gc[0]] += J_local_z[i];
+        // Merge local buffers into global grid (critical region)
+        //this helps with performance when many threads are used
+        const int gc0 = current->gc[0];
+        #pragma omp simd
+        for(int i = gc0; i < current_size - gc0; i++) {
+            const int idx = i - gc0;
+            
+            // Faça atomics em batch (menos overhead)
+            if (J_local_x[i] != 0.0f || J_local_y[i] != 0.0f || J_local_z[i] != 0.0f) {
+                #pragma omp atomic
+                current->J_0x[idx] += J_local_x[i];
+                #pragma omp atomic
+                current->J_0y[idx] += J_local_y[i];
+                #pragma omp atomic
+                current->J_0z[idx] += J_local_z[i];
             }
         }
 
@@ -1159,8 +1199,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
     // Boundary conditions (serial)
     if ( spec -> moving_window || spec -> bc_type == PART_BC_OPEN ){
         if (spec -> moving_window )	spec_move_window( spec );
-
-        int i = 0;
+	int i = 0;
         while (i < spec -> np) {
             if (( spec -> part.ix[i] < 0 ) || ( spec -> part.ix[i] >= nx0 )) {
                 spec -> part.ix[i] = spec -> part.ix[ -- spec -> np ];
@@ -1173,7 +1212,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             i++;
         }
     } else {
-        for (int i=0; i<spec->np; i++) {
+	    for (int i=0; i<spec->np; i++) {
             spec-> part.ix[i] += (( spec -> part.ix[i] < 0 ) ? nx0 : 0 ) - 
                                  (( spec -> part.ix[i] >= nx0 ) ? nx0 : 0);
         }

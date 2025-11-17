@@ -1,0 +1,2 @@
+slurmstepd: error: execve(): /projects/F202500010HPCVLABUMINHO/uminhocp016/testecp7/zpic_CompParalela-main/./zpic: No such file or directory
+srun: error: cna1313: task 0: Exited with exit code 2

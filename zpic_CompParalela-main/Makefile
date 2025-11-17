@@ -47,7 +47,6 @@ CFLAGS_OPT_2 = -O2 -march=native -flto
 CFLAGS_OPT_3 = -O3 -march=native -flto
 CFLAGS_OPT_FULL = -Ofast -march=native -flto
 
-# ✅ ADD OPENMP FLAG
 CFLAGS_PARALLEL = -fopenmp
 
 LDFLAGS = -lm
@@ -65,7 +64,8 @@ else ifeq ($(CONFIG), OPT_2)
 else ifeq ($(CONFIG), OPT_3)
     CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_3)
 else ifeq ($(CONFIG), OPT_FULL)
-    CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_FULL)
+        CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_FULL)
+    endif
 endif
 
 # ADD OPENMP IF PARALLEL=Y

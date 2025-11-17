@@ -13,7 +13,7 @@
 #SBATCH -t 00:10:00    # 10 minutes max run
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=48
 #SBATCH --output=tests/slurm_logs/compile_out.o%j
 #SBATCH --error=tests/slurm_logs/compile_err.e%j
 #SBATCH --exclusive
@@ -23,7 +23,7 @@
 # --------- LOAD MODULES -----------------
 echo "[STARTING] Loading modules"
 modules=(
-    "GCC/14"
+    "GCC/13.3.0"
     "Score-P/8.4-gompi-2024a"
 )
 
@@ -76,7 +76,7 @@ case $TEST_NAME in
     scorep)
         echo "Running Score-P test with CONFIG=$CONFIG and CORES=$CORES"
 	    make clean
-	    make CC="scorep gcc" CONFIG="$CONFIG" DEBUG="Y" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
+	    make CC="scorep gcc" CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
 	    mkdir -p tests/scorep
 	    SCOREP_DIR="tests/scorep/score_${CONFIG}_${CORES}_threads"a
 	    export SCOREP_EXPERIMENT_DIRECTORY="$SCOREP_DIR"

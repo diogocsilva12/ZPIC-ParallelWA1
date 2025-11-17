@@ -774,7 +774,7 @@ void emf_update_part_fld( t_emf* const emf ) {
 		float* const restrict E_z = emf->E_z;
 		float3 E_0 = emf->ext_fld.E_0;
 
-		#pragma omp simd
+		#pragma omp parallel for simd
         for (int i= start; i< end; i++) {
             float3 e = {E_x[i], E_y[i], E_z[i]};
             e.x += E_0.x;
@@ -813,7 +813,7 @@ void emf_update_part_fld( t_emf* const emf ) {
 	
 	int start = -emf->gc[0];
 	int end = emf->nx + emf->gc[1];	
-	#pragma omp simd
+	#pragma omp parallel for simd
         for (int i=start; i<end; i++) {
 			float3 b = {emf->B_x[i], emf->B_y[i], emf->B_z[i]};
             b.x += emf->ext_fld.B_0.x;
