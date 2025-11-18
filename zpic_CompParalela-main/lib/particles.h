@@ -1,11 +1,10 @@
-/*
- *  particles.h
- *  zpic
- *
- *  Created by Ricardo Fonseca on 11/8/10.
- *  Copyright 2010 Centro de Física dos Plasmas. All rights reserved.
- *
- */
+/**
+ * @file particles.h
+ * @author Diogo Silva, Ricardo Fonseca, Tomás Pereira
+ * @brief Particle species
+ * @version 0.2
+ * @date 2025/11/24
+*/
 
 #ifndef __PARTICLES__
 #define __PARTICLES__
@@ -51,7 +50,6 @@ enum density_type {
 /**
  * @brief Density profile parameters
  * @note Since only electrons are used we decided to not vectorize the density profile
- * !If in the future more than one density profile is needed, vectorization will be needed
  * 
  */
 typedef struct Density {
@@ -84,7 +82,6 @@ enum part_boundary {
 
 /**
  * @brief Set of particles
-* ! ONLY ELECTRONS ARE USED FOR THIS SIMULATION
  */
 typedef struct Species {
 
@@ -155,8 +152,18 @@ typedef struct Species {
  * @param density   Density profile for particle injection, may be set to NULL
  **/
 void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
-			  const float ufl[], const float uth[],
-			  const int nx, float box, const float dt, t_density* density );
+              const float *ufl, const float * uth,
+              const int nx, float box, const float dt, t_density* density );
+
+/**
+* @brief Sorting particles by cell index	 
+*/
+void spec_sort(t_species *spec);
+
+/**
+* @brief Move window   
+*/
+void spec_move_window(t_species *spec);
 
 /**
  * @brief Frees dynamic memory from particle species
@@ -247,7 +254,7 @@ double spec_perf( void );
  * @param buf       Phasespace density grid
  */
 void spec_deposit_pha( const t_species *spec, const int rep_type,
-			  const int pha_nx[], const float pha_range[][2], float* buf );
+              const int pha_nx[], const float pha_range[][2], float* restrict buf);
 
 /**
  * @brief Deposits particle species charge density

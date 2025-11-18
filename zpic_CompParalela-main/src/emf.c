@@ -1,9 +1,9 @@
 /**
  * @file emf.c
- * @author Ricardo Fonseca
+ * @author Diogo Silva, Ricardo Fonseca, Tomás Pereira
  * @brief EM fields
  * @version 0.2
- * @date 2022-02-04
+ * @date 2025/11/24
  * 
  * @copyright Copyright (c) 2022
  * 
@@ -20,9 +20,7 @@
 #include "../lib/zdf.h"
 #include "../lib/timer.h"
 
-void emf_move_window( t_emf *emf );
-void emf_update_part_fld( t_emf *emf );
-void emf_update_gc( t_emf *emf );
+
 
 /// Time spent advancing the EM fields
 static double _emf_time = 0.0;

@@ -19,6 +19,8 @@
 #SBATCH --exclusive
 #SBATCH --acctg-freq=energy=10
 
+echo "Usage: sbatch tests.sh <TEST_NAME> <?CC> <?CONFIG> <?CORES> <?PARALLEL>"
+echo "Example: sbatch tests.sh perf_stat clang OPT_FULL 8 Y"
 
 # --------- LOAD MODULES -----------------
 echo "[STARTING] Loading modules"
@@ -37,13 +39,18 @@ done
 
 # --------- PARSE ARGUMENTS -------------
 TEST_NAME=$1
-CONFIG=$2
-CORES=$3
-PARALLEL=$4
+CC=$2
+CONFIG=$3
+CORES=$4
+PARALLEL=$5
 
 if [ -z "$TEST_NAME" ]; then
-    echo "Usage: sbatch run_tests.sh <test_name> <?config> <?cores>"
+    echo "Usage: Insert a right test (run, scorep, perf_stat, perf_record)"
     exit 1
+fi
+
+if [ -z "$CC" ]; then
+   CC="clang"
 fi
 
 if [ -z "$CONFIG" ]; then
@@ -72,10 +79,10 @@ fi
 mkdir -p tests/slurm_logs
 
 case $TEST_NAME in
-    gcc)
+    run)
         echo "Running test with GCC"
         make clean
-        make CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
+        make CC="$CC" CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
         srun -c $CORES ./zpic
         ;;
 
@@ -91,7 +98,7 @@ case $TEST_NAME in
     perf_stat)
         echo "Running perf test with CONFIG=$CONFIG and CORES=$CORES"
         make clean
-        make CC="clang" CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
+        make CC="$CC" CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
         mkdir -p tests/perf
         PERF_DIR="tests/perf/perf_stat_${CONFIG}_${CORES}_threads.txt"
         srun -c $CORES perf stat ./zpic &> "$PERF_DIR"
@@ -100,7 +107,7 @@ case $TEST_NAME in
     perf_record)
         echo "Running perf record with CONFIG=$CONFIG and CORES=$CORES"
         make clean
-        make CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" DEBUG="Y" PARALLEL="$PARALLEL"
+        make CC="$CC" CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" DEBUG="Y" PARALLEL="$PARALLEL"
         mkdir -p tests/perf
         
         TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")

@@ -1,11 +1,10 @@
-/*
- *  emf.h
- *  zpic
- *
- *  Created by Ricardo Fonseca on 10/8/10.
- *  Copyright 2010 Centro de Física dos Plasmas. All rights reserved.
- *
- */
+/**
+ * @file emf.h
+ * @author Diogo Silva, Ricardo Fonseca, Tomás Pereira
+ * @brief EM fields
+ * @version 0.2
+ * @date 2025/11/24
+*/
 
 #ifndef __EMF__
 #define __EMF__
@@ -163,11 +162,29 @@ typedef struct EMF_Laser {
 } t_emf_laser;
 
 /**
+ * @brief Move window
+ * @param emf - Em field
+ */
+void emf_move_window(t_emf *emf);
+
+/**
+ * @brief Update field values seen by external fields
+ * @param emf - Em field
+*/
+void emf_update_part_fld(t_emf *emf);
+
+/**
+ * @brief Update guard cell values
+ * @param emf - Em field
+*/
+void emf_update_gc(t_emf *emf);
+
+/**
  * @brief Calculate total EM field energy
  *
  * @param[in] emf EM field
  * @param[out] energy Energy values vector
- */
+*/
 void emf_get_energy( const t_emf *emf, double energy[] );
 
 /**

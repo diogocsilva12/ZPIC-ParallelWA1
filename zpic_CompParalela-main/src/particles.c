@@ -1,9 +1,9 @@
 /**
  * @file particles.c
- * @author Ricardo Fonseca
+ * @author Diogo Silva, Ricardo Fonseca, Tomás Pereira
  * @brief Particle species
  * @version 0.2
- * @date 2022-02-04
+ * @date 2025/11/24
  * 
  * @copyright Copyright (c) 2022
  * 
@@ -24,17 +24,12 @@
 static double _spec_time = 0.0;
 static uint64_t _spec_npush = 0;
 
-void spec_sort( t_species *spec );
-void spec_move_window( t_species *spec );
-
-
 /**
  * @brief Returns the total time spent pushing particles (includes boundaries and moving window)
  * 
  * @return  Total time in seconds
  */
-double spec_time( void )
-{
+double spec_time(void){
     return _spec_time;
 }
 
@@ -43,8 +38,7 @@ double spec_time( void )
  * 
  * @return  Number of particle pushes
  */
-uint64_t spec_npush( void )
-{
+uint64_t spec_npush(void){
     return _spec_npush;
 }
 
@@ -53,8 +47,7 @@ uint64_t spec_npush( void )
  * 
  * @return  Performance in seconds per particle
  */
-double spec_perf( void )
-{
+double spec_perf(void){
     return (_spec_npush > 0 )? _spec_time / _spec_npush: -1.0;
 }
 
@@ -69,12 +62,9 @@ double spec_perf( void )
  * @param start Index of the first particle to set the momentum
  * @param end   Index of the last particle to set the momentum
  */
-void spec_set_u( t_species* spec, const int start, const int end )
-{
+void spec_set_u(t_species* spec, const int start, const int end){
 
-    /**
-     * Version 1 momentum initialization
-     */
+    
     // Initialize thermal component
     #pragma omp parallel for	
     for (int i = start; i <= end; i++) {
@@ -104,7 +94,7 @@ void spec_set_u( t_species* spec, const int start, const int end )
 
     // Normalize to the number of particles in each cell to get the
     // average momentum in each cell
-    #pragma omp parallel for
+    #pragma omp parallel for simd
     for(int i = 0; i< spec->nx; i++ ) {
         const float norm = (npc[ i ] > 0) ? 1.0f/npc[i] : 0;
 
@@ -114,12 +104,13 @@ void spec_set_u( t_species* spec, const int start, const int end )
     }
 
     // Subtract average momentum and add fluid component
+    #pragma omp parallel for simd
     for (int i = start; i <= end; i++) {
         const int idx  = spec -> part.ix[i];
 
-        spec->part.ux[i] += spec -> ufl[0] - net_u[ idx ].x;
-        spec->part.uy[i] += spec -> ufl[1] - net_u[ idx ].y;
-        spec->part.uz[i] += spec -> ufl[2] - net_u[ idx ].z;
+        spec->part.ux[i] += spec -> ufl[0] - net_u[idx].x;
+        spec->part.uy[i] += spec -> ufl[1] - net_u[idx].y;
+        spec->part.uz[i] += spec -> ufl[2] - net_u[idx].z;
     }
 
     // Free temporary memory
@@ -248,23 +239,23 @@ void spec_set_x( t_species* spec, const int range[] )
     const int npc = spec->ppc;
 
     float poscell[npc];
+
     for (i=0; i<spec->ppc; i++) {
-        poscell[i]   = ( i + 0.5 ) / npc;
+        poscell[i]  = (i + 0.5) / npc;
     }
 
     ip = spec -> np;
 
     // Set position of particles in the specified grid range according to the density profile
-    switch ( spec -> density.type ) {
+    switch (spec -> density.type) {
     case STEP: // Step like density profile
 
         // Get edge position normalized to cell size;
         start = spec -> density.start / spec -> dx - spec -> n_move;
-	
-        for (i = range[0]; i <= range[1]; i++) {
+	 for (i = range[0]; i <= range[1]; i++) {
 	     
             for (k=0; k<npc; k++) {
-                if ( i + poscell[k] > start ) {
+                if (i + poscell[k] > start) {
                     spec->part.ix[ip] = i;
                     spec->part.x[ip] = poscell[k];
                     ip++;
@@ -611,7 +602,7 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
 
     const int range[2] = {0, nx-1};
 
-    spec_inject_particles( spec, range );
+    spec_inject_particles(spec, range);
 
     // Set default sorting frequency
     spec -> n_sort = 16;
@@ -1475,7 +1466,7 @@ const char * spec_pha_axis_units( int quant ) {
  * @param buf       Phasespace density grid
  */
 void spec_deposit_pha( const t_species *spec, const int rep_type,
-              const int pha_nx[], const float pha_range[][2], float* restrict buf )
+              const int pha_nx[], const float pha_range[][2], float* restrict buf)
 {
     const int BUF_SIZE = 1024;
     float pha_x1[BUF_SIZE], pha_x2[BUF_SIZE];

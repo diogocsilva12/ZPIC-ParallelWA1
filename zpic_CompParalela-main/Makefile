@@ -32,7 +32,7 @@
 
 # ====================== OMP SETTINGS ====================================== #
 
-OMP_NUM_THREADS?=48 # ! Change this to achieve best performance
+OMP_NUM_THREADS?=12 # Best PU performance (Best times with CLANG 12s vs 14s)
 OMP_PLACES?=cores
 OMP_PROC_BIND?=close 
 
@@ -43,32 +43,50 @@ MAKEFLAGS += --no-print-directory
 CC ?= gcc # Compiler
 
 CFLAGS_DEFAULT = -std=c99 -pedantic -Wall
-CFLAGS_OPT_2 = -O2 -march=native -flto
-CFLAGS_OPT_3 = -O3 -march=native -flto
-CFLAGS_OPT_FULL = -O3 -ffast-math -mcpu=a64fx   -fstrict-aliasing \
-    -funroll-loops
+CFLAGS_OPT_2_GCC = -O2 -march=native
+CFLAGS_OPT_2_CLANG = -O2 -mcpu=a64fx
+CFLAGS_OPT_3_GCC = -O3 -march=native 
+CFLAGS_OPT_3_CLANG = -O3 -mcpu=a64fx
+CFLAGS_OPT_FULL_GCC = -Ofast -march=native
+CFLAGS_OPT_FULL_CLANG= -O3 -ffast-math -mcpu=a64fx 
 
 CFLAGS_PARALLEL = -fopenmp
 
 LDFLAGS = -lm 
 
 # Inputs by user
-CONFIG ?= DEFAULT 
+CONFIG ?= OPT_FULL
 PARALLEL ?= N
 DEBUG ?= N
 
 # Choose CFLAGS based on CONFIG
 ifeq ($(CONFIG), NO_OPT)
-    CFLAGS = $(CFLAGS_DEFAULT)
+    ifneq (,$(findstring gcc,$(CC)))
+        CFLAGS = $(CFLAGS_DEFAULT)
+    else
+        CFLAGS =
+    endif
 else ifeq ($(CONFIG), OPT_2)
-    CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_2)
+    ifneq (,$(findstring gcc,$(CC)))
+        CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_2_GCC)
+    else
+        CFLAGS = $(CFLAGS_OPT_2_CLANG)
+    endif
 else ifeq ($(CONFIG), OPT_3)
-    CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_3)
+    ifneq (,$(findstring gcc,$(CC)))
+        CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_3_GCC)
+    else
+        CFLAGS = $(CFLAGS_OPT_3_CLANG)
+    endif
 else ifeq ($(CONFIG), OPT_FULL)
-     CFLAGS =   $(CFLAGS_OPT_FULL)
+    ifneq (,$(findstring gcc,$(CC)))
+        CFLAGS = $(CFLAGS_DEFAULT) $(CFLAGS_OPT_FULL_GCC)
+    else
+        CFLAGS = $(CFLAGS_OPT_FULL_CLANG)
+    endif
 endif
 
-# ADD OPENMP IF PARALLEL=Y
+# Add OpenMP if parallel is Y
 ifeq ($(PARALLEL), Y)
     CFLAGS += $(CFLAGS_PARALLEL)
     LDFLAGS += -fopenmp
@@ -126,6 +144,7 @@ debug:
 
 # Documentation
 DOCSBASE = docs
+
 DOCS = $(DOCSBASE)/html/index.html
 
 docs: $(DOCS)

@@ -1,3 +1,0 @@
-gcc: error: unrecognized command-line option ‘--thread=omp’; did you mean ‘--thread-jumps’?
-[Score-P] ERROR: Execution failed: gcc  -c --thread=omp -std=c99 -pedantic -Wall -Ofast -march=native -flto -fopenmp -Ilib `/eb/aarch64/software/Score-P/8.4-gompi-2024a/bin/scorep-config --thread=omp:opari2 --mpp=none --io=none --nocuda --preprocess --noopencl --noopenacc --nomemory --nokokkos --nohip --cppflags=c`  -iquote /projects/F202500010HPCVLABUMINHO/uminhocp016/testecp7/zpic_CompParalela-main/src  zdf_1763377495_998874.input.c -E -o zdf_1763377495_998874.input.prep.c
-make: *** [Makefile:108: src/zdf.o] Error 1

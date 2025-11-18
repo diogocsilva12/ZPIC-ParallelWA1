@@ -1,0 +1,4 @@
+src/particles.c: In function ‘aligned_realloc’:
+src/particles.c:448:13: warning: implicit declaration of function ‘posix_memalign’ [-Wimplicit-function-declaration]
+  448 |         if (posix_memalign(&new_ptr, align, new_size) != 0) {
+      |             ^~~~~~~~~~~~~~

@@ -48,16 +48,20 @@ int main(int argc, const char * argv[]){
   	printf("n = 0, t = 0.0\n");
 
 	// Report at timestep (0)
-	sim_report_energy_ret(&sim, &en_in);
-    sim_report_energy (&sim);
 
 	// Create temporary buffer for kernel_x
 	kernel_tmpbuf_init(sim.current.nx);
+	for (n=0,t=0.0; t<=sim.tmax; n++, t=n*sim.dt) {
+        //printf("n = %i, t = %f\n",n,t);
 
-	// Simulation main loop
-	for (n=0; t<=sim.tmax; n++){
-		if (report(n, sim.ndump))	sim_report(&sim);
-		sim_iter(&sim);
+		if ( report ( n , sim.ndump ) )	sim_report( &sim );
+
+		sim_iter( &sim );
+
+        if (n==0){
+            sim_report_energy_ret( &sim, &en_in);
+            sim_report_energy (&sim);
+        }
 	}
 
 	// Delete temporary buffer for kernel_x
