@@ -44,11 +44,11 @@ CC ?= gcc # Compiler
 
 CFLAGS_DEFAULT = -std=c99 -pedantic -Wall
 CFLAGS_OPT_2_GCC = -O2 -march=native
-CFLAGS_OPT_2_CLANG = -O2 -mcpu=a64fx
+CFLAGS_OPT_2_CLANG = -O2 -mcpu=a64fx -msve-vector-bits=512
 CFLAGS_OPT_3_GCC = -O3 -march=native 
-CFLAGS_OPT_3_CLANG = -O3 -mcpu=a64fx
+CFLAGS_OPT_3_CLANG = -O3 -mcpu=a64fx -msve-vector-bits=512
 CFLAGS_OPT_FULL_GCC = -Ofast -march=native
-CFLAGS_OPT_FULL_CLANG= -O3 -ffast-math -mcpu=a64fx 
+CFLAGS_OPT_FULL_CLANG= -O3 -ffast-math -mcpu=a64fx -msve-vector-bits=512 -Rpass=loop-vectorize -Rpass-analysis=loop-vectorize 
 
 CFLAGS_PARALLEL = -fopenmp
 

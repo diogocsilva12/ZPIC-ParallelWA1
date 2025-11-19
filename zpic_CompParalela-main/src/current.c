@@ -216,7 +216,7 @@ void kernel_x(t_current* const current, const float sa, const float sb){
     #pragma omp parallel
     {
         // Convolution
-        #pragma omp for simd
+        #pragma omp for schedule(static)
         for (int i = 0; i < nx; i++){
             tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
             tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
@@ -224,7 +224,7 @@ void kernel_x(t_current* const current, const float sa, const float sb){
         }
 
         // Copy back
-        #pragma omp for simd
+        #pragma omp for schedule(static)
         for(int i = 0; i < nx; i++){
             J_0x[i] = tmp_x[i];
             J_0y[i] = tmp_y[i];

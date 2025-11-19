@@ -1,0 +1,65 @@
+Usage: sbatch tests.sh <TEST_NAME> <?CC> <?CONFIG> <?CORES> <?PARALLEL>
+Example: sbatch tests.sh perf_stat clang OPT_FULL 8 Y
+[STARTING] Loading modules
+[LOAD_MODULE] GCC/13.3.0
+[LOAD_MODULE] Score-P/8.4-gompi-2024a
+[LOAD_MODULE] LLVM/19
+Running perf record with CONFIG=OPT_FULL and CORES=12
+rm -f zpic src/zdf.o src/current.o src/simulation.o src/particles.o src/main.o src/random.o src/zpic.o src/emf.o src/timer.o
+rm -rf docs
+clang -c -O3 -ffast-math -mcpu=a64fx -msve-vector-bits=512 -Rpass=loop-vectorize -Rpass-analysis=loop-vectorize  -fopenmp -g -fno-omit-frame-pointer -Ilib src/zdf.c -o src/zdf.o
+clang -c -O3 -ffast-math -mcpu=a64fx -msve-vector-bits=512 -Rpass=loop-vectorize -Rpass-analysis=loop-vectorize  -fopenmp -g -fno-omit-frame-pointer -Ilib src/current.c -o src/current.o
+clang -c -O3 -ffast-math -mcpu=a64fx -msve-vector-bits=512 -Rpass=loop-vectorize -Rpass-analysis=loop-vectorize  -fopenmp -g -fno-omit-frame-pointer -Ilib src/simulation.c -o src/simulation.o
+clang -c -O3 -ffast-math -mcpu=a64fx -msve-vector-bits=512 -Rpass=loop-vectorize -Rpass-analysis=loop-vectorize  -fopenmp -g -fno-omit-frame-pointer -Ilib src/particles.c -o src/particles.o
+clang -c -O3 -ffast-math -mcpu=a64fx -msve-vector-bits=512 -Rpass=loop-vectorize -Rpass-analysis=loop-vectorize  -fopenmp -g -fno-omit-frame-pointer -Ilib src/main.c -o src/main.o
+clang -c -O3 -ffast-math -mcpu=a64fx -msve-vector-bits=512 -Rpass=loop-vectorize -Rpass-analysis=loop-vectorize  -fopenmp -g -fno-omit-frame-pointer -Ilib src/random.c -o src/random.o
+clang -c -O3 -ffast-math -mcpu=a64fx -msve-vector-bits=512 -Rpass=loop-vectorize -Rpass-analysis=loop-vectorize  -fopenmp -g -fno-omit-frame-pointer -Ilib src/zpic.c -o src/zpic.o
+clang -c -O3 -ffast-math -mcpu=a64fx -msve-vector-bits=512 -Rpass=loop-vectorize -Rpass-analysis=loop-vectorize  -fopenmp -g -fno-omit-frame-pointer -Ilib src/emf.c -o src/emf.o
+clang -c -O3 -ffast-math -mcpu=a64fx -msve-vector-bits=512 -Rpass=loop-vectorize -Rpass-analysis=loop-vectorize  -fopenmp -g -fno-omit-frame-pointer -Ilib src/timer.c -o src/timer.o
+OMP_NUM_THREADS=12 OMP_PLACES=cores OMP_PROC_BIND=close  \
+clang -O3 -ffast-math -mcpu=a64fx -msve-vector-bits=512 -Rpass=loop-vectorize -Rpass-analysis=loop-vectorize  -fopenmp -g -fno-omit-frame-pointer src/zdf.o src/current.o src/simulation.o src/particles.o src/main.o src/random.o src/zpic.o src/emf.o src/timer.o -lm  -fopenmp -o zpic
+Recording performance data...
+Starting simulation ...
+
+n = 0, t = 0.0
+Energy (fields | particles | total) = 3.000000e+02 0.000000e+00 3.000000e+02
+n = 42106, t = 40.000702
+Energy (fields | particles | total) = 2.985472e+02 1.624786e+00 3.001720e+02
+Initial energy: 3.000000e+02, Final energy: 3.001720e+02
+
+Final energy different from Initial Energy. Change in total energy is: 0.06 % 
+Converting to script format...
+Perf data saved to tests/perf/perf_record_OPT_FULL_12_threads.data
+Perf script saved to tests/perf/measurement_2025-11-19_15-26-38.perf
+
+Quick analysis:
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 14K of event 'cycles'
+# Event count (approx.): 291878064543
+#
+# Overhead  Command  Shared Object      Symbol                                                                    
+# ........  .......  .................  ..........................................................................
+#
+    37.78%  zpic     zpic               [.] spec_advance.omp_outlined
+            |
+            ---spec_advance.omp_outlined
+               |          
+                --18.95%--spec_advance.omp_outlined
+                          __kmp_invoke_microtask
+
+    28.47%  zpic     libomp.so          [.] kmp_flag_64<false, true>::wait
+            |
+            ---kmp_flag_64<false, true>::wait
+               |          
+               |--21.31%--__kmp_hyper_barrier_release
+               |          |          
+               |          |--16.01%--__kmp_fork_barrier
+               |          |          __kmp_launch_thread
+               |          |          __kmp_launch_worker
+               |          |          __kmp_launch_worker
+               |          |          __kmp_launch_worker
+               |          |          __kmp_launch_worker

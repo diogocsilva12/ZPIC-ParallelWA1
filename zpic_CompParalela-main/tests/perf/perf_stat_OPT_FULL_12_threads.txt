@@ -1,36 +1,36 @@
 
 Simulation ended.
 
-Time for spec. advance = 8.064145 s
-Time for emf   advance = 3.233237 s
-Total simulation time  = 14.083476 s
+Time for spec. advance = 7.359475 s
+Time for emf   advance = 1.464292 s
+Total simulation time  = 11.507396 s
 
-Particle advance [nsec/part] = 42.551545 
-Particle advance [Mpart/sec] = 23.500909 
+Particle advance [nsec/part] = 38.833259 
+Particle advance [Mpart/sec] = 25.751122 
 Starting simulation ...
 
 n = 0, t = 0.0
 Energy (fields | particles | total) = 3.000000e+02 0.000000e+00 3.000000e+02
 n = 42106, t = 40.000702
-Energy (fields | particles | total) = 2.985474e+02 1.624787e+00 3.001722e+02
-Initial energy: 3.000000e+02, Final energy: 3.001722e+02
+Energy (fields | particles | total) = 2.985472e+02 1.624786e+00 3.001720e+02
+Initial energy: 3.000000e+02, Final energy: 3.001720e+02
 
 Final energy different from Initial Energy. Change in total energy is: 0.06 % 
 
  Performance counter stats for './zpic':
 
-        167,923.71 msec task-clock                #   11.886 CPUs utilized          
-             4,145      context-switches          #    0.025 K/sec                  
-                12      cpu-migrations            #    0.000 K/sec                  
-               511      page-faults               #    0.003 K/sec                  
-   335,822,734,268      cycles                    #    2.000 GHz                    
-   527,929,555,932      instructions              #    1.57  insn per cycle         
+        138,174.89 msec task-clock                #   11.935 CPUs utilized          
+               584      context-switches          #    0.004 K/sec                  
+                 0      cpu-migrations            #    0.000 K/sec                  
+               514      page-faults               #    0.004 K/sec                  
+   276,345,972,090      cycles                    #    2.000 GHz                    
+   379,562,459,088      instructions              #    1.37  insn per cycle         
    <not supported>      branches                                                    
-        66,750,932      branch-misses                                               
+        90,641,104      branch-misses                                               
 
-      14.128048807 seconds time elapsed
+      11.577582114 seconds time elapsed
 
-     166.102415000 seconds user
-       1.828705000 seconds sys
+     131.526677000 seconds user
+       6.651349000 seconds sys
 
 

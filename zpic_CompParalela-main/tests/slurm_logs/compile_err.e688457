@@ -1,0 +1,1796 @@
+src/zdf.c:113:17: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+  113 |                 while(*p!='/') p--;
+      |                 ^
+src/zdf.c:113:17: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:822:31: remark: loop not vectorized: control flow cannot be substituted for a select [-Rpass-analysis=loop-vectorize]
+  822 |     return size_zdf_uint32 + ((len > 0) ? RNDUP(len) : 0);
+      |                               ^
+src/zdf.c:821:28: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  821 |     unsigned len = ( s ) ? strlen( s ) : 0;
+      |                            ^
+src/zdf.c:1004:9: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1004 |         for(unsigned i=0; i<grid -> ndims; i++)
+      |         ^
+src/zdf.c:364:10: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  364 |     if ( fwrite( (void *) &u, sizeof(uint64_t), 1, zdf -> fp ) != 1 )
+      |          ^
+src/zdf.c:1033:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1033 |     for( unsigned i=0; i < grid -> ndims; i++) {
+      |     ^
+src/zdf.c:1033:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:1046:19: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1046 |             if ( !zdf_string_write( zdf, grid -> axis[i].name  ) ) return(0);
+      |                   ^
+src/zdf.c:1045:9: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1045 |         for( unsigned i=0; i < grid -> ndims; i++) {
+      |         ^
+src/zdf.c:1045:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:822:31: remark: loop not vectorized: control flow cannot be substituted for a select [-Rpass-analysis=loop-vectorize]
+  822 |     return size_zdf_uint32 + ((len > 0) ? RNDUP(len) : 0);
+      |                               ^
+src/zdf.c:821:28: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  821 |     unsigned len = ( s ) ? strlen( s ) : 0;
+      |                            ^
+src/zdf.c:1068:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1068 |     for( unsigned i = 0; i < part -> nquants; i++) {
+      |     ^
+src/zdf.c:1099:15: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1099 |         if ( !zdf_string_write( zdf, part -> quants[i] ) ) return(0);
+      |               ^
+src/zdf.c:1098:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1098 |     for( unsigned i=0; i < part -> nquants; i++) {
+      |     ^
+src/zdf.c:1098:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:1102:15: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1102 |         if ( !zdf_string_write( zdf, part -> qlabels[i] ) ) return(0);
+      |               ^
+src/zdf.c:1101:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1101 |     for( unsigned i=0; i < part -> nquants; i++) {
+      |     ^
+src/zdf.c:1101:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:1105:15: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1105 |         if ( !zdf_string_write( zdf, part -> qunits[i] )  ) return(0);
+      |               ^
+src/zdf.c:1104:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1104 |     for( unsigned i=0; i < part -> nquants; i++) {
+      |     ^
+src/zdf.c:1104:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:822:31: remark: loop not vectorized: control flow cannot be substituted for a select [-Rpass-analysis=loop-vectorize]
+  822 |     return size_zdf_uint32 + ((len > 0) ? RNDUP(len) : 0);
+      |                               ^
+src/zdf.c:821:28: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  821 |     unsigned len = ( s ) ? strlen( s ) : 0;
+      |                            ^
+src/zdf.c:1120:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1120 |     for( unsigned i = 0; i < tracks -> nquants; i++) {
+      |     ^
+src/zdf.c:1153:15: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1153 |         if ( !zdf_string_write( zdf, tracks -> quants[i] ) ) return(0);
+      |               ^
+src/zdf.c:1152:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1152 |     for( unsigned i=0; i < tracks -> nquants; i++) {
+      |     ^
+src/zdf.c:1152:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:1156:15: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1156 |         if ( !zdf_string_write( zdf, tracks -> qlabels[i] ) ) return(0);
+      |               ^
+src/zdf.c:1155:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1155 |     for( unsigned i=0; i < tracks -> nquants; i++) {
+      |     ^
+src/zdf.c:1155:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:1159:15: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1159 |         if ( !zdf_string_write( zdf, tracks -> qunits[i] ) ) return(0);
+      |               ^
+src/zdf.c:1158:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1158 |     for( unsigned i=0; i < tracks -> nquants; i++) {
+      |     ^
+src/zdf.c:1158:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:364:10: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  364 |     if ( fwrite( (void *) &u, sizeof(uint64_t), 1, zdf -> fp ) != 1 )
+      |          ^
+src/zdf.c:1199:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1199 |     for( unsigned i=0; i < dataset -> ndims; i++) {
+      |     ^
+src/zdf.c:1199:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:376:10: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  376 |     if ( fread( (void *) u, sizeof(int64_t), 1, zdf -> fp ) != 1 )
+      |          ^
+src/zdf.c:1228:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1228 |     for( unsigned i=0; i < dataset -> ndims; i++) {
+      |     ^
+src/zdf.c:1228:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:1244:5: remark: Scalable vectorization not supported for the reduction operations found in this loop. [-Rpass-analysis=loop-vectorize]
+ 1244 |     for( unsigned i = 0; i < dataset -> ndims; i++ ) {
+      |     ^
+src/zdf.c:1244:5: remark: vectorized loop (vectorization width: 8, interleaved count: 4) [-Rpass=loop-vectorize]
+src/zdf.c:1263:3: remark: Scalable vectorization not supported for the reduction operations found in this loop. [-Rpass-analysis=loop-vectorize]
+ 1263 |   for( unsigned i=0; i < dataset -> ndims; i++) count *= dataset -> count[i];
+      |   ^
+src/zdf.c:1263:3: remark: vectorized loop (vectorization width: 8, interleaved count: 4) [-Rpass=loop-vectorize]
+src/zdf.c:1322:5: remark: Scalable vectorization not supported for the reduction operations found in this loop. [-Rpass-analysis=loop-vectorize]
+ 1322 |     for( unsigned i = 0; i < dataset -> ndims; i++ ) {
+      |     ^
+src/zdf.c:1322:5: remark: vectorized loop (vectorization width: 8, interleaved count: 4) [-Rpass=loop-vectorize]
+src/zdf.c:364:10: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  364 |     if ( fwrite( (void *) &u, sizeof(uint64_t), 1, zdf -> fp ) != 1 )
+      |          ^
+src/zdf.c:1340:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1340 |     for( unsigned i=0; i < dataset -> ndims; i++) {
+      |     ^
+src/zdf.c:1340:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:364:10: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  364 |     if ( fwrite( (void *) &u, sizeof(uint64_t), 1, zdf -> fp ) != 1 )
+      |          ^
+src/zdf.c:1345:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1345 |     for( unsigned i = 0; i < dataset -> ndims; i++) {
+      |     ^
+src/zdf.c:1345:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:364:10: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  364 |     if ( fwrite( (void *) &u, sizeof(uint64_t), 1, zdf -> fp ) != 1 )
+      |          ^
+src/zdf.c:1350:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1350 |     for( unsigned i = 0; i < dataset -> ndims; i++) {
+      |     ^
+src/zdf.c:1350:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:1373:6: remark: Scalable vectorization not supported for the reduction operations found in this loop. [-Rpass-analysis=loop-vectorize]
+ 1373 |      for( unsigned i = 0; i < dataset -> ndims; i++ ) count *= chunk -> count[i];
+      |      ^
+src/zdf.c:1373:6: remark: vectorized loop (vectorization width: 8, interleaved count: 4) [-Rpass=loop-vectorize]
+src/zdf.c:1429:51: remark: loop not vectorized: loop contains a switch statement [-Rpass-analysis=loop-vectorize]
+ 1429 |         if ( rec.id_version == ZDF_CDSET_START_ID || rec.id_version == ZDF_DATASET_ID ) {
+      |                                                   ^
+src/zdf.c:1424:12: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+ 1424 |     while(!feof(zdf -> fp)) {
+      |            ^
+src/zdf.c:1424:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+ 1424 |     while(!feof(zdf -> fp)) {
+      |     ^
+src/zdf.c:1424:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/zdf.c:1471:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+ 1471 |     for( unsigned i = 0; i < dataset -> ndims; i++ ) {
+      |     ^
+src/current.c:152:24: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  152 |             J_0x[i] += J_0x[nx + i];
+      |                        ^
+src/current.c:152:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  152 |             J_0x[i] += J_0x[nx + i];
+      |                     ^
+src/current.c:152:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/current.c:152:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+src/current.c:153:24: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  153 |             J_0y[i] += J_0y[nx + i];
+      |                        ^
+src/current.c:153:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  153 |             J_0y[i] += J_0y[nx + i];
+      |                     ^
+src/current.c:153:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/current.c:153:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+src/current.c:154:24: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  154 |             J_0z[i] += J_0z[nx + i];
+      |                        ^
+src/current.c:154:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  154 |             J_0z[i] += J_0z[nx + i];
+      |                     ^
+src/current.c:154:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/current.c:154:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+src/current.c:151:9: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  151 |         for (int i=-current->gc[0]; i < current->gc[1]; i++){
+      |         ^
+src/current.c:151:9: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/current.c:159:28: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  159 |             J_0x[nx + i] = J_0x[i];
+      |                            ^
+src/current.c:159:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  159 |             J_0x[nx + i] = J_0x[i];
+      |                          ^
+src/current.c:160:28: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  160 |             J_0y[nx + i] = J_0y[i];
+      |                            ^
+src/current.c:160:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  160 |             J_0y[nx + i] = J_0y[i];
+      |                          ^
+src/current.c:161:28: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  161 |             J_0z[nx + i] = J_0z[i];
+      |                            ^
+src/current.c:161:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  161 |             J_0z[nx + i] = J_0z[i];
+      |                          ^
+src/current.c:158:9: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 2) [-Rpass=loop-vectorize]
+  158 |         for (int i=-current->gc[0]; i < current->gc[1]; i++){
+      |         ^
+src/current.c:152:24: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  152 |             J_0x[i] += J_0x[nx + i];
+      |                        ^
+src/current.c:152:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  152 |             J_0x[i] += J_0x[nx + i];
+      |                     ^
+src/current.c:152:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/current.c:152:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+src/current.c:153:24: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  153 |             J_0y[i] += J_0y[nx + i];
+      |                        ^
+src/current.c:153:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  153 |             J_0y[i] += J_0y[nx + i];
+      |                     ^
+src/current.c:153:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/current.c:153:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+src/current.c:154:24: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  154 |             J_0z[i] += J_0z[nx + i];
+      |                        ^
+src/current.c:154:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  154 |             J_0z[i] += J_0z[nx + i];
+      |                     ^
+src/current.c:154:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/current.c:154:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+src/current.c:151:9: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  151 |         for (int i=-current->gc[0]; i < current->gc[1]; i++){
+      |         ^
+src/current.c:151:9: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/current.c:159:28: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  159 |             J_0x[nx + i] = J_0x[i];
+      |                            ^
+src/current.c:159:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  159 |             J_0x[nx + i] = J_0x[i];
+      |                          ^
+src/current.c:160:28: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  160 |             J_0y[nx + i] = J_0y[i];
+      |                            ^
+src/current.c:160:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  160 |             J_0y[nx + i] = J_0y[i];
+      |                          ^
+src/current.c:161:28: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  161 |             J_0z[nx + i] = J_0z[i];
+      |                            ^
+src/current.c:161:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  161 |             J_0z[nx + i] = J_0z[i];
+      |                          ^
+src/current.c:158:9: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 2) [-Rpass=loop-vectorize]
+  158 |         for (int i=-current->gc[0]; i < current->gc[1]; i++){
+      |         ^
+src/current.c:216:5: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  216 |     #pragma omp parallel
+      |     ^
+src/current.c:177:9: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  177 |         for(int i = 0; i < current -> smooth.xlevel; i++){
+      |         ^
+src/current.c:177:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/current.c:221:29: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  221 |             tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
+      |                             ^
+src/current.c:221:46: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  221 |             tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
+      |                                              ^
+src/current.c:221:44: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+  221 |             tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
+      |                                            ^
+src/current.c:221:61: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  221 |             tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
+      |                                                             ^
+src/current.c:219:9: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  219 |         #pragma omp for simd
+      |         ^
+src/current.c:219:9: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+src/current.c:221:54: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  221 |             tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
+      |                                                      ^
+src/current.c:221:22: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  221 |             tmp_x[i] = sa * J_0x[i-1] + sb * J_0x[i] + sa * J_0x[i+1];
+      |                      ^
+src/current.c:222:29: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  222 |             tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
+      |                             ^
+src/current.c:222:46: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  222 |             tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
+      |                                              ^
+src/current.c:222:44: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+  222 |             tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
+      |                                            ^
+src/current.c:222:61: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  222 |             tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
+      |                                                             ^
+src/current.c:219:9: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  219 |         #pragma omp for simd
+      |         ^
+src/current.c:219:9: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+src/current.c:222:54: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  222 |             tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
+      |                                                      ^
+src/current.c:222:22: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  222 |             tmp_y[i] = sa * J_0y[i-1] + sb * J_0y[i] + sa * J_0y[i+1];
+      |                      ^
+src/current.c:223:29: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  223 |             tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
+      |                             ^
+src/current.c:223:46: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  223 |             tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
+      |                                              ^
+src/current.c:223:44: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+  223 |             tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
+      |                                            ^
+src/current.c:223:61: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  223 |             tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
+      |                                                             ^
+src/current.c:219:9: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  219 |         #pragma omp for simd
+      |         ^
+src/current.c:219:9: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+src/current.c:223:54: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  223 |             tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
+      |                                                      ^
+src/current.c:223:22: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  223 |             tmp_z[i] = sa * J_0z[i-1] + sb * J_0z[i] + sa * J_0z[i+1];
+      |                      ^
+src/current.c:219:9: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  219 |         #pragma omp for simd
+      |         ^
+src/current.c:219:9: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/current.c:229:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  229 |             J_0x[i] = tmp_x[i];
+      |                       ^
+src/current.c:229:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  229 |             J_0x[i] = tmp_x[i];
+      |                     ^
+src/current.c:230:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  230 |             J_0y[i] = tmp_y[i];
+      |                       ^
+src/current.c:230:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  230 |             J_0y[i] = tmp_y[i];
+      |                     ^
+src/current.c:231:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  231 |             J_0z[i] = tmp_z[i];
+      |                       ^
+src/current.c:231:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  231 |             J_0z[i] = tmp_z[i];
+      |                     ^
+src/current.c:227:9: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 2) [-Rpass=loop-vectorize]
+  227 |         #pragma omp for simd
+      |         ^
+src/current.c:243:27: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  243 |                 J_0x[i] = J_0x[nx + i];
+      |                           ^
+src/current.c:243:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  243 |                 J_0x[i] = J_0x[nx + i];
+      |                         ^
+src/current.c:244:27: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  244 |                 J_0y[i] = J_0y[nx + i];
+      |                           ^
+src/current.c:244:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  244 |                 J_0y[i] = J_0y[nx + i];
+      |                         ^
+src/current.c:245:27: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  245 |                 J_0z[i] = J_0z[nx + i];
+      |                           ^
+src/current.c:245:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  245 |                 J_0z[i] = J_0z[nx + i];
+      |                         ^
+src/current.c:242:13: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 2) [-Rpass=loop-vectorize]
+  242 |             for(int i = -gc0; i < 0; i++){
+      |             ^
+src/current.c:250:32: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  250 |                 J_0x[nx + i] = J_0x[i];
+      |                                ^
+src/current.c:250:30: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  250 |                 J_0x[nx + i] = J_0x[i];
+      |                              ^
+src/current.c:251:32: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  251 |                 J_0y[nx + i] = J_0y[i];
+      |                                ^
+src/current.c:251:30: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  251 |                 J_0y[nx + i] = J_0y[i];
+      |                              ^
+src/current.c:252:32: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  252 |                 J_0z[nx + i] = J_0z[i];
+      |                                ^
+src/current.c:252:30: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  252 |                 J_0z[nx + i] = J_0z[i];
+      |                              ^
+src/current.c:249:13: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 2) [-Rpass=loop-vectorize]
+  249 |             for (int i = 0; i < gc1; i++){
+      |             ^
+src/current.c:299:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  299 |                 buf[i] = fz[i];
+      |                          ^
+src/current.c:299:24: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  299 |                 buf[i] = fz[i];
+      |                        ^
+src/current.c:298:13: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+  298 |             for (int i = 0; i < nx; i++){
+      |             ^
+src/current.c:294:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  294 |                 buf[i] = fy[i];
+      |                          ^
+src/current.c:294:24: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  294 |                 buf[i] = fy[i];
+      |                        ^
+src/current.c:293:13: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+  293 |             for (int i = 0; i < nx; i++){
+      |             ^
+src/current.c:289:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  289 |                 buf[i] = fx[i];
+      |                          ^
+src/current.c:289:24: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  289 |                 buf[i] = fx[i];
+      |                        ^
+src/current.c:288:13: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+  288 |             for (int i = 0; i < nx; i++){
+      |             ^
+src/simulation.c:57:41: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+   57 |         for (int i = 0; i<sim->n_species; i++) spec_delete( &sim->species[i] );
+      |                                                ^
+src/simulation.c:57:2: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+   57 |         for (int i = 0; i<sim->n_species; i++) spec_delete( &sim->species[i] );
+      |         ^
+src/simulation.c:57:2: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/simulation.c:75:3: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+   75 |                 spec_advance(&sim -> species[i], &sim -> emf, &sim -> current );
+      |                 ^
+src/simulation.c:74:2: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+   74 |         for (int i = 0; i<sim -> n_species; i++)
+      |         ^
+src/simulation.c:74:2: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/simulation.c:112:72: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  112 |         for(int i=0; i<sim -> n_species; i++) sim -> species[i].moving_window = 1;
+      |                                                                               ^
+src/simulation.c:112:36: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): add [-Rpass-analysis=loop-vectorize]
+  112 |         for(int i=0; i<sim -> n_species; i++) sim -> species[i].moving_window = 1;
+      |                                           ^
+src/simulation.c:112:2: remark: the cost-model indicates that vectorization is not beneficial [-Rpass-analysis=loop-vectorize]
+  112 |         for(int i=0; i<sim -> n_species; i++) sim -> species[i].moving_window = 1;
+      |         ^
+src/simulation.c:112:2: remark: interleaved loop (interleaved count: 4) [-Rpass=loop-vectorize]
+src/simulation.c:151:70: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  151 |         for(i = 0; i < sim -> n_species; i++) tot_part += sim -> species[i].energy;
+      |                                                                             ^
+src/simulation.c:151:49: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  151 |         for(i = 0; i < sim -> n_species; i++) tot_part += sim -> species[i].energy;
+      |                                                        ^
+src/simulation.c:151:36: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): add [-Rpass-analysis=loop-vectorize]
+  151 |         for(i = 0; i < sim -> n_species; i++) tot_part += sim -> species[i].energy;
+      |                                           ^
+src/simulation.c:151:2: remark: the cost-model indicates that vectorization is not beneficial [-Rpass-analysis=loop-vectorize]
+  151 |         for(i = 0; i < sim -> n_species; i++) tot_part += sim -> species[i].energy;
+      |         ^
+src/simulation.c:151:2: remark: interleaved loop (interleaved count: 4) [-Rpass=loop-vectorize]
+src/simulation.c:177:38: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  177 |                 part_energy[i] = sim -> species[i].energy;
+      |                                                    ^
+src/simulation.c:178:12: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  178 |                 tot_part += part_energy[i];
+      |                          ^
+src/simulation.c:176:37: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): add [-Rpass-analysis=loop-vectorize]
+  176 |         for( i = 0; i < sim -> n_species; i++ ){
+      |                                            ^
+src/simulation.c:176:2: remark: the cost-model indicates that vectorization is not beneficial [-Rpass-analysis=loop-vectorize]
+  176 |         for( i = 0; i < sim -> n_species; i++ ){
+      |         ^
+src/simulation.c:176:2: remark: interleaved loop (interleaved count: 4) [-Rpass=loop-vectorize]
+src/particles.c:92:9: remark: loop not vectorized: cannot identify array bounds [-Rpass-analysis=loop-vectorize]
+   92 |         npc[ idx ] += 1;
+      |         ^
+src/particles.c:71:28: remark: loop not vectorized: value that could not be identified as reduction is used outside the loop [-Rpass-analysis=loop-vectorize]
+   71 |         spec->part.ux[i] = spec -> uth[0] * rand_norm();
+      |                            ^
+src/particles.c:69:5: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+   69 |     #pragma omp parallel for    
+      |     ^
+src/particles.c:69:5: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/particles.c:99:29: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+   99 |         const float norm = (npc[ i ] > 0) ? 1.0f/npc[i] : 0;
+      |                             ^
+src/particles.c:99:49: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fdiv [-Rpass-analysis]
+   99 |         const float norm = (npc[ i ] > 0) ? 1.0f/npc[i] : 0;
+      |                                                 ^
+src/particles.c:101:22: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  101 |         net_u[ i ].x *= norm;
+      |                      ^
+src/particles.c:101:22: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+src/particles.c:102:22: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+  102 |         net_u[ i ].y *= norm;
+      |                      ^
+src/particles.c:103:22: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+  103 |         net_u[ i ].z *= norm;
+      |                      ^
+src/particles.c:103:22: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+src/particles.c:98:5: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): add [-Rpass-analysis]
+   98 |     for(int i = 0; i< spec->nx; i++ ) {
+      |     ^
+src/particles.c:97:5: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+   97 |     #pragma omp parallel for simd
+      |     ^
+src/particles.c:97:5: remark: vectorized loop (vectorization width: 16, interleaved count: 1) [-Rpass=loop-vectorize]
+src/particles.c:109:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  109 |         const int idx  = spec -> part.ix[i];
+      |                          ^
+src/particles.c:111:57: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  111 |         spec->part.ux[i] += spec -> ufl[0] - net_u[idx].x;
+      |                                                         ^
+src/particles.c:111:44: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis]
+  111 |         spec->part.ux[i] += spec -> ufl[0] - net_u[idx].x;
+      |                                            ^
+src/particles.c:111:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  111 |         spec->part.ux[i] += spec -> ufl[0] - net_u[idx].x;
+      |                          ^
+src/particles.c:111:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+src/particles.c:111:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+src/particles.c:112:57: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  112 |         spec->part.uy[i] += spec -> ufl[1] - net_u[idx].y;
+      |                                                         ^
+src/particles.c:112:44: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis]
+  112 |         spec->part.uy[i] += spec -> ufl[1] - net_u[idx].y;
+      |                                            ^
+src/particles.c:112:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  112 |         spec->part.uy[i] += spec -> ufl[1] - net_u[idx].y;
+      |                          ^
+src/particles.c:112:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+src/particles.c:112:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+src/particles.c:113:57: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  113 |         spec->part.uz[i] += spec -> ufl[2] - net_u[idx].z;
+      |                                                         ^
+src/particles.c:113:44: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis]
+  113 |         spec->part.uz[i] += spec -> ufl[2] - net_u[idx].z;
+      |                                            ^
+src/particles.c:113:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  113 |         spec->part.uz[i] += spec -> ufl[2] - net_u[idx].z;
+      |                          ^
+src/particles.c:113:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+src/particles.c:113:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+src/particles.c:107:5: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  107 |     #pragma omp parallel for simd
+      |     ^
+src/particles.c:107:5: remark: vectorized loop (vectorization width: 16, interleaved count: 1) [-Rpass=loop-vectorize]
+src/particles.c:204:22: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  204 |                 q += (*spec -> density.custom)((i + spec -> n_move) * spec->dx,
+      |                      ^
+src/particles.c:203:13: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  203 |             for( int i = range[0]+1; i <= range[1]; i++) {
+      |             ^
+src/particles.c:203:13: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/particles.c:244:26: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  244 |         poscell[i]  = (i + 0.5) / npc;
+      |                          ^
+src/particles.c:244:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fdiv [-Rpass-analysis=loop-vectorize]
+  244 |         poscell[i]  = (i + 0.5) / npc;
+      |                                 ^
+src/particles.c:244:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fptrunc [-Rpass-analysis=loop-vectorize]
+  244 |         poscell[i]  = (i + 0.5) / npc;
+      |                       ^
+src/particles.c:244:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  244 |         poscell[i]  = (i + 0.5) / npc;
+      |                     ^
+src/particles.c:243:29: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): add [-Rpass-analysis=loop-vectorize]
+  243 |     for (i=0; i<spec->ppc; i++) {
+      |                             ^
+src/particles.c:243:5: remark: vectorized loop (vectorization width: 16, interleaved count: 4) [-Rpass=loop-vectorize]
+  243 |     for (i=0; i<spec->ppc; i++) {
+      |     ^
+src/particles.c:383:17: remark: loop not vectorized: value that could not be identified as reduction is used outside the loop [-Rpass-analysis=loop-vectorize]
+  383 |                 while( ( Rs =  (k+0.5) * cpp ) < d1 ) {
+      |                 ^
+src/particles.c:383:17: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/particles.c:383:17: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/particles.c:312:13: remark: loop not vectorized: value that could not be identified as reduction is used outside the loop [-Rpass-analysis=loop-vectorize]
+  312 |             for( k = spec -> density.total_np_inj; ; k++ ) {
+      |             ^
+src/particles.c:312:13: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/particles.c:312:13: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/particles.c:277:13: remark: loop not vectorized: value that could not be identified as reduction is used outside the loop [-Rpass-analysis=loop-vectorize]
+  277 |             for (k=0; k<npc; k++) {
+      |             ^
+src/particles.c:279:21: remark: loop not vectorized: cannot identify array bounds [-Rpass-analysis=loop-vectorize]
+  279 |                     spec->part.ix[ip] = i;
+      |                     ^
+src/particles.c:257:13: remark: loop not vectorized: value that could not be identified as reduction is used outside the loop [-Rpass-analysis=loop-vectorize]
+  257 |             for (k=0; k<npc; k++) {
+      |             ^
+src/particles.c:259:21: remark: loop not vectorized: cannot identify array bounds [-Rpass-analysis=loop-vectorize]
+  259 |                     spec->part.ix[ip] = i;
+      |                     ^
+src/particles.c:415:35: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  415 |                 spec->part.ix[ip] = i;
+      |                                   ^
+src/particles.c:416:36: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  416 |                 spec->part.x[ip] = poscell[k];
+      |                                    ^
+src/particles.c:416:34: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  416 |                 spec->part.x[ip] = poscell[k];
+      |                                  ^
+src/particles.c:414:13: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+  414 |             for (k=0; k<npc; k++) {
+      |             ^
+src/particles.c:630:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+  630 |         for( i = 0; i < spec->np; i++ ) {
+      |         ^
+src/particles.c:809:9: remark: loop not vectorized: cannot identify array bounds [-Rpass-analysis=loop-vectorize]
+  809 |         J_0x[ vp[k].ix     ] += qnx * vp[k].dx;
+      |         ^
+src/particles.c:872:21: remark: loop not vectorized: unsafe dependent memory operations in loop. Use #pragma clang loop distribute(enable) to allow loop distribution to attempt to isolate the offending operations into a separate loop
+Unsafe indirect dependence. Memory location is the same as accessed at src/particles.c:872:9 [-Rpass-analysis=loop-vectorize]
+  872 |         npic[idx[i]]++;
+      |                     ^
+src/particles.c:876:5: remark: loop not vectorized: value that could not be identified as reduction is used outside the loop [-Rpass-analysis=loop-vectorize]
+  876 |     for (int i=0; i<ncell; i++) {
+      |     ^
+src/particles.c:884:25: remark: loop not vectorized: unsafe dependent memory operations in loop. Use #pragma clang loop distribute(enable) to allow loop distribution to attempt to isolate the offending operations into a separate loop
+Unsafe indirect dependence. Memory location is the same as accessed at src/particles.c:884:18 [-Rpass-analysis=loop-vectorize]
+  884 |         idx[i] = npic[j]++;
+      |                         ^
+src/particles.c:893:9: remark: loop not vectorized: value that could not be identified as reduction is used outside the loop [-Rpass-analysis=loop-vectorize]
+  893 |         while ( k > i ) {            
+      |         ^
+src/particles.c:893:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/particles.c:893:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/particles.c:630:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+  630 |         for( i = 0; i < spec->np; i++ ) {
+      |         ^
+src/particles.c:1207:6: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+ 1207 |             for (int i=0; i<spec->np; i++) {
+      |             ^
+src/particles.c:1194:9: remark: loop not vectorized: value that could not be identified as reduction is used outside the loop [-Rpass-analysis=loop-vectorize]
+ 1194 |         while (i < spec -> np) {
+      |         ^
+src/particles.c:1194:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/particles.c:1194:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/particles.c:1151:17: remark: loop not vectorized: cannot identify array bounds [-Rpass-analysis=loop-vectorize]
+ 1151 |                 J_local_x[idx] += qnx * vp[k].dx;
+      |                 ^
+src/particles.c:1177:13: remark: loop not vectorized: control flow cannot be substituted for a select [-Rpass-analysis]
+ 1177 |             }
+      |             ^
+src/particles.c:1165:9: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis]
+ 1165 |         #pragma omp simd
+      |         ^
+src/particles.c:1165:9: warning: loop not vectorized: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+src/particles.c:1247:9: remark: loop not vectorized: cannot identify array bounds [-Rpass-analysis=loop-vectorize]
+ 1247 |         charge[ idx            ] += ( 1.0f - w1 ) * q;
+      |         ^
+src/particles.c:1326:37: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+ 1326 |         data[i] = (spec -> n_move + spec -> part.ix[i] + spec -> part.x[i] ) * spec -> dx;
+      |                                     ^
+src/particles.c:1326:35: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): add [-Rpass-analysis=loop-vectorize]
+ 1326 |         data[i] = (spec -> n_move + spec -> part.ix[i] + spec -> part.x[i] ) * spec -> dx;
+      |                                   ^
+src/particles.c:1326:58: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+ 1326 |         data[i] = (spec -> n_move + spec -> part.ix[i] + spec -> part.x[i] ) * spec -> dx;
+      |                                                          ^
+src/particles.c:1326:56: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+ 1326 |         data[i] = (spec -> n_move + spec -> part.ix[i] + spec -> part.x[i] ) * spec -> dx;
+      |                                                        ^
+src/particles.c:1326:78: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+ 1326 |         data[i] = (spec -> n_move + spec -> part.ix[i] + spec -> part.x[i] ) * spec -> dx;
+      |                                                                              ^
+src/particles.c:1326:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+ 1326 |         data[i] = (spec -> n_move + spec -> part.ix[i] + spec -> part.x[i] ) * spec -> dx;
+      |                 ^
+src/particles.c:1325:5: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+ 1325 |     for( i = 0; i < spec ->np; i++ )
+      |     ^
+src/particles.c:1330:48: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+ 1330 |     for( i = 0; i < spec ->np; i++ ) data[i] = spec -> part.ux[i];
+      |                                                ^
+src/particles.c:1330:46: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+ 1330 |     for( i = 0; i < spec ->np; i++ ) data[i] = spec -> part.ux[i];
+      |                                              ^
+src/particles.c:1330:5: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+ 1330 |     for( i = 0; i < spec ->np; i++ ) data[i] = spec -> part.ux[i];
+      |     ^
+src/particles.c:1334:48: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+ 1334 |     for( i = 0; i < spec ->np; i++ ) data[i] = spec -> part.uy[i];
+      |                                                ^
+src/particles.c:1334:46: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+ 1334 |     for( i = 0; i < spec ->np; i++ ) data[i] = spec -> part.uy[i];
+      |                                              ^
+src/particles.c:1334:5: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+ 1334 |     for( i = 0; i < spec ->np; i++ ) data[i] = spec -> part.uy[i];
+      |     ^
+src/particles.c:1338:48: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+ 1338 |     for( i = 0; i < spec ->np; i++ ) data[i] = spec -> part.uz[i];
+      |                                                ^
+src/particles.c:1338:46: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+ 1338 |     for( i = 0; i < spec ->np; i++ ) data[i] = spec -> part.uz[i];
+      |                                              ^
+src/particles.c:1338:5: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+ 1338 |     for( i = 0; i < spec ->np; i++ ) data[i] = spec -> part.uz[i];
+      |     ^
+src/particles.c:1247:9: remark: loop not vectorized: cannot identify array bounds [-Rpass-analysis=loop-vectorize]
+ 1247 |         charge[ idx            ] += ( 1.0f - w1 ) * q;
+      |         ^
+src/particles.c:1423:29: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                             ^
+src/particles.c:1423:52: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                                                    ^
+src/particles.c:1423:50: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                                                  ^
+src/particles.c:1423:76: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                                                                            ^
+src/particles.c:1423:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                         ^
+src/particles.c:1422:13: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+ 1422 |             for (int i = 0; i < np; i++)
+      |             ^
+src/particles.c:1508:21: remark: loop not vectorized: cannot identify array bounds [-Rpass-analysis=loop-vectorize]
+ 1508 |                     buf[ idx ] += (1.0f-w1)*(1.0f-w2)*spec->q;
+      |                     ^
+src/particles.c:1423:29: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                             ^
+src/particles.c:1423:52: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                                                    ^
+src/particles.c:1423:50: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                                                  ^
+src/particles.c:1423:76: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                                                                            ^
+src/particles.c:1423:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                         ^
+src/particles.c:1422:13: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+ 1422 |             for (int i = 0; i < np; i++)
+      |             ^
+src/particles.c:1423:29: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                             ^
+src/particles.c:1423:52: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                                                    ^
+src/particles.c:1423:50: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                                                  ^
+src/particles.c:1423:76: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                                                                            ^
+src/particles.c:1423:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+ 1423 |                 axis[i] = ( spec -> part.x[i0+i] + spec -> part.ix[i0+i] ) * spec -> dx;
+      |                         ^
+src/particles.c:1422:13: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+ 1422 |             for (int i = 0; i < np; i++)
+      |             ^
+1 warning generated.
+src/main.c:57:8: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+   57 |                 if ( report ( n , sim.ndump ) ) sim_report( &sim );
+      |                      ^
+src/main.c:54:2: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+   54 |         for (n=0,t=0.0; t<=sim.tmax; n++, t=n*sim.dt) {
+      |         ^
+src/main.c:54:2: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/random.c:50:24: remark: loop not vectorized: value that could not be identified as reduction is used outside the loop [-Rpass-analysis=loop-vectorize]
+   50 |     m_z = 36969 * (m_z & 65535) + (m_z >> 16);
+      |                        ^
+src/random.c:77:3: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+   77 |                 do {
+      |                 ^
+src/random.c:77:3: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/emf.c:260:9: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  260 |                 z = i * dx;
+      |                       ^
+src/emf.c:261:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  261 |                 z_2 = z + dx/2;
+      |                         ^
+src/emf.c:180:44: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  180 |         } else if ( z > laser -> start - laser -> rise ) {
+      |                                                   ^
+src/emf.c:180:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis=loop-vectorize]
+  180 |         } else if ( z > laser -> start - laser -> rise ) {
+      |                                        ^
+src/emf.c:185:61: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  185 |         } else if ( z > laser -> start - (laser -> rise + laser -> flat) ) {
+      |                                                                    ^
+src/emf.c:185:50: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  185 |         } else if ( z > laser -> start - (laser -> rise + laser -> flat) ) {
+      |                                                         ^
+src/emf.c:185:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis=loop-vectorize]
+  185 |         } else if ( z > laser -> start - (laser -> rise + laser -> flat) ) {
+      |                                        ^
+src/emf.c:188:77: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  188 |         } else if ( z > laser -> start - (laser -> rise + laser -> flat + laser -> fall) ) {
+      |                                                                                    ^
+src/emf.c:188:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  188 |         } else if ( z > laser -> start - (laser -> rise + laser -> flat + laser -> fall) ) {
+      |                                        ^
+src/emf.c:188:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis=loop-vectorize]
+src/emf.c:190:67: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis=loop-vectorize]
+  190 |                 float csi = z - (laser -> start - laser -> rise - laser -> flat - laser -> fall);
+      |                                                                                 ^
+src/emf.c:190:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  190 |                 float csi = z - (laser -> start - laser -> rise - laser -> flat - laser -> fall);
+      |                               ^
+src/emf.c:190:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/emf.c:191:27: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  191 |                 float e = sin( M_PI_2 * csi / laser->fall );
+      |                                         ^
+src/emf.c:191:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  191 |                 float e = sin( M_PI_2 * csi / laser->fall );
+      |                                       ^
+src/emf.c:191:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  191 |                 float e = sin( M_PI_2 * csi / laser->fall );
+      |                                               ^
+src/emf.c:191:31: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fdiv [-Rpass-analysis=loop-vectorize]
+  191 |                 float e = sin( M_PI_2 * csi / laser->fall );
+      |                                             ^
+src/emf.c:191:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): call to llvm.sin.f64 [-Rpass-analysis=loop-vectorize]
+  191 |                 float e = sin( M_PI_2 * csi / laser->fall );
+      |                           ^
+src/emf.c:191:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fptrunc [-Rpass-analysis=loop-vectorize]
+src/emf.c:192:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  192 |                 return e*e;
+      |                         ^
+src/emf.c:182:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis=loop-vectorize]
+  182 |                 float csi = z - laser -> start;
+      |                               ^
+src/emf.c:183:27: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  183 |                 float e = sin( M_PI_2 * csi / laser->rise );
+      |                                         ^
+src/emf.c:183:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  183 |                 float e = sin( M_PI_2 * csi / laser->rise );
+      |                                       ^
+src/emf.c:183:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  183 |                 float e = sin( M_PI_2 * csi / laser->rise );
+      |                                               ^
+src/emf.c:183:31: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fdiv [-Rpass-analysis=loop-vectorize]
+  183 |                 float e = sin( M_PI_2 * csi / laser->rise );
+      |                                             ^
+src/emf.c:183:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): call to llvm.sin.f64 [-Rpass-analysis=loop-vectorize]
+  183 |                 float e = sin( M_PI_2 * csi / laser->rise );
+      |                           ^
+src/emf.c:183:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fptrunc [-Rpass-analysis=loop-vectorize]
+src/emf.c:184:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  184 |                 return e*e;
+      |                         ^
+src/emf.c:263:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  263 |                 lenv   = amp * lon_env(laser, z);
+      |                              ^
+src/emf.c:180:44: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  180 |         } else if ( z > laser -> start - laser -> rise ) {
+      |                                                   ^
+src/emf.c:180:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis=loop-vectorize]
+  180 |         } else if ( z > laser -> start - laser -> rise ) {
+      |                                        ^
+src/emf.c:185:61: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  185 |         } else if ( z > laser -> start - (laser -> rise + laser -> flat) ) {
+      |                                                                    ^
+src/emf.c:185:50: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  185 |         } else if ( z > laser -> start - (laser -> rise + laser -> flat) ) {
+      |                                                         ^
+src/emf.c:185:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis=loop-vectorize]
+  185 |         } else if ( z > laser -> start - (laser -> rise + laser -> flat) ) {
+      |                                        ^
+src/emf.c:188:77: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  188 |         } else if ( z > laser -> start - (laser -> rise + laser -> flat + laser -> fall) ) {
+      |                                                                                    ^
+src/emf.c:188:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  188 |         } else if ( z > laser -> start - (laser -> rise + laser -> flat + laser -> fall) ) {
+      |                                        ^
+src/emf.c:188:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis=loop-vectorize]
+src/emf.c:190:67: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis=loop-vectorize]
+  190 |                 float csi = z - (laser -> start - laser -> rise - laser -> flat - laser -> fall);
+      |                                                                                 ^
+src/emf.c:190:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  190 |                 float csi = z - (laser -> start - laser -> rise - laser -> flat - laser -> fall);
+      |                               ^
+src/emf.c:190:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/emf.c:191:27: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  191 |                 float e = sin( M_PI_2 * csi / laser->fall );
+      |                                         ^
+src/emf.c:191:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  191 |                 float e = sin( M_PI_2 * csi / laser->fall );
+      |                                       ^
+src/emf.c:191:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  191 |                 float e = sin( M_PI_2 * csi / laser->fall );
+      |                                               ^
+src/emf.c:191:31: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fdiv [-Rpass-analysis=loop-vectorize]
+  191 |                 float e = sin( M_PI_2 * csi / laser->fall );
+      |                                             ^
+src/emf.c:191:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): call to llvm.sin.f64 [-Rpass-analysis=loop-vectorize]
+  191 |                 float e = sin( M_PI_2 * csi / laser->fall );
+      |                           ^
+src/emf.c:191:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fptrunc [-Rpass-analysis=loop-vectorize]
+src/emf.c:192:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  192 |                 return e*e;
+      |                         ^
+src/emf.c:182:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis=loop-vectorize]
+  182 |                 float csi = z - laser -> start;
+      |                               ^
+src/emf.c:183:27: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  183 |                 float e = sin( M_PI_2 * csi / laser->rise );
+      |                                         ^
+src/emf.c:183:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  183 |                 float e = sin( M_PI_2 * csi / laser->rise );
+      |                                       ^
+src/emf.c:183:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  183 |                 float e = sin( M_PI_2 * csi / laser->rise );
+      |                                               ^
+src/emf.c:183:31: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fdiv [-Rpass-analysis=loop-vectorize]
+  183 |                 float e = sin( M_PI_2 * csi / laser->rise );
+      |                                             ^
+src/emf.c:183:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): call to llvm.sin.f64 [-Rpass-analysis=loop-vectorize]
+  183 |                 float e = sin( M_PI_2 * csi / laser->rise );
+      |                           ^
+src/emf.c:183:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fptrunc [-Rpass-analysis=loop-vectorize]
+src/emf.c:184:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  184 |                 return e*e;
+      |                         ^
+src/emf.c:264:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  264 |                 lenv_2 = amp * lon_env(laser, z_2);
+      |                              ^
+src/emf.c:267:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  267 |                 E_y[i] += +lenv * cos(k * z) * cos_pol;
+      |                           ^
+src/emf.c:267:27: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  267 |                 E_y[i] += +lenv * cos(k * z) * cos_pol;
+      |                                         ^
+src/emf.c:267:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  267 |                 E_y[i] += +lenv * cos(k * z) * cos_pol;
+      |                                       ^
+src/emf.c:267:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): call to llvm.cos.f64 [-Rpass-analysis=loop-vectorize]
+  267 |                 E_y[i] += +lenv * cos(k * z) * cos_pol;
+      |                                   ^
+src/emf.c:267:19: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  267 |                 E_y[i] += +lenv * cos(k * z) * cos_pol;
+      |                                 ^
+src/emf.c:267:32: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  267 |                 E_y[i] += +lenv * cos(k * z) * cos_pol;
+      |                                              ^
+src/emf.c:267:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  267 |                 E_y[i] += +lenv * cos(k * z) * cos_pol;
+      |                        ^
+src/emf.c:267:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+src/emf.c:267:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/emf.c:267:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fptrunc [-Rpass-analysis=loop-vectorize]
+src/emf.c:267:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+src/emf.c:268:32: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  268 |                 E_z[i] += +lenv * cos(k * z) * sin_pol;
+      |                                              ^
+src/emf.c:268:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  268 |                 E_z[i] += +lenv * cos(k * z) * sin_pol;
+      |                        ^
+src/emf.c:268:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+src/emf.c:268:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/emf.c:268:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fptrunc [-Rpass-analysis=loop-vectorize]
+src/emf.c:268:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+src/emf.c:271:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fneg [-Rpass-analysis=loop-vectorize]
+  271 |                 B_y[i] += -lenv_2 * cos(k * z_2) * sin_pol;
+      |                           ^
+src/emf.c:271:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+src/emf.c:271:29: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  271 |                 B_y[i] += -lenv_2 * cos(k * z_2) * sin_pol;
+      |                                           ^
+src/emf.c:271:27: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  271 |                 B_y[i] += -lenv_2 * cos(k * z_2) * sin_pol;
+      |                                         ^
+src/emf.c:271:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1, vscale x 2, vscale x 4): call to llvm.cos.f64 [-Rpass-analysis=loop-vectorize]
+  271 |                 B_y[i] += -lenv_2 * cos(k * z_2) * sin_pol;
+      |                                     ^
+src/emf.c:271:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  271 |                 B_y[i] += -lenv_2 * cos(k * z_2) * sin_pol;
+      |                                   ^
+src/emf.c:271:36: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  271 |                 B_y[i] += -lenv_2 * cos(k * z_2) * sin_pol;
+      |                                                  ^
+src/emf.c:271:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  271 |                 B_y[i] += -lenv_2 * cos(k * z_2) * sin_pol;
+      |                        ^
+src/emf.c:271:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+src/emf.c:271:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/emf.c:271:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fptrunc [-Rpass-analysis=loop-vectorize]
+src/emf.c:271:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+src/emf.c:272:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  272 |                 B_z[i] += +lenv_2 * cos(k * z_2) * cos_pol;
+      |                           ^
+src/emf.c:272:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  272 |                 B_z[i] += +lenv_2 * cos(k * z_2) * cos_pol;
+      |                                   ^
+src/emf.c:272:36: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  272 |                 B_z[i] += +lenv_2 * cos(k * z_2) * cos_pol;
+      |                                                  ^
+src/emf.c:272:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  272 |                 B_z[i] += +lenv_2 * cos(k * z_2) * cos_pol;
+      |                        ^
+src/emf.c:272:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+src/emf.c:272:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+src/emf.c:272:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fptrunc [-Rpass-analysis=loop-vectorize]
+src/emf.c:272:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+src/emf.c:259:32: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): add [-Rpass-analysis=loop-vectorize]
+  259 |         for (int i = 0; i < emf->nx; i++) {
+      |                                       ^
+src/emf.c:521:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  521 |                         E_x[i] = E_x[nx + i];
+      |                                  ^
+src/emf.c:521:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  521 |                         E_x[i] = E_x[nx + i];
+      |                                ^
+src/emf.c:522:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  522 |                         E_y[i] = E_y[nx + i];
+      |                                  ^
+src/emf.c:522:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  522 |                         E_y[i] = E_y[nx + i];
+      |                                ^
+src/emf.c:523:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  523 |                         E_z[i] = E_z[nx + i];
+      |                                  ^
+src/emf.c:523:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  523 |                         E_z[i] = E_z[nx + i];
+      |                                ^
+src/emf.c:524:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  524 |                         B_x[i] = B_x[nx + i];
+      |                                  ^
+src/emf.c:524:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  524 |                         B_x[i] = B_x[nx + i];
+      |                                ^
+src/emf.c:525:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  525 |                         B_y[i] = B_y[nx + i];
+      |                                  ^
+src/emf.c:525:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  525 |                         B_y[i] = B_y[nx + i];
+      |                                ^
+src/emf.c:526:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  526 |                         B_z[i] = B_z[nx + i];
+      |                                  ^
+src/emf.c:526:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  526 |                         B_z[i] = B_z[nx + i];
+      |                                ^
+src/emf.c:520:3: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  520 |                 for (int i = -gc_lower; i < 0; i++) {
+      |                 ^
+src/emf.c:520:3: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:530:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  530 |                         E_x[nx + i] = E_x[i];
+      |                                       ^
+src/emf.c:530:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  530 |                         E_x[nx + i] = E_x[i];
+      |                                     ^
+src/emf.c:531:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  531 |                         E_y[nx + i] = E_y[i];
+      |                                       ^
+src/emf.c:531:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  531 |                         E_y[nx + i] = E_y[i];
+      |                                     ^
+src/emf.c:532:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  532 |                         E_z[nx + i] = E_z[i];
+      |                                       ^
+src/emf.c:532:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  532 |                         E_z[nx + i] = E_z[i];
+      |                                     ^
+src/emf.c:533:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  533 |                         B_x[nx + i] = B_x[i];
+      |                                       ^
+src/emf.c:533:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  533 |                         B_x[nx + i] = B_x[i];
+      |                                     ^
+src/emf.c:534:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  534 |                         B_y[nx + i] = B_y[i];
+      |                                       ^
+src/emf.c:534:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  534 |                         B_y[nx + i] = B_y[i];
+      |                                     ^
+src/emf.c:535:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  535 |                         B_z[nx + i] = B_z[i];
+      |                                       ^
+src/emf.c:535:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  535 |                         B_z[nx + i] = B_z[i];
+      |                                     ^
+src/emf.c:529:3: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  529 |                 for (int i = 0; i < gc_upper; i++) {
+      |                 ^
+src/emf.c:529:3: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:521:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  521 |                         E_x[i] = E_x[nx + i];
+      |                                  ^
+src/emf.c:521:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  521 |                         E_x[i] = E_x[nx + i];
+      |                                ^
+src/emf.c:522:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  522 |                         E_y[i] = E_y[nx + i];
+      |                                  ^
+src/emf.c:522:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  522 |                         E_y[i] = E_y[nx + i];
+      |                                ^
+src/emf.c:523:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  523 |                         E_z[i] = E_z[nx + i];
+      |                                  ^
+src/emf.c:523:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  523 |                         E_z[i] = E_z[nx + i];
+      |                                ^
+src/emf.c:524:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  524 |                         B_x[i] = B_x[nx + i];
+      |                                  ^
+src/emf.c:524:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  524 |                         B_x[i] = B_x[nx + i];
+      |                                ^
+src/emf.c:525:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  525 |                         B_y[i] = B_y[nx + i];
+      |                                  ^
+src/emf.c:525:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  525 |                         B_y[i] = B_y[nx + i];
+      |                                ^
+src/emf.c:526:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  526 |                         B_z[i] = B_z[nx + i];
+      |                                  ^
+src/emf.c:526:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  526 |                         B_z[i] = B_z[nx + i];
+      |                                ^
+src/emf.c:520:3: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  520 |                 for (int i = -gc_lower; i < 0; i++) {
+      |                 ^
+src/emf.c:520:3: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:530:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  530 |                         E_x[nx + i] = E_x[i];
+      |                                       ^
+src/emf.c:530:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  530 |                         E_x[nx + i] = E_x[i];
+      |                                     ^
+src/emf.c:531:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  531 |                         E_y[nx + i] = E_y[i];
+      |                                       ^
+src/emf.c:531:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  531 |                         E_y[nx + i] = E_y[i];
+      |                                     ^
+src/emf.c:532:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  532 |                         E_z[nx + i] = E_z[i];
+      |                                       ^
+src/emf.c:532:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  532 |                         E_z[nx + i] = E_z[i];
+      |                                     ^
+src/emf.c:533:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  533 |                         B_x[nx + i] = B_x[i];
+      |                                       ^
+src/emf.c:533:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  533 |                         B_x[nx + i] = B_x[i];
+      |                                     ^
+src/emf.c:534:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  534 |                         B_y[nx + i] = B_y[i];
+      |                                       ^
+src/emf.c:534:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  534 |                         B_y[nx + i] = B_y[i];
+      |                                     ^
+src/emf.c:535:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  535 |                         B_z[nx + i] = B_z[i];
+      |                                       ^
+src/emf.c:535:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  535 |                         B_z[nx + i] = B_z[i];
+      |                                     ^
+src/emf.c:529:3: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  529 |                 for (int i = 0; i < gc_upper; i++) {
+      |                 ^
+src/emf.c:529:3: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:363:14: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  363 |                                 buf[i] = f_z[i];
+      |                                          ^
+src/emf.c:363:12: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  363 |                                 buf[i] = f_z[i];
+      |                                        ^
+src/emf.c:362:4: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+  362 |                         for (int i = 0; i < emf->nx; i++) {
+      |                         ^
+src/emf.c:358:14: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  358 |                                 buf[i] = f_y[i];
+      |                                          ^
+src/emf.c:358:12: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  358 |                                 buf[i] = f_y[i];
+      |                                        ^
+src/emf.c:357:4: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+  357 |                         for (int i = 0; i < emf->nx; i++) {
+      |                         ^
+src/emf.c:353:14: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  353 |                                 buf[i] = f_x[i];
+      |                                          ^
+src/emf.c:353:12: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  353 |                                 buf[i] = f_x[i];
+      |                                        ^
+src/emf.c:352:4: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+  352 |                         for (int i = 0; i < emf->nx; i++) {
+      |                         ^
+src/emf.c:464:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  464 |                 B_y[i] +=   dt_dx * ( E_z[i+1] - E_z[i] );
+      |                                       ^
+src/emf.c:464:36: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  464 |                 B_y[i] +=   dt_dx * ( E_z[i+1] - E_z[i] );
+      |                                                  ^
+src/emf.c:464:34: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis]
+  464 |                 B_y[i] +=   dt_dx * ( E_z[i+1] - E_z[i] );
+      |                                                ^
+src/emf.c:464:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+  464 |                 B_y[i] +=   dt_dx * ( E_z[i+1] - E_z[i] );
+      |                                   ^
+src/emf.c:464:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  464 |                 B_y[i] +=   dt_dx * ( E_z[i+1] - E_z[i] );
+      |                        ^
+src/emf.c:464:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+src/emf.c:464:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+src/emf.c:465:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  465 |                 B_z[i] += - dt_dx * ( E_y[i+1] - E_y[i] );    
+      |                                       ^
+src/emf.c:465:36: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  465 |                 B_z[i] += - dt_dx * ( E_y[i+1] - E_y[i] );    
+      |                                                  ^
+src/emf.c:465:34: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis]
+  465 |                 B_z[i] += - dt_dx * ( E_y[i+1] - E_y[i] );    
+      |                                                ^
+src/emf.c:465:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  465 |                 B_z[i] += - dt_dx * ( E_y[i+1] - E_y[i] );    
+      |                        ^
+src/emf.c:465:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+src/emf.c:465:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis]
+src/emf.c:465:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+src/emf.c:462:2: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  462 |         #pragma omp parallel for simd
+      |         ^
+src/emf.c:462:2: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:492:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  492 |                 E_x[i] += - dt    * J_0x[i];
+      |                                     ^
+src/emf.c:492:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  492 |                 E_x[i] += - dt    * J_0x[i];
+      |                        ^
+src/emf.c:492:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+src/emf.c:492:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis]
+src/emf.c:492:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+src/emf.c:493:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  493 |                 E_y[i] += - dt_dx * ( B_z[i] - B_z[i-1] ) - dt * J_0y[i];
+      |                                       ^
+src/emf.c:493:34: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  493 |                 E_y[i] += - dt_dx * ( B_z[i] - B_z[i-1] ) - dt * J_0y[i];
+      |                                                ^
+src/emf.c:493:32: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis]
+  493 |                 E_y[i] += - dt_dx * ( B_z[i] - B_z[i-1] ) - dt * J_0y[i];
+      |                                              ^
+src/emf.c:493:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+  493 |                 E_y[i] += - dt_dx * ( B_z[i] - B_z[i-1] ) - dt * J_0y[i];
+      |                                   ^
+src/emf.c:493:52: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  493 |                 E_y[i] += - dt_dx * ( B_z[i] - B_z[i-1] ) - dt * J_0y[i];
+      |                                                                  ^
+src/emf.c:490:2: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+  490 |         #pragma omp parallel for simd 
+      |         ^
+src/emf.c:493:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  493 |                 E_y[i] += - dt_dx * ( B_z[i] - B_z[i-1] ) - dt * J_0y[i];
+      |                        ^
+src/emf.c:490:2: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  490 |         #pragma omp parallel for simd 
+      |         ^
+src/emf.c:493:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis]
+  493 |                 E_y[i] += - dt_dx * ( B_z[i] - B_z[i-1] ) - dt * J_0y[i];
+      |                        ^
+src/emf.c:493:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+src/emf.c:494:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  494 |                 E_z[i] +=   dt_dx * ( B_y[i] - B_y[i-1] ) - dt * J_0z[i];
+      |                                       ^
+src/emf.c:494:34: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  494 |                 E_z[i] +=   dt_dx * ( B_y[i] - B_y[i-1] ) - dt * J_0z[i];
+      |                                                ^
+src/emf.c:494:32: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis]
+  494 |                 E_z[i] +=   dt_dx * ( B_y[i] - B_y[i-1] ) - dt * J_0z[i];
+      |                                              ^
+src/emf.c:494:21: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+  494 |                 E_z[i] +=   dt_dx * ( B_y[i] - B_y[i-1] ) - dt * J_0z[i];
+      |                                   ^
+src/emf.c:494:52: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  494 |                 E_z[i] +=   dt_dx * ( B_y[i] - B_y[i-1] ) - dt * J_0z[i];
+      |                                                                  ^
+src/emf.c:494:45: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis]
+  494 |                 E_z[i] +=   dt_dx * ( B_y[i] - B_y[i-1] ) - dt * J_0z[i];
+      |                                                           ^
+src/emf.c:494:45: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fsub [-Rpass-analysis]
+src/emf.c:494:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  494 |                 E_z[i] +=   dt_dx * ( B_y[i] - B_y[i-1] ) - dt * J_0z[i];
+      |                        ^
+src/emf.c:494:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+src/emf.c:494:10: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+src/emf.c:490:2: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  490 |         #pragma omp parallel for simd 
+      |         ^
+src/emf.c:490:2: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:564:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  564 |                         E_x[i] = E_x[i + 1];
+      |                                  ^
+src/emf.c:564:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  564 |                         E_x[i] = E_x[i + 1];
+      |                                ^
+src/emf.c:565:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  565 |                         E_y[i] = E_y[i + 1];
+      |                                  ^
+src/emf.c:565:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  565 |                         E_y[i] = E_y[i + 1];
+      |                                ^
+src/emf.c:566:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  566 |                         E_z[i] = E_z[i + 1];
+      |                                  ^
+src/emf.c:566:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  566 |                         E_z[i] = E_z[i + 1];
+      |                                ^
+src/emf.c:567:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  567 |                         B_x[i] = B_x[i + 1];
+      |                                  ^
+src/emf.c:567:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  567 |                         B_x[i] = B_x[i + 1];
+      |                                ^
+src/emf.c:568:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  568 |                         B_y[i] = B_y[i + 1];
+      |                                  ^
+src/emf.c:568:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  568 |                         B_y[i] = B_y[i + 1];
+      |                                ^
+src/emf.c:569:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  569 |                         B_z[i] = B_z[i + 1];
+      |                                  ^
+src/emf.c:569:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  569 |                         B_z[i] = B_z[i + 1];
+      |                                ^
+src/emf.c:563:3: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  563 |                 for (int i = start; i < end; i++) {
+      |                 ^
+src/emf.c:563:3: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:577:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  577 |                         E_x[i] = 0.;
+      |                                ^
+src/emf.c:578:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  578 |                         E_y[i] = 0.;
+      |                                ^
+src/emf.c:579:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  579 |                         E_z[i] = 0.;
+      |                                ^
+src/emf.c:580:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  580 |                         B_x[i] = 0.;
+      |                                ^
+src/emf.c:581:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  581 |                         B_y[i] = 0.;
+      |                                ^
+src/emf.c:582:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  582 |                         B_z[i] = 0.;
+      |                                ^
+src/emf.c:575:3: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 4) [-Rpass=loop-vectorize]
+  575 |                 #pragma omp parallel for simd
+      |                 ^
+src/emf.c:521:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  521 |                         E_x[i] = E_x[nx + i];
+      |                                  ^
+src/emf.c:521:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  521 |                         E_x[i] = E_x[nx + i];
+      |                                ^
+src/emf.c:522:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  522 |                         E_y[i] = E_y[nx + i];
+      |                                  ^
+src/emf.c:522:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  522 |                         E_y[i] = E_y[nx + i];
+      |                                ^
+src/emf.c:523:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  523 |                         E_z[i] = E_z[nx + i];
+      |                                  ^
+src/emf.c:523:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  523 |                         E_z[i] = E_z[nx + i];
+      |                                ^
+src/emf.c:524:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  524 |                         B_x[i] = B_x[nx + i];
+      |                                  ^
+src/emf.c:524:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  524 |                         B_x[i] = B_x[nx + i];
+      |                                ^
+src/emf.c:525:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  525 |                         B_y[i] = B_y[nx + i];
+      |                                  ^
+src/emf.c:525:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  525 |                         B_y[i] = B_y[nx + i];
+      |                                ^
+src/emf.c:526:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  526 |                         B_z[i] = B_z[nx + i];
+      |                                  ^
+src/emf.c:526:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  526 |                         B_z[i] = B_z[nx + i];
+      |                                ^
+src/emf.c:520:3: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  520 |                 for (int i = -gc_lower; i < 0; i++) {
+      |                 ^
+src/emf.c:520:3: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:530:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  530 |                         E_x[nx + i] = E_x[i];
+      |                                       ^
+src/emf.c:530:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  530 |                         E_x[nx + i] = E_x[i];
+      |                                     ^
+src/emf.c:531:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  531 |                         E_y[nx + i] = E_y[i];
+      |                                       ^
+src/emf.c:531:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  531 |                         E_y[nx + i] = E_y[i];
+      |                                     ^
+src/emf.c:532:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  532 |                         E_z[nx + i] = E_z[i];
+      |                                       ^
+src/emf.c:532:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  532 |                         E_z[nx + i] = E_z[i];
+      |                                     ^
+src/emf.c:533:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  533 |                         B_x[nx + i] = B_x[i];
+      |                                       ^
+src/emf.c:533:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  533 |                         B_x[nx + i] = B_x[i];
+      |                                     ^
+src/emf.c:534:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  534 |                         B_y[nx + i] = B_y[i];
+      |                                       ^
+src/emf.c:534:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  534 |                         B_y[nx + i] = B_y[i];
+      |                                     ^
+src/emf.c:535:18: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  535 |                         B_z[nx + i] = B_z[i];
+      |                                       ^
+src/emf.c:535:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  535 |                         B_z[nx + i] = B_z[i];
+      |                                     ^
+src/emf.c:529:3: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  529 |                 for (int i = 0; i < gc_upper; i++) {
+      |                 ^
+src/emf.c:529:3: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:789:28: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  789 |             float3 ext_E = (*emf->ext_fld.E_custom)(i,emf->dx,emf->ext_fld.E_custom_data);
+      |                            ^
+src/emf.c:788:9: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  788 |         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
+      |         ^
+src/emf.c:788:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/emf.c:829:28: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  829 |             float3 ext_B = (*emf->ext_fld.B_custom)(i,emf->dx,emf->ext_fld.B_custom_data);
+      |                            ^
+src/emf.c:828:9: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  828 |         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
+      |         ^
+src/emf.c:828:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/emf.c:656:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  656 |                 energy[0] += E_x[i] * E_x[i];
+      |                              ^
+src/emf.c:656:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  656 |                 energy[0] += E_x[i] * E_x[i];
+      |                                     ^
+src/emf.c:656:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  656 |                 energy[0] += E_x[i] * E_x[i];
+      |                              ^
+src/emf.c:656:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  656 |                 energy[0] += E_x[i] * E_x[i];
+      |                           ^
+src/emf.c:657:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  657 |                 energy[1] += E_y[i] * E_y[i];
+      |                              ^
+src/emf.c:657:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  657 |                 energy[1] += E_y[i] * E_y[i];
+      |                                     ^
+src/emf.c:657:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  657 |                 energy[1] += E_y[i] * E_y[i];
+      |                              ^
+src/emf.c:657:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  657 |                 energy[1] += E_y[i] * E_y[i];
+      |                           ^
+src/emf.c:658:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  658 |                 energy[2] += E_z[i] * E_z[i];
+      |                              ^
+src/emf.c:658:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  658 |                 energy[2] += E_z[i] * E_z[i];
+      |                                     ^
+src/emf.c:658:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  658 |                 energy[2] += E_z[i] * E_z[i];
+      |                              ^
+src/emf.c:658:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  658 |                 energy[2] += E_z[i] * E_z[i];
+      |                           ^
+src/emf.c:659:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  659 |                 energy[3] += B_x[i] * B_x[i];
+      |                              ^
+src/emf.c:659:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  659 |                 energy[3] += B_x[i] * B_x[i];
+      |                                     ^
+src/emf.c:659:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  659 |                 energy[3] += B_x[i] * B_x[i];
+      |                              ^
+src/emf.c:659:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  659 |                 energy[3] += B_x[i] * B_x[i];
+      |                           ^
+src/emf.c:660:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  660 |                 energy[4] += B_y[i] * B_y[i];
+      |                              ^
+src/emf.c:660:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  660 |                 energy[4] += B_y[i] * B_y[i];
+      |                                     ^
+src/emf.c:660:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  660 |                 energy[4] += B_y[i] * B_y[i];
+      |                              ^
+src/emf.c:660:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  660 |                 energy[4] += B_y[i] * B_y[i];
+      |                           ^
+src/emf.c:661:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis=loop-vectorize]
+  661 |                 energy[5] += B_z[i] * B_z[i];
+      |                              ^
+src/emf.c:661:23: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fmul [-Rpass-analysis=loop-vectorize]
+  661 |                 energy[5] += B_z[i] * B_z[i];
+      |                                     ^
+src/emf.c:661:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fpext [-Rpass-analysis=loop-vectorize]
+  661 |                 energy[5] += B_z[i] * B_z[i];
+      |                              ^
+src/emf.c:661:13: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis=loop-vectorize]
+  661 |                 energy[5] += B_z[i] * B_z[i];
+      |                           ^
+src/emf.c:655:2: remark: vectorized loop (vectorization width: 16, interleaved count: 2) [-Rpass=loop-vectorize]
+  655 |         for( i = 0; i < emf -> nx; i ++ ) {
+      |         ^
+src/emf.c:777:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  777 |             float3 e = {E_x[i], E_y[i], E_z[i]};
+      |                         ^
+src/emf.c:777:33: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  777 |             float3 e = {E_x[i], E_y[i], E_z[i]};
+      |                                 ^
+src/emf.c:777:41: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  777 |             float3 e = {E_x[i], E_y[i], E_z[i]};
+      |                                         ^
+src/emf.c:778:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  778 |             e.x += E_0.x;
+      |                 ^
+src/emf.c:779:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  779 |             e.y += E_0.y;
+      |                 ^
+src/emf.c:780:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  780 |             e.z += E_0.z;
+      |                 ^
+src/emf.c:781:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  781 |                         E_part_x[i] = e.x;
+      |                                     ^
+src/emf.c:782:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  782 |                         E_part_y[i] = e.y;
+      |                                     ^
+src/emf.c:783:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  783 |                         E_part_z[i] = e.z;
+      |                                     ^
+src/emf.c:775:3: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  775 |                 #pragma omp parallel for simd
+      |                 ^
+src/emf.c:775:3: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:816:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  816 |                         float3 b = {emf->B_x[i], emf->B_y[i], emf->B_z[i]};
+      |                                     ^
+src/emf.c:816:29: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  816 |                         float3 b = {emf->B_x[i], emf->B_y[i], emf->B_z[i]};
+      |                                                  ^
+src/emf.c:816:42: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): load [-Rpass-analysis]
+  816 |                         float3 b = {emf->B_x[i], emf->B_y[i], emf->B_z[i]};
+      |                                                               ^
+src/emf.c:817:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  817 |             b.x += emf->ext_fld.B_0.x;
+      |                 ^
+src/emf.c:818:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  818 |             b.y += emf->ext_fld.B_0.y;
+      |                 ^
+src/emf.c:819:17: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): fadd [-Rpass-analysis]
+  819 |             b.z += emf->ext_fld.B_0.z;
+      |                 ^
+src/emf.c:820:25: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  820 |             B_part_x[i] = b.x;
+      |                         ^
+src/emf.c:821:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  821 |                         B_part_y[i] = b.y;
+      |                                     ^
+src/emf.c:822:16: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis]
+  822 |                         B_part_z[i] = b.z;
+      |                                     ^
+src/emf.c:814:2: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  814 |         #pragma omp parallel for simd
+      |         ^
+src/emf.c:814:2: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:873:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  873 |                         E_x[i] = init_fld -> E_0.x;
+      |                                ^
+src/emf.c:874:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  874 |                         E_y[i] = init_fld -> E_0.y;
+      |                                ^
+src/emf.c:875:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  875 |                         E_z[i] = init_fld -> E_0.z;
+      |                                ^
+src/emf.c:872:9: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  872 |         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
+      |         ^
+src/emf.c:872:9: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:881:29: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  881 |             float3 init_E = (init_fld->E_custom)
+      |                             ^
+src/emf.c:880:9: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  880 |         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
+      |         ^
+src/emf.c:880:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/emf.c:896:20: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  896 |             B_x[i] = init_fld -> B_0.x;
+      |                    ^
+src/emf.c:897:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  897 |                         B_y[i] = init_fld -> B_0.y;
+      |                                ^
+src/emf.c:898:11: remark: Instruction with invalid costs prevented vectorization at VF=(vscale x 1): store [-Rpass-analysis=loop-vectorize]
+  898 |                         B_z[i] = init_fld -> B_0.z;
+      |                                ^
+src/emf.c:895:9: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-analysis=loop-vectorize]
+  895 |         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
+      |         ^
+src/emf.c:895:9: remark: vectorized loop (vectorization width: vscale x 4, interleaved count: 1) [-Rpass=loop-vectorize]
+src/emf.c:904:29: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  904 |             float3 init_B = (init_fld->B_custom)
+      |                             ^
+src/emf.c:903:9: remark: loop not vectorized: instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+  903 |         for (int i=-emf->gc[0]; i<emf->nx+emf->gc[1]; i++) {
+      |         ^
+src/emf.c:903:9: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+src/timer.c:77:3: remark: loop not vectorized: call instruction cannot be vectorized [-Rpass-analysis=loop-vectorize]
+   77 |                 gettimeofday(&tv2, NULL);
+      |                 ^
+src/timer.c:76:2: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+   76 |         do {
+      |         ^
+src/timer.c:76:2: remark: loop not vectorized: could not determine number of loop iterations [-Rpass-analysis=loop-vectorize]
+
+Simulation ended.
+
+Time for spec. advance = 7.757960 s
+Time for emf   advance = 1.563645 s
+Total simulation time  = 12.206209 s
+
+Particle advance [nsec/part] = 40.935919 
+Particle advance [Mpart/sec] = 24.428424 
+[ perf record: Woken up 455 times to write data ]
+[ perf record: Captured and wrote 116.456 MB tests/perf/perf_record_OPT_FULL_12_threads.data (14282 samples) ]
+BFD: Dwarf Error: Can't find .debug_ranges section.
+BFD: Dwarf Error: found dwarf version '7424', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '4097', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: Can't find .debug_ranges section.
+BFD: Dwarf Error: found dwarf version '2053', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '62724', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '256', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '52', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '8', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '35', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '12', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '41730', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '1026', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '17920', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '9734', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '43264', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '1024', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '49664', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '32513', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '13568', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '53760', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '4096', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '55808', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '16384', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '60160', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '14848', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '1792', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '44', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '14081', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '1792', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '2560', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '43264', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '37', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '3840', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '59904', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '1519', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '4608', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '11520', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '8192', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '3584', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '27905', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '5407', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '51988', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '9239', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '33806', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '48920', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '50959', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '256', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '27905', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '3094', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '9999', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '13833', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '14857', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '16393', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '17929', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '19721', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '22793', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '24073', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '14624', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '575', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '17953', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '19488', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '20', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '7168', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '9472', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '11044', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '5632', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '5421', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '5169', this reader only handles version 2, 3, 4 and 5 information.
+lzma: fopen failed on /lib/modules/4.18.0-348.23.1.el8_5.aarch64/kernel/fs/ext4/ext4.ko.xz: 'Permission denied'
+lzma: fopen failed on /lib/modules/4.18.0-348.23.1.el8_5.aarch64/kernel/fs/ext4/ext4.ko.xz: 'Permission denied'
+BFD: Dwarf Error: Can't find .debug_ranges section.
+BFD: Dwarf Error: found dwarf version '7424', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '4097', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: Can't find .debug_ranges section.
+BFD: Dwarf Error: found dwarf version '2053', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '62724', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '256', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '52', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '8', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '35', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '12', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '41730', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '1026', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '17920', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '9734', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '43264', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '1024', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '49664', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '32513', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '13568', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '53760', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '4096', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '55808', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '16384', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '60160', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '14848', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '1792', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '44', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '14081', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '1792', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '2560', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '43264', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '37', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '3840', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '59904', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '1519', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '4608', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '11520', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '8192', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '3584', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '27905', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '5407', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '51988', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '9239', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '33806', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '48920', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '50959', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '256', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '27905', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '3094', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '9999', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '13833', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '14857', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '16393', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '17929', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '19721', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '22793', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '24073', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '14624', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '575', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '38919', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '17953', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '19488', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '20', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '7168', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '9472', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '11044', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '5632', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '5421', this reader only handles version 2, 3, 4 and 5 information.
+BFD: Dwarf Error: found dwarf version '5169', this reader only handles version 2, 3, 4 and 5 information.
+lzma: fopen failed on /lib/modules/4.18.0-348.23.1.el8_5.aarch64/kernel/fs/ext4/ext4.ko.xz: 'Permission denied'
+lzma: fopen failed on /lib/modules/4.18.0-348.23.1.el8_5.aarch64/kernel/fs/ext4/ext4.ko.xz: 'Permission denied'

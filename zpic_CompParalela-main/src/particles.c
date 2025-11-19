@@ -94,7 +94,7 @@ void spec_set_u(t_species* spec, const int start, const int end){
 
     // Normalize to the number of particles in each cell to get the
     // average momentum in each cell
-    #pragma omp parallel for simd
+    #pragma omp parallel for
     for(int i = 0; i< spec->nx; i++ ) {
         const float norm = (npc[ i ] > 0) ? 1.0f/npc[i] : 0;
 
@@ -104,7 +104,7 @@ void spec_set_u(t_species* spec, const int start, const int end){
     }
 
     // Subtract average momentum and add fluid component
-    #pragma omp parallel for simd
+    #pragma omp parallel for
     for (int i = start; i <= end; i++) {
         const int idx  = spec -> part.ix[i];
 
@@ -1162,7 +1162,6 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         // Merge local buffers into global grid (critical region)
         //this helps with performance when many threads are used
         const int gc0 = current->gc[0];
-        #pragma omp simd
         for(int i = gc0; i < current_size - gc0; i++) {
             const int idx = i - gc0;
             
