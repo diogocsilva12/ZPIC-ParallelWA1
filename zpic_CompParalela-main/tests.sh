@@ -66,11 +66,6 @@ if [ "$CORES" -gt 48 ] || [ "$CORES" -lt 1 ]; then
     CORES=1
 fi
 
-if [ "$CORES" -gt 1 ]; then
-    PARALLEL="Y"
-else
-    PARALLEL="N"
-fi
 
 
 

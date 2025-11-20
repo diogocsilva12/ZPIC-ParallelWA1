@@ -85,26 +85,26 @@ void spec_set_u(t_species* spec, const int start, const int end){
     for (int i = start; i <= end; i++) {
         const int idx  = spec -> part.ix[i];
 
-        net_u[ idx ].x += spec->part.ux[i];
-        net_u[ idx ].y += spec->part.uy[i];
-        net_u[ idx ].z += spec->part.uz[i];
+        net_u[idx].x += spec->part.ux[i];
+        net_u[idx].y += spec->part.uy[i];
+        net_u[idx].z += spec->part.uz[i];
 
         npc[ idx ] += 1;
     }
 
     // Normalize to the number of particles in each cell to get the
     // average momentum in each cell
-    #pragma omp parallel for simd
+    #pragma omp parallel for
     for(int i = 0; i< spec->nx; i++ ) {
         const float norm = (npc[ i ] > 0) ? 1.0f/npc[i] : 0;
 
-        net_u[ i ].x *= norm;
-        net_u[ i ].y *= norm;
-        net_u[ i ].z *= norm;
+        net_u[i].x *= norm;
+        net_u[i].y *= norm;
+        net_u[i].z *= norm;
     }
 
     // Subtract average momentum and add fluid component
-    #pragma omp parallel for simd
+    #pragma omp parallel for
     for (int i = start; i <= end; i++) {
         const int idx  = spec -> part.ix[i];
 
@@ -114,8 +114,8 @@ void spec_set_u(t_species* spec, const int start, const int end){
     }
 
     // Free temporary memory
-    free( npc );
-    free( net_u );
+    free(npc);
+    free(net_u);
 }
 
 /**
@@ -133,7 +133,7 @@ int spec_np_inj( t_species* spec, const int range[] )
 {
     int np_inj;
 
-    switch ( spec -> density.type ) {
+    switch (spec -> density.type) {
     case STEP: // Step like density profile
         {
             int i0 = spec -> density.start / spec -> dx - spec -> n_move;
@@ -479,11 +479,11 @@ void spec_grow_buffer( t_species* spec, const int size ) {
     int old_np_max = spec -> np_max;
     spec -> np_max = (size/1024 + 1) * 1024;
 
-    spec->part.ix = aligned_realloc(spec -> part.ix, spec -> np_max * sizeof(int), old_np_max * sizeof(int), 64);
-    spec->part.x = aligned_realloc(spec -> part.x, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 64);
-    spec->part.ux = aligned_realloc(spec -> part.ux, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 64);
-    spec->part.uy = aligned_realloc(spec -> part.uy, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 64);
-    spec->part.uz = aligned_realloc(spec -> part.uz, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 64);
+    spec->part.ix = aligned_realloc(spec -> part.ix, spec -> np_max * sizeof(int), old_np_max * sizeof(int), 256);
+    spec->part.x = aligned_realloc(spec -> part.x, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 256);
+    spec->part.ux = aligned_realloc(spec -> part.ux, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 256);
+    spec->part.uy = aligned_realloc(spec -> part.uy, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 256);
+    spec->part.uz = aligned_realloc(spec -> part.uz, spec -> np_max * sizeof(float), old_np_max * sizeof(float), 256);
 }
 
 /**
@@ -1019,7 +1019,6 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
 
         double energy_local = 0;
 
-        //
         #pragma omp for
         for (int i=0; i<spec->np; i++) {
 
@@ -1162,12 +1161,10 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         // Merge local buffers into global grid (critical region)
         //this helps with performance when many threads are used
         const int gc0 = current->gc[0];
-        #pragma omp simd
-        for(int i = gc0; i < current_size - gc0; i++) {
+		
+	for(int i = gc0; i < current_size - gc0; i++) {
             const int idx = i - gc0;
-            
-            // Faça atomics em batch (menos overhead)
-            if (J_local_x[i] != 0.0f || J_local_y[i] != 0.0f || J_local_z[i] != 0.0f) {
+        if (J_local_x[i] != 0.0f || J_local_y[i] != 0.0f || J_local_z[i] != 0.0f) {
                 #pragma omp atomic
                 current->J_0x[idx] += J_local_x[i];
                 #pragma omp atomic
@@ -1175,7 +1172,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
                 #pragma omp atomic
                 current->J_0z[idx] += J_local_z[i];
             }
-        }
+	}
 
         free(J_local_x);
         free(J_local_y);

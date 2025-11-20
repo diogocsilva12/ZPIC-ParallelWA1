@@ -1,0 +1,2 @@
+clang: error: no such file or directory: 'Rpass=loop-vectorize'; did you mean '-Rpass=loop-vectorize'?
+make: *** [Makefile:121: src/zdf.o] Error 1

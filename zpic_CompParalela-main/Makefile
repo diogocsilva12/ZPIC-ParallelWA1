@@ -48,7 +48,7 @@ CFLAGS_OPT_2_CLANG = -O2 -mcpu=a64fx
 CFLAGS_OPT_3_GCC = -O3 -march=native 
 CFLAGS_OPT_3_CLANG = -O3 -mcpu=a64fx
 CFLAGS_OPT_FULL_GCC = -Ofast -march=native
-CFLAGS_OPT_FULL_CLANG= -O3 -ffast-math -mcpu=a64fx 
+CFLAGS_OPT_FULL_CLANG= -O3 -ffast-math -mcpu=a64fx  
 
 CFLAGS_PARALLEL = -fopenmp
 

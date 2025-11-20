@@ -15,17 +15,17 @@ void alloc_float3Buffer(float3Buffer* buffer, int size) {
     
     // Allocate memory for x, y and z components
 
-    if (posix_memalign((void**)&buffer->x, 64, size * sizeof(float))) {
+    if (posix_memalign((void**)&buffer->x, 256, size * sizeof(float))) {
         fprintf(stderr, "(*error*) Could not allocate memory for float3Buffer\n");
         exit(EXIT_FAILURE);
     }
 
-    if (posix_memalign((void**)&buffer->y, 64, size * sizeof(float))) {
+    if (posix_memalign((void**)&buffer->y, 256, size * sizeof(float))) {
         fprintf(stderr, "(*error*) Could not allocate memory for float3Buffer\n");
         exit(EXIT_FAILURE);
     }
 
-    if (posix_memalign((void**)&buffer->z, 64, size * sizeof(float))) {
+    if (posix_memalign((void**)&buffer->z, 256, size * sizeof(float))) {
         fprintf(stderr, "(*error*) Could not allocate memory for float3Buffer\n");
         exit(EXIT_FAILURE);
     }
