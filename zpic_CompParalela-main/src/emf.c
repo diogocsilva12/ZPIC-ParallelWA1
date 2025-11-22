@@ -459,7 +459,7 @@ void yee_b( t_emf *emf, const float dt )
     const float dt_dx = dt / emf->dx;
     const int nx = emf->nx;
     
-    #pragma omp parallel for	
+    #pragma omp parallel for 
     for (int i = -1; i <= nx; i++) {
 		B_y[i] +=   dt_dx * ( E_z[i+1] - E_z[i] );
 		B_z[i] += - dt_dx * ( E_y[i+1] - E_y[i] );    
@@ -571,7 +571,6 @@ void emf_move_window( t_emf *emf ){
 		start = emf->nx - 1;
 		end = emf->nx+emf->gc[1];
 		
-		#pragma omp parallel for 
 		for(int i =  start; i < end; i ++) {
 			E_x[i] = 0.;
 			E_y[i] = 0.;
@@ -770,7 +769,6 @@ void emf_update_part_fld( t_emf* const emf ) {
 		float* const restrict E_y = emf->E_y;
 		float* const restrict E_z = emf->E_z;
 		float3 E_0 = emf->ext_fld.E_0;
-	#pragma omp parallel for
         for (int i= start; i< end; i++) {
             float3 e = {E_x[i], E_y[i], E_z[i]};
             e.x += E_0.x;
@@ -809,7 +807,6 @@ void emf_update_part_fld( t_emf* const emf ) {
 	
 	int start = -emf->gc[0];
 	int end = emf->nx + emf->gc[1];
-	#pragma omp parallel for	
         for (int i=start; i<end; i++) {
 			float3 b = {emf->B_x[i], emf->B_y[i], emf->B_z[i]};
             b.x += emf->ext_fld.B_0.x;

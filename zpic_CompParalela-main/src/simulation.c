@@ -52,7 +52,6 @@ void sim_new(t_simulation* sim, int nx, float box, float dt, float tmax, int ndu
 void sim_delete(t_simulation* sim){
 
 	// Delete simulation data
-
 	// Delete particle species
 	for (int i = 0; i<sim->n_species; i++) spec_delete( &sim->species[i] );
 	free(sim->species);

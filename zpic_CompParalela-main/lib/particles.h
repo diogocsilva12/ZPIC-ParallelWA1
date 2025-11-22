@@ -105,6 +105,8 @@ typedef struct Species {
 	/// Number of particles per cell
 	int ppc;
 
+	float3Buffer* J_local_per_thread;
+
 	/// Density profile to inject
 	t_density density;
 	

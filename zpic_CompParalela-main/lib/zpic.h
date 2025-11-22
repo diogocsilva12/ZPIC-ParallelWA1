@@ -14,13 +14,14 @@
 #include <stdlib.h>
 
 /**
- * @struct Float3Buffer
+ * @struct Float3Buffer holds a chunnk of memory used for x y and z coordinates
  * @brief Buffer of 3 float arrays
  * float* x -> x[i],  x coordinates
  * float* y -> y[i],  y coordinates
  * float* z -> z[i],  z coordinates
  */
 typedef struct Float3Buffer {
+    float* chunk_xyz;
 	float* x;	///< x vector component
 	float* y;	///< y vector component
 	float* z;	///< z vector component

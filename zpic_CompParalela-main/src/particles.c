@@ -8,11 +8,13 @@
  * @copyright Copyright (c) 2022
  * 
 */
+#define _POSIX_C_SOURCE 200112L
 
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
+#include <omp.h>
 
 #include "../lib/particles.h"
 #include "../lib/random.h"
@@ -23,6 +25,7 @@
 
 static double _spec_time = 0.0;
 static uint64_t _spec_npush = 0;
+static int initialized_locals = 0;
 
 /**
  * @brief Returns the total time spent pushing particles (includes boundaries and moving window)
@@ -78,8 +81,8 @@ void spec_set_u(t_species* spec, const int start, const int end){
     int * restrict    npc   = (int *) malloc( spec->nx * sizeof(int));
 
     // Zero momentum grids
-    memset(net_u, 0, spec->nx * sizeof(float3) );
-    memset(npc, 0, (spec->nx) * sizeof(int) );
+    memset(net_u, 0, spec->nx * sizeof(float3));
+    memset(npc, 0, (spec->nx) * sizeof(int));
 
     // Accumulate momentum in each cell
     for (int i = start; i <= end; i++) {
@@ -89,7 +92,7 @@ void spec_set_u(t_species* spec, const int start, const int end){
         net_u[idx].y += spec->part.uy[i];
         net_u[idx].z += spec->part.uz[i];
 
-        npc[ idx ] += 1;
+        npc[idx] += 1;
     }
 
     // Normalize to the number of particles in each cell to get the
@@ -604,6 +607,12 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
 
     spec_inject_particles(spec, range);
 
+    // Create local buffers local
+    int nthreads = omp_get_max_threads(); // or omp_get_max_threads();
+    float3Buffer* J_local_per_thread = malloc(nthreads * sizeof(float3Buffer));
+
+    spec->J_local_per_thread = J_local_per_thread;
+
     // Set default sorting frequency
     spec -> n_sort = 16;
 
@@ -627,6 +636,7 @@ void spec_move_window( t_species *spec ){
         // shift all particles left
         // particles leaving the box will be removed later
         int i;
+        #pragma omp parallel for
         for( i = 0; i < spec->np; i++ ) {
             spec->part.ix[i]--;
         }
@@ -636,7 +646,7 @@ void spec_move_window( t_species *spec ){
 
         // Inject particles in the right edge of the simulation box
         const int range[2] = {spec->nx-1,spec->nx-1};
-        spec_inject_particles( spec, range );
+        spec_inject_particles(spec, range);
 
     }
 
@@ -648,7 +658,16 @@ void spec_move_window( t_species *spec ){
  * @param spec Particle species
  */
 void spec_delete( t_species* spec )
-{
+{   
+    int num_threads = omp_get_max_threads();
+    for (int i = 0; i < num_threads; i++) {
+        free_float3Buffer(&spec->J_local_per_thread[i]);
+    }
+    
+    initialized_locals = 0;
+
+    free(spec->J_local_per_thread);
+
     free(spec->part.ix);
     free(spec->part.x);
     free(spec->part.ux);
@@ -940,10 +959,10 @@ void interpolate_fld( const float* restrict const E_part_x, const float* restric
     ih += i;
 
     Ep->x = E_part_x[ih] * (1.0f - w1h) + E_part_x[ih+1]* w1h;
-    Ep->y = E_part_y[i] * (1.0f -  w1) + E_part_y[i+1 ] * w1;
-    Ep->z = E_part_z[i ] * (1.0f -  w1) + E_part_z[i+1 ] * w1;
+    Ep->y = E_part_y[i] * (1.0f -  w1) + E_part_y[i+1] * w1;
+    Ep->z = E_part_z[i] * (1.0f -  w1) + E_part_z[i+1] * w1;
 
-    Bp->x = B_part_x[i ] * (1.0f  - w1) + B_part_x[i+1 ] * w1;
+    Bp->x = B_part_x[i] * (1.0f  - w1) + B_part_x[i+1] * w1;
     Bp->y = B_part_y[ih] * (1.0f - w1h) + B_part_y[ih+1] * w1h;
     Bp->z = B_part_z[ih] * (1.0f - w1h) + B_part_z[ih+1] * w1h;
 
@@ -990,6 +1009,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
     const float qnx = spec -> q *  spec->dx / spec->dt;
     const int nx0 = spec -> nx;
     double energy = 0;
+    int num_threads = omp_get_max_threads();
 
     int* restrict const part_ix = spec -> part.ix;
     float* restrict const part_x = spec -> part.x;
@@ -1003,24 +1023,31 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
     float* restrict const B_part_y = emf -> B_part_y;
     float* restrict const B_part_z = emf -> B_part_z;
 
-    //grid size including guard cells
+    // Grid size including guard cells
     const int current_size = current->nx + current->gc[0] + current->gc[1];
 
+    // Initialize locals if first time
+    if (initialized_locals == 0) {
+        printf("Allocating %d threads\n", num_threads);
+        initialized_locals = 1;
+        for (int i = 0; i < num_threads; i++) {
+            alloc_float3Buffer(&spec->J_local_per_thread[i], current_size);
+            mem_set_float3Buffer(&spec->J_local_per_thread[i], current_size, 0.0f);
+        }
+    }
+    
     #pragma omp parallel reduction(+:energy)
     {
-        //calloc initialized to zero
-        float3Buffer J_local;
-        alloc_float3Buffer(&J_local, current_size);
-        mem_set_float3Buffer(&J_local, current_size, 0.0f);
-
-        float* restrict const J_local_x = J_local.x;
-        float* restrict const J_local_y = J_local.y;
-        float* restrict const J_local_z = J_local.z;
+        int tid = omp_get_thread_num();
+        float* restrict const J_local_x = spec->J_local_per_thread[tid].x;
+        float* restrict const J_local_y = spec->J_local_per_thread[tid].y;
+        float* restrict const J_local_z = spec->J_local_per_thread[tid].z;
+        mem_set_float3Buffer(&spec->J_local_per_thread[tid], current_size, 0.0f);
 
         double energy_local = 0;
 
         #pragma omp for
-        for (int i=0; i<spec->np; i++) {
+        for (int i=0; i < spec->np; i++) {
 
             float3 Ep, Bp;
             float utx, uty, utz;
@@ -1146,7 +1173,6 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
                 S1x[1] = vp[k].x1;
 
                 int idx = vp[k].ix + current->gc[0]; // offset para guard cells
-
                 J_local_x[idx] += qnx * vp[k].dx;
                 J_local_y[idx] += vp[k].qvy * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
                 J_local_y[idx + 1] += vp[k].qvy * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
@@ -1158,26 +1184,32 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             part_ix[i] += di;
         }
 
-        // Merge local buffers into global grid (critical region)
-        //this helps with performance when many threads are used
-        const int gc0 = current->gc[0];
-		
-	for(int i = gc0; i < current_size - gc0; i++) {
-            const int idx = i - gc0;
-        if (J_local_x[i] != 0.0f || J_local_y[i] != 0.0f || J_local_z[i] != 0.0f) {
-                #pragma omp atomic
-                current->J_0x[idx] += J_local_x[i];
-                #pragma omp atomic
-                current->J_0y[idx] += J_local_y[i];
-                #pragma omp atomic
-                current->J_0z[idx] += J_local_z[i];
+    // Join local buffers into global grid (critical region)
+    // Doing this by blocks helps performance a bit
+   
+    const int gc0 = current->gc[0];
+    const int n_cells = current->nx;
+    int block_size = (n_cells + num_threads - 1) / num_threads;
+
+    float* restrict const J_0x = current->J_0x;
+    float* restrict const J_0y = current->J_0y;
+    float* restrict const J_0z = current->J_0z;
+
+    #pragma omp for nowait
+    for (int block = 0; block < n_cells; block += block_size) {
+        const int block_end = (block + block_size < n_cells) ? block + block_size : n_cells;
+        for (int t = 0; t < num_threads; t++) {
+	    const float* restrict const J_total_x = spec->J_local_per_thread[t].x;
+	    const float* restrict const J_total_y = spec->J_local_per_thread[t].y;
+        const float* restrict const J_total_z = spec->J_local_per_thread[t].z;
+            for (int j = block; j < block_end; j++){
+                const int idx_local = gc0 + j;
+                J_0x[j] += J_total_x[idx_local];
+                J_0y[j] += J_total_y[idx_local];
+                J_0z[j] += J_total_z[idx_local];
             }
-	}
-
-        free(J_local_x);
-        free(J_local_y);
-        free(J_local_z);
-
+        }
+    }	
         energy += energy_local;
     }
 
@@ -1185,9 +1217,10 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
     spec -> iter += 1;
 
     // Boundary conditions (serial)
-    if ( spec -> moving_window || spec -> bc_type == PART_BC_OPEN ){
+    if (spec -> moving_window || spec -> bc_type == PART_BC_OPEN){
         if (spec -> moving_window )	spec_move_window( spec );
 	    int i = 0;
+
         while (i < spec -> np) {
             if (( spec -> part.ix[i] < 0 ) || ( spec -> part.ix[i] >= nx0 )) {
                 spec -> part.ix[i] = spec -> part.ix[ -- spec -> np ];
@@ -1201,15 +1234,18 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         }	
 
     } else {
+        #pragma omp parallel for
 	    for (int i=0; i<spec->np; i++) {
             spec-> part.ix[i] += (( spec -> part.ix[i] < 0 ) ? nx0 : 0 ) - 
                                  (( spec -> part.ix[i] >= nx0 ) ? nx0 : 0);
         }
     }
 
+    
     if ( spec -> n_sort > 0 ) {
         if ( ! (spec -> iter % spec -> n_sort) ) spec_sort( spec );
     }
+   
 
     _spec_npush += spec -> np;
     _spec_time += timer_interval_seconds( t0, timer_ticks() );
@@ -1241,15 +1277,13 @@ void spec_deposit_charge( const t_species* spec, float* charge )
         int idx = spec->part.ix[i];
         float w1 = spec->part.x[i];
 
-        charge[ idx            ] += ( 1.0f - w1 ) * q;
-        charge[ idx + 1        ] += (        w1 ) * q;
+        charge[idx] += (1.0f - w1) * q;
+        charge[idx + 1] += (w1) * q;
     }
 
-    // Correct boundary values
-
     // x
-    if ( ! spec -> moving_window ){
-        charge[ 0 ] += charge[ spec -> nx ];
+    if (!spec -> moving_window){
+        charge[0] += charge[spec -> nx];
     }
 }
 
@@ -1633,3 +1667,4 @@ void spec_report( const t_species *spec, const int rep_type,
             break;
     }
 }
+

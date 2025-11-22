@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-
+#include <omp.h>
 #include "current.h"
 #include "zdf.h"
 
@@ -101,18 +101,20 @@ void current_new(t_current *current, int nx, float box, float dt){
 }
 
 void current_delete(t_current *current){
+
+    // Free memory allocated on J_buf and set J0 pointers to NULL
     free_float3Buffer(&current->J_buf);
-    current->J_buf.x = NULL;
-    current->J_buf.y = NULL;
-    current->J_buf.z = NULL;
+
+    // Avoid memory leaks
+    current->J_0x = NULL;
+    current->J_0y = NULL;
+    current->J_0z = NULL;
     
 }
 
 void current_zero(t_current *current){
-    size_t size;
-    
     // Mem setting J_buf with zero
-    size = current->gc[0] + current->nx + current->gc[1];
+    int size = current->gc[0] + current->nx + current->gc[1];
     mem_set_float3Buffer(&current->J_buf, size, 0);
     
 }
@@ -148,14 +150,14 @@ void current_update_gc(t_current *current){
         const int nx = current -> nx;
 
         // lower - add the values from upper boundary (both gc and inside box)
-	int gc0 = -current->gc[0];
-	int gc1 = current->gc[1];
+        int gc0 = -current->gc[0];
+        int gc1 = current->gc[1];
         for (int i=gc0; i < gc1; i++){
             J_0x[i] += J_0x[nx + i];
             J_0y[i] += J_0y[nx + i];
             J_0z[i] += J_0z[nx + i];
         }
-        
+            
         // upper - just copy the values from the lower boundary     
         for (int i=gc0; i < gc1; i++){
             J_0x[nx + i] = J_0x[i];

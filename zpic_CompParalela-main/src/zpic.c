@@ -1,3 +1,9 @@
+/**
+ * @file zpic.c
+ * @brief ZPIC utilities (Float3Buffer, Float3)
+ * @author Diogo Silva, Tomás Pereira
+*/
+
 
 #define _POSIX_C_SOURCE 200112L
 #include <stdlib.h>
@@ -5,54 +11,47 @@
 #include <stdio.h>
 #include "../lib/zpic.h"
 
+#define CACHE_LINE_SIZE 256
 
-/**
- * @brief Allocates a float3Buffer 
- * @param buffer Pointer to the buffer
- * @param size Number of elements in the buffer
- */
 void alloc_float3Buffer(float3Buffer* buffer, int size) {
-    
-    // Allocate memory for x, y and z components
 
-    if (posix_memalign((void**)&buffer->x, 256, size * sizeof(float))) {
-        fprintf(stderr, "(*error*) Could not allocate memory for float3Buffer\n");
+    // Total size for the chunk (x,y,z)
+    int total_chunk_size = size * 3 * sizeof(float);
+
+    // Allocate memory for the buffer
+    if (posix_memalign((void**)&buffer->chunk_xyz, CACHE_LINE_SIZE, total_chunk_size)) {
+        fprintf(stderr, "Error allocating memory for float3Buffer\n");
         exit(EXIT_FAILURE);
     }
 
-    if (posix_memalign((void**)&buffer->y, 256, size * sizeof(float))) {
-        fprintf(stderr, "(*error*) Could not allocate memory for float3Buffer\n");
-        exit(EXIT_FAILURE);
-    }
+    // Assign pointers to each coordinate
+    buffer->x = buffer->chunk_xyz;
+    buffer->y = buffer->chunk_xyz + size;
+    buffer->z = buffer->chunk_xyz + size * 2;
 
-    if (posix_memalign((void**)&buffer->z, 256, size * sizeof(float))) {
-        fprintf(stderr, "(*error*) Could not allocate memory for float3Buffer\n");
-        exit(EXIT_FAILURE);
-    }
 }
 
-/**
- * @brief Sets a float3Buffer to a value
- * @param buffer Pointer to the buffer
- * @param size Number of elements in the buffer
- * @param value Value to initialize the buffer
- */
 void mem_set_float3Buffer(float3Buffer* buffer, int size, float value) {
-    memset(buffer->x, value, size * sizeof(float));
-    memset(buffer->y, value, size * sizeof(float));
-    memset(buffer->z, value, size * sizeof(float));
+   
+    // Set all the memory chunk to zeros (x,y,z components) 
+   if (buffer->chunk_xyz == NULL) {
+       fprintf(stderr, "Buffer is not allocated\n");
+       exit(EXIT_FAILURE);
+   }
+
+   memset(buffer->chunk_xyz, 0, size * 3 * sizeof(float));
 }
 
-/**
- * @brief Frees a float3Buffer (Only frees afer checjking if the buffer is not NULL)
- * @param buffer Pointer to the buffer
- */
 void free_float3Buffer(float3Buffer* buffer) {
     
-    if (buffer->x) free(buffer->x);
-    if (buffer->y) free(buffer->y);
-    if (buffer->z) free(buffer->z);
+    if (buffer->chunk_xyz == NULL) {
+        fprintf(stderr, "Buffer is not allocated\n");
+        exit(EXIT_FAILURE);
+    }
 
+    // Free memory of chunk xyz and set pointers to NULL
+    free(buffer->chunk_xyz);
+    buffer->chunk_xyz = NULL;
     buffer->x = NULL;
     buffer->y = NULL;
     buffer->z = NULL;

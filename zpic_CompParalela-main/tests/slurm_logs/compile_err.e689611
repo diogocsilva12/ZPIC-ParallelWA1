@@ -1,4 +1,0 @@
-clang: error: -E or -x required when input is from standard input
-clang: error: no such file or directory: 'Rpass=loop-vectorize'; did you mean '-Rpass=loop-vectorize'?
-clang: error: cannot specify -o when generating multiple output files
-make: *** [Makefile:121: src/zdf.o] Error 1
