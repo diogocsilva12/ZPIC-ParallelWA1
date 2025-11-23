@@ -1,0 +1,19 @@
+
+Simulation ended.
+
+Time for spec. advance = 8.472737 s
+Time for emf   advance = 3.245481 s
+Total simulation time  = 15.816730 s
+
+Particle advance [nsec/part] = 44.707536 
+Particle advance [Mpart/sec] = 22.367594 
+Starting simulation ...
+
+n = 0, t = 0.0
+Allocating 12 threads
+Energy (fields | particles | total) = 3.000000e+02 0.000000e+00 3.000000e+02
+n = 42106, t = 40.000702
+Energy (fields | particles | total) = 2.985472e+02 1.624786e+00 3.001720e+02
+Initial energy: 3.000000e+02, Final energy: 3.001720e+02
+
+Final energy different from Initial Energy. Change in total energy is: 0.06 % 
