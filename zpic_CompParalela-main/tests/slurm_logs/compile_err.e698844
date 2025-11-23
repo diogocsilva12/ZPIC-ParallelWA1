@@ -1,0 +1,7 @@
+src/particles.c:75:27: warning: incompatible pointer types initializing 'float *const restrict' with an expression of type 'int *' [-Wincompatible-pointer-types]
+   75 |     float* restrict const part_ix = spec->part.ix;
+      |                           ^         ~~~~~~~~~~~~~
+src/particles.c:656:31: warning: incompatible pointer types initializing 'float *const restrict' with an expression of type 'int *' [-Wincompatible-pointer-types]
+  656 |         float* restrict const part_ix = spec->part.ix;
+      |                               ^         ~~~~~~~~~~~~~
+2 warnings generated.

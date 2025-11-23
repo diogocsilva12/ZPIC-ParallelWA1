@@ -1,0 +1,8 @@
+src/particles.c: In function ‘spec_set_u’:
+src/particles.c:75:37: warning: initialization of ‘float * const restrict’ from incompatible pointer type ‘int *’ [-Wincompatible-pointer-types]
+   75 |     float* restrict const part_ix = spec->part.ix;
+      |                                     ^~~~
+src/particles.c: In function ‘spec_move_window’:
+src/particles.c:656:41: warning: initialization of ‘float * const restrict’ from incompatible pointer type ‘int *’ [-Wincompatible-pointer-types]
+  656 |         float* restrict const part_ix = spec->part.ix;
+      |                                         ^~~~

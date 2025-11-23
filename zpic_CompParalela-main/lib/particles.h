@@ -106,6 +106,7 @@ typedef struct Species {
 	int ppc;
 
 	float3Buffer* J_local_per_thread;
+	float3Buffer net_u;
 
 	/// Density profile to inject
 	t_density density;
