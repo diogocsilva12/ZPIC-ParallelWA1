@@ -487,7 +487,7 @@ void yee_e( t_emf *emf, const t_current *current, const float dt )
     const float* const restrict J_0z = current -> J_0z;
     const int nx = emf->nx;
     
-    #pragma omp parallel for 
+    #pragma omp parallel for
     for (int i = 0; i <= nx+1; i++) {
 		E_x[i] += - dt    * J_0x[i];
 		E_y[i] += - dt_dx * ( B_z[i] - B_z[i-1] ) - dt * J_0y[i];
@@ -570,7 +570,6 @@ void emf_move_window( t_emf *emf ){
 
 		start = emf->nx - 1;
 		end = emf->nx+emf->gc[1];
-		
 		for(int i =  start; i < end; i ++) {
 			E_x[i] = 0.;
 			E_y[i] = 0.;
@@ -774,9 +773,9 @@ void emf_update_part_fld( t_emf* const emf ) {
             e.x += E_0.x;
             e.y += E_0.y;
             e.z += E_0.z;
-			E_part_x[i] = e.x;
-			E_part_y[i] = e.y;
-			E_part_z[i] = e.z;
+	    E_part_x[i] = e.x;
+	    E_part_y[i] = e.y;
+	    E_part_z[i] = e.z;
         }
         break; 
 	}

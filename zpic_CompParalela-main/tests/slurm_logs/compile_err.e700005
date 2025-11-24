@@ -1,0 +1,8 @@
+src/particles.c:1208:44: error: cannot assign to variable 'block_finish' with const-qualified type 'const int'
+ 1208 |     if (block_size > n_cells) block_finish = n_cells;
+      |                               ~~~~~~~~~~~~ ^
+src/particles.c:1207:15: note: variable 'block_finish' declared const here
+ 1207 |     const int block_finish = tid * block_size + block_size;
+      |     ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:121: src/particles.o] Error 1

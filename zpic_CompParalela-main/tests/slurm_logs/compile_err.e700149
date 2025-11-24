@@ -1,0 +1,4 @@
+src/particles.c:28:12: warning: ‘initialized_locals’ defined but not used [-Wunused-variable]
+   28 | static int initialized_locals = 0;
+      |            ^~~~~~~~~~~~~~~~~~
+slurmstepd: error: *** JOB 700149 ON cna0280 CANCELLED AT 2025-11-24T10:38:56 ***

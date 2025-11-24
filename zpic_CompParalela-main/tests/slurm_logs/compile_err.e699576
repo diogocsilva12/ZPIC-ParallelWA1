@@ -1,0 +1,8 @@
+event syntax error: '..ST_RETIRED ./zpic &>'
+                                  \___ parser error
+Run 'perf list' for a list of valid events
+
+ Usage: perf stat [<options>] [<command>]
+
+    -e, --event <event>   event selector. use 'perf list' to list available events
+srun: error: cna1287: task 0: Exited with exit code 129

@@ -96,7 +96,7 @@ case $TEST_NAME in
         make CC="$CC" CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
         mkdir -p tests/perf
         PERF_DIR="tests/perf/perf_stat_${CONFIG}_${CORES}_threads.txt"
-        srun -c $CORES perf stat ./zpic &> "$PERF_DIR"
+        srun -c $CORES perf stat -e "L1D_CACHE,L1D_CACHE_REFILL,L2D_CACHE,L2D_CACHE_REFILL" ./zpic &> "$PERF_DIR"
         echo "Perf stats saved to $PERF_OUT"
         ;;
     perf_record)

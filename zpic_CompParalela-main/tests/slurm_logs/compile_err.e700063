@@ -1,0 +1,17 @@
+src/particles.c:1166:17: error: use of undeclared identifier 'J_0x'
+ 1166 |                 J_0x[idx] += qnx * vp[k].dx;
+      |                 ^
+src/particles.c:1167:17: error: use of undeclared identifier 'J_0y'
+ 1167 |                 J_0y[idx] += vp[k].qvy * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
+      |                 ^
+src/particles.c:1168:17: error: use of undeclared identifier 'J_0y'
+ 1168 |                 J_0y[idx + 1] += vp[k].qvy * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
+      |                 ^
+src/particles.c:1169:17: error: use of undeclared identifier 'J_0z'
+ 1169 |                 J_0z[idx] += vp[k].qvz * (S0x[0]+S1x[0]+(S0x[0]-S1x[0])/2.0f);
+      |                 ^
+src/particles.c:1170:17: error: use of undeclared identifier 'J_0z'
+ 1170 |                 J_0z[idx + 1] += vp[k].qvz * (S0x[1]+S1x[1]+(S0x[1]-S1x[1])/2.0f);
+      |                 ^
+5 errors generated.
+make: *** [Makefile:121: src/particles.o] Error 1

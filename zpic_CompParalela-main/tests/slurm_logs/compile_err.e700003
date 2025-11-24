@@ -1,0 +1,14 @@
+src/particles.c:1208:31: error: use of undeclared identifier 'block_end'
+ 1208 |     if (block_size > n_cells) block_end = n_cells;
+      |                               ^
+src/particles.c:1210:43: error: use of undeclared identifier 'block_finish'
+ 1210 |     for (int block = block_start; block < block_finish; block += block_size) {
+      |                                           ^
+src/particles.c:1211:53: error: use of undeclared identifier 'block_finish'
+ 1211 |         const int block_end = (block + block_size < block_finish) ? block + block_size : block_finish;
+      |                                                     ^
+src/particles.c:1211:90: error: use of undeclared identifier 'block_finish'
+ 1211 |         const int block_end = (block + block_size < block_finish) ? block + block_size : block_finish;
+      |                                                                                          ^
+4 errors generated.
+make: *** [Makefile:121: src/particles.o] Error 1

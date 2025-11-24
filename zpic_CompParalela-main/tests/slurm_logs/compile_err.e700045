@@ -1,0 +1,12 @@
+src/particles.c:1214:21: error: use of undeclared identifier 'J_local_per_thread'
+ 1214 |                  J_0z[j] += spec_>J_local_per_thread[t].z[idx_local];
+      |                                   ^
+src/particles.c:1214:15: error: use of undeclared identifier 'spec_'; did you mean 'spec'?
+ 1214 |                  J_0z[j] += spec_>J_local_per_thread[t].z[idx_local];
+      |                             ^~~~~
+      |                             spec
+src/particles.c:1009:31: note: 'spec' declared here
+ 1009 | void spec_advance( t_species* spec, t_emf* emf, t_current* current )
+      |                               ^
+2 errors generated.
+make: *** [Makefile:121: src/particles.o] Error 1

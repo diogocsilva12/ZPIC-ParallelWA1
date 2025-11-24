@@ -1,0 +1,5 @@
+src/particles.c:1215:26: error: use of undeclared identifier 'block'
+ 1215 |             for (int j = block; j < block_finish; j++){
+      |                          ^
+1 error generated.
+make: *** [Makefile:121: src/particles.o] Error 1

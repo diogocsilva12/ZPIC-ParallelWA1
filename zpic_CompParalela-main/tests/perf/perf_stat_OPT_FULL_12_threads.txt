@@ -1,15 +1,16 @@
 
 Simulation ended.
 
-Time for spec. advance = 6.172346 s
-Time for emf   advance = 1.314921 s
-Total simulation time  = 9.900596 s
+Time for spec. advance = 5.258325 s
+Time for emf   advance = 1.401895 s
+Total simulation time  = 8.965453 s
 
-Particle advance [nsec/part] = 32.569213 
-Particle advance [Mpart/sec] = 30.703843 
+Particle advance [nsec/part] = 27.746259 
+Particle advance [Mpart/sec] = 36.040895 
 Starting simulation ...
 
 n = 0, t = 0.0
+Allocating 12 threads
 Energy (fields | particles | total) = 3.000000e+02 0.000000e+00 3.000000e+02
 n = 42106, t = 40.000702
 Energy (fields | particles | total) = 2.985472e+02 1.624786e+00 3.001720e+02
@@ -19,18 +20,14 @@ Final energy different from Initial Energy. Change in total energy is: 0.06 %
 
  Performance counter stats for './zpic':
 
-        118,924.79 msec task-clock                #   11.925 CPUs utilized          
-               274      context-switches          #    0.002 K/sec                  
-                 1      cpu-migrations            #    0.000 K/sec                  
-               256      page-faults               #    0.002 K/sec                  
-   237,847,321,209      cycles                    #    2.000 GHz                    
-   245,078,147,568      instructions              #    1.03  insn per cycle         
-   <not supported>      branches                                                    
-        81,950,114      branch-misses                                               
+    98,388,601,103      L1D_CACHE                                                   
+     1,973,323,338      L1D_CACHE_REFILL                                            
+     3,900,465,149      L2D_CACHE                                                   
+         2,404,750      L2D_CACHE_REFILL                                            
 
-       9.972766724 seconds time elapsed
+       9.035848060 seconds time elapsed
 
-     113.488616000 seconds user
-       5.438017000 seconds sys
+     100.049882000 seconds user
+       7.624563000 seconds sys
 
 

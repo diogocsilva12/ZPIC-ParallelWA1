@@ -67,30 +67,36 @@ double spec_perf(void){
  */
 void spec_set_u(t_species* spec, const int start, const int end){
 
-    
+    int* restrict const part_ix = spec->part.ix;
+    float* restrict const part_ux = spec->part.ux;
+    float* restrict const part_uy = spec->part.uy;
+    float* restrict const part_uz = spec->part.uz;
+
     // Initialize thermal component
-    #pragma omp parallel for	
     for (int i = start; i <= end; i++) {
-        spec->part.ux[i] = spec -> uth[0] * rand_norm();
-        spec->part.uy[i] = spec -> uth[1] * rand_norm();
-        spec->part.uz[i] = spec -> uth[2] * rand_norm();
+        part_ux[i] = spec -> uth[0] * rand_norm();
+        part_uy[i] = spec -> uth[1] * rand_norm();
+        part_uz[i] = spec -> uth[2] * rand_norm();
     }
 
     // Calculate net momentum in each cell
-    float3 * restrict net_u = (float3 *) malloc( spec->nx * sizeof(float3));
+    alloc_float3Buffer(&spec->net_u, spec->nx);
+    mem_set_float3Buffer(&spec->net_u, spec->nx, 0.0f);
+    float* restrict const net_u_x = spec->net_u.x;
+    float* restrict const net_u_y = spec->net_u.y;
+    float* restrict const net_u_z = spec->net_u.z;
     int * restrict    npc   = (int *) malloc( spec->nx * sizeof(int));
 
     // Zero momentum grids
-    memset(net_u, 0, spec->nx * sizeof(float3));
     memset(npc, 0, (spec->nx) * sizeof(int));
 
     // Accumulate momentum in each cell
     for (int i = start; i <= end; i++) {
-        const int idx  = spec -> part.ix[i];
+        const int idx  =  part_ix[i];
 
-        net_u[idx].x += spec->part.ux[i];
-        net_u[idx].y += spec->part.uy[i];
-        net_u[idx].z += spec->part.uz[i];
+        net_u_x[idx] += part_ux[i];
+        net_u_y[idx] += part_uy[i];
+        net_u_z[idx] += part_uz[i];
 
         npc[idx] += 1;
     }
@@ -101,24 +107,24 @@ void spec_set_u(t_species* spec, const int start, const int end){
     for(int i = 0; i< spec->nx; i++ ) {
         const float norm = (npc[ i ] > 0) ? 1.0f/npc[i] : 0;
 
-        net_u[i].x *= norm;
-        net_u[i].y *= norm;
-        net_u[i].z *= norm;
+        net_u_x[i] *= norm;
+        net_u_y[i] *= norm;
+        net_u_z[i] *= norm;
     }
 
     // Subtract average momentum and add fluid component
-    #pragma omp parallel for
     for (int i = start; i <= end; i++) {
-        const int idx  = spec -> part.ix[i];
+        const int idx  = part_ix[i];
 
-        spec->part.ux[i] += spec -> ufl[0] - net_u[idx].x;
-        spec->part.uy[i] += spec -> ufl[1] - net_u[idx].y;
-        spec->part.uz[i] += spec -> ufl[2] - net_u[idx].z;
+        part_ux[i] += spec -> ufl[0] - net_u_x[idx];
+        part_uy[i] += spec -> ufl[1] - net_u_y[idx];
+        part_uz[i] += spec -> ufl[2] - net_u_z[idx];
     }
 
     // Free temporary memory
     free(npc);
-    free(net_u);
+    free_float3Buffer(&spec->net_u);
+
 }
 
 /**
@@ -614,7 +620,7 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
     spec->J_local_per_thread = J_local_per_thread;
 
     // Set default sorting frequency
-    spec -> n_sort = 16;
+    spec -> n_sort = 256;
 
     // Default to periodic boundary condtions
     spec -> bc_type = PART_BC_PERIODIC;
@@ -909,7 +915,7 @@ void spec_sort( t_species* spec )
     // low mem
     for (int i=0; i < spec->np; i++) {
         int k = idx[i];
-        while ( k > i ) {            
+        while ( k > i ) {
             move_ptr_int( &spec->part.ix[k], &spec->part.ix[i]);
             move_ptr_float( &spec->part.x[k], &spec->part.x[i]);
             move_ptr_float( &spec->part.ux[k], &spec->part.ux[i]);
@@ -924,6 +930,7 @@ void spec_sort( t_species* spec )
 
     free(idx);
 }
+
 
 /*********************************************************************************************
 
@@ -1032,10 +1039,11 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         initialized_locals = 1;
         for (int i = 0; i < num_threads; i++) {
             alloc_float3Buffer(&spec->J_local_per_thread[i], current_size);
-            mem_set_float3Buffer(&spec->J_local_per_thread[i], current_size, 0.0f);
         }
     }
     
+
+ 
     #pragma omp parallel reduction(+:energy)
     {
         int tid = omp_get_thread_num();
@@ -1184,12 +1192,10 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             part_ix[i] += di;
         }
 
-    // Join local buffers into global grid (critical region)
-    // Doing this by blocks helps performance a bit
-   
+    
     const int gc0 = current->gc[0];
     const int n_cells = current->nx;
-    int block_size = (n_cells + num_threads - 1) / num_threads;
+    int block_size = 256;
 
     float* restrict const J_0x = current->J_0x;
     float* restrict const J_0y = current->J_0y;
@@ -1224,10 +1230,10 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         while (i < spec -> np) {
             if (( spec -> part.ix[i] < 0 ) || ( spec -> part.ix[i] >= nx0 )) {
                 spec -> part.ix[i] = spec -> part.ix[ -- spec -> np ];
-                spec -> part.x[i] = spec -> part.x[ spec -> np ];
-                spec -> part.ux[i] = spec -> part.ux[ spec -> np ];
-                spec -> part.uy[i] = spec -> part.uy[ spec -> np ];
-                spec -> part.uz[i] = spec -> part.uz[ spec -> np ];
+                spec -> part.x[i] = spec -> part.x[ --spec -> np ];
+                spec -> part.ux[i] = spec -> part.ux[ --spec -> np ];
+                spec -> part.uy[i] = spec -> part.uy[ --spec -> np ];
+                spec -> part.uz[i] = spec -> part.uz[ --spec -> np ];
                 continue;
             }
             i++;
@@ -1241,10 +1247,11 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
         }
     }
 
-    
+     
     if ( spec -> n_sort > 0 ) {
         if ( ! (spec -> iter % spec -> n_sort) ) spec_sort( spec );
     }
+    
    
 
     _spec_npush += spec -> np;
@@ -1667,4 +1674,6 @@ void spec_report( const t_species *spec, const int rep_type,
             break;
     }
 }
+
+
 

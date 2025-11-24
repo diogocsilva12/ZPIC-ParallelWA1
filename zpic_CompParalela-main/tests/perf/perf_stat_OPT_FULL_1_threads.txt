@@ -1,36 +1,33 @@
 
 Simulation ended.
 
-Time for spec. advance = 37.972573 s
-Time for emf   advance = 1.911884 s
-Total simulation time  = 44.518938 s
+Time for spec. advance = 6.554036 s
+Time for emf   advance = 2.033829 s
+Total simulation time  = 13.222979 s
 
-Particle advance [nsec/part] = 200.367386 
-Particle advance [Mpart/sec] = 4.990832 
+Particle advance [nsec/part] = 345.832519 
+Particle advance [Mpart/sec] = 2.891573 
 Starting simulation ...
 
 n = 0, t = 0.0
+Allocating 1 threads
 Energy (fields | particles | total) = 3.000000e+02 0.000000e+00 3.000000e+02
 n = 42106, t = 40.000702
-Energy (fields | particles | total) = 2.985471e+02 1.624787e+00 3.001719e+02
-Initial energy: 3.000000e+02, Final energy: 3.001719e+02
+Energy (fields | particles | total) = 2.985474e+02 1.624786e+00 3.001721e+02
+Initial energy: 3.000000e+02, Final energy: 3.001721e+02
 
 Final energy different from Initial Energy. Change in total energy is: 0.06 % 
 
  Performance counter stats for './zpic':
 
-         44,565.77 msec task-clock                #    1.000 CPUs utilized          
-               222      context-switches          #    0.005 K/sec                  
-                 0      cpu-migrations            #    0.000 K/sec                  
-               214      page-faults               #    0.005 K/sec                  
-    89,130,112,565      cycles                    #    2.000 GHz                    
-    58,646,925,609      instructions              #    0.66  insn per cycle         
-   <not supported>      branches                                                    
-         9,113,338      branch-misses                                               
+     9,962,157,530      L1D_CACHE                                                   
+     1,259,510,303      L1D_CACHE_REFILL                                            
+     2,241,318,178      L2D_CACHE                                                   
+            71,889      L2D_CACHE_REFILL                                            
 
-      44.587701680 seconds time elapsed
+      13.290241471 seconds time elapsed
 
-      44.467482000 seconds user
-       0.099971000 seconds sys
+      13.198659000 seconds user
+       0.079991000 seconds sys
 
 
