@@ -4,3 +4,18 @@ my_docs/
 
 
 zpic_CompParalela-main/tests/perf/perf_record_OPT_FULL_16_threads.data.old
+zpic_CompParalela-main/launch_jobs.sh
+zpic_CompParalela-main/t1.sh
+zpic_CompParalela-main/t10.sh
+zpic_CompParalela-main/t12.sh
+zpic_CompParalela-main/t16.sh
+zpic_CompParalela-main/t2.sh
+zpic_CompParalela-main/t20.sh
+zpic_CompParalela-main/t24.sh
+zpic_CompParalela-main/t32.sh
+zpic_CompParalela-main/t36.sh
+zpic_CompParalela-main/t4.sh
+zpic_CompParalela-main/t40.sh
+zpic_CompParalela-main/t48.sh
+zpic_CompParalela-main/t8.sh
+zpic_CompParalela-main/validateBatch.sh
