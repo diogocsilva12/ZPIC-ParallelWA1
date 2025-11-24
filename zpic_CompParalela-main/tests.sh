@@ -10,17 +10,18 @@
 
 #SBATCH -A f202500010hpcvlabuminhoa
 #SBATCH -p normal-arm
-#SBATCH -t 00:10:00    # 10 minutes max run
+#SBATCH -t 00:10:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=12
-#SBATCH --output=tests/slurm_logs/compile_out.o%j
-#SBATCH --error=tests/slurm_logs/compile_err.e%j
+#SBATCH --cpus-per-task=48
+#SBATCH --output=tests/slurm_logs/test_out.o%j
+#SBATCH --error=tests/slurm_logs/test_err.e%j
 #SBATCH --exclusive
 #SBATCH --acctg-freq=energy=10
 
-echo "Usage: sbatch tests.sh <TEST_NAME> <?CC> <?CONFIG> <?CORES> <?PARALLEL>"
-echo "Example: sbatch tests.sh perf_stat clang OPT_FULL 8 Y"
+echo "Usage: sbatch tests.sh <TEST_NAME> <?CORES>"
+echo "Example: sbatch tests.sh run 12"
+echo "NOTE: Compile first using: sbatch compile.sh clang OPT_FULL Y"
 
 # --------- LOAD MODULES -----------------
 echo "[STARTING] Loading modules"
@@ -39,78 +40,87 @@ done
 
 # --------- PARSE ARGUMENTS -------------
 TEST_NAME=$1
-CC=$2
-CONFIG=$3
-CORES=$4
-PARALLEL=$5
+CORES=$2
 
 if [ -z "$TEST_NAME" ]; then
     echo "Usage: Insert a right test (run, scorep, perf_stat, perf_record)"
     exit 1
 fi
 
-if [ -z "$CC" ]; then
-   CC="clang"
-fi
-
-if [ -z "$CONFIG" ]; then
-    CONFIG="NO_OPT"
-fi
-
 if [ -z "$CORES" ]; then
-    CORES=1
+    CORES=12
 fi
 
 if [ "$CORES" -gt 48 ] || [ "$CORES" -lt 1 ]; then
-    echo "Warning: CORES ($CORES) out of range [1-48]. Setting CORES=1."
-    CORES=1
+    echo "Warning: CORES ($CORES) out of range [1-48]. Setting CORES=12."
+    CORES=12
 fi
 
-
-
+# Check if zpic executable exists
+if [ ! -f "./zpic" ]; then
+    echo "ERROR: zpic executable not found!"
+    echo "Please compile first using: sbatch compile.sh"
+    exit 1
+fi
 
 # --------- RUN TESTS --------------------
 
 mkdir -p tests/slurm_logs
+mkdir -p tests/results
+mkdir -p tests/perf
+
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 
 case $TEST_NAME in
     run)
-        echo "Running test with GCC"
-        make clean
-        make CC="$CC" CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
-        srun -c $CORES ./zpic
+        echo "Running zpic with $CORES cores"
+        RUN_OUTPUT="tests/results/run_${CORES}_threads_${TIMESTAMP}.txt"
+        
+        export OMP_NUM_THREADS=$CORES
+        export OMP_PLACES=cores
+        export OMP_PROC_BIND=close
+        
+        echo "=== ZPIC Run ===" > "$RUN_OUTPUT"
+        echo "Threads: $CORES" >> "$RUN_OUTPUT"
+        echo "Date: $TIMESTAMP" >> "$RUN_OUTPUT"
+        echo "===============================" >> "$RUN_OUTPUT"
+        echo "" >> "$RUN_OUTPUT"
+        
+        srun -c $CORES ./zpic >> "$RUN_OUTPUT" 2>&1
+        
+        echo "Output saved to $RUN_OUTPUT"
         ;;
 
     scorep)
-        echo "Running Score-P test with CONFIG=$CONFIG and CORES=$CORES"
-	    make clean
-	    make CC="scorep gcc" CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
-	    mkdir -p tests/scorep
-	    SCOREP_DIR="tests/scorep/score_${CONFIG}_${CORES}_threads"a
-	    export SCOREP_EXPERIMENT_DIRECTORY="$SCOREP_DIR"
-	    srun -c "$CORES" ./zpic &> "${SCOREP_DIR}.log"
+        echo "ERROR: Score-P requires recompilation with 'scorep gcc'"
+        echo "Use: sbatch compile.sh 'scorep gcc' OPT_FULL Y"
+        echo "Then run: sbatch tests.sh scorep $CORES"
+        exit 1
         ;;
+        
     perf_stat)
-        echo "Running perf test with CONFIG=$CONFIG and CORES=$CORES"
-        make clean
-        make CC="$CC" CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" PARALLEL="$PARALLEL"
+        echo "Running perf stat with $CORES cores"
         mkdir -p tests/perf
-        PERF_DIR="tests/perf/perf_stat_${CONFIG}_${CORES}_threads.txt"
-        srun -c $CORES perf stat -e "L1D_CACHE,L1D_CACHE_REFILL,L2D_CACHE,L2D_CACHE_REFILL" ./zpic &> "$PERF_DIR"
-        echo "Perf stats saved to $PERF_OUT"
+        PERF_DIR="tests/perf/perf_stat_${CORES}_threads.txt"
+        export OMP_NUM_THREADS=$CORES
+        export OMP_PLACES=cores
+        export OMP_PROC_BIND=close
+        srun -c $CORES perf stat ./zpic 2>&1 | tee "$PERF_DIR"
+        echo "Perf stats saved to $PERF_DIR"
         ;;
+        
     perf_record)
-        echo "Running perf record with CONFIG=$CONFIG and CORES=$CORES"
-        make clean
-        make CC="$CC" CONFIG="$CONFIG" OMP_NUM_THREADS="$CORES" DEBUG="Y" PARALLEL="$PARALLEL"
+        echo "Running perf record with $CORES cores"
         mkdir -p tests/perf
         
         TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-        PERF_DATA="tests/perf/perf_record_${CONFIG}_${CORES}_threads.data"
+        PERF_DATA="tests/perf/perf_record_${CORES}_threads_${TIMESTAMP}.data"
         PERF_SCRIPT="tests/perf/measurement_${TIMESTAMP}.perf"
-        PERF_DIR="tests/perf/perf_stat_${CONFIG}_${CORES}_threads.txt"
-        srun -c $CORES perf stat ./zpic &> "$PERF_DIR"
-
+        
+        export OMP_NUM_THREADS=$CORES
+        export OMP_PLACES=cores
+        export OMP_PROC_BIND=close
+        
         echo "Recording performance data..."
         srun -c "$CORES" perf record -g --call-graph dwarf -F 99 -o "$PERF_DATA" -- ./zpic
         
@@ -120,11 +130,11 @@ case $TEST_NAME in
         echo "Perf data saved to $PERF_DATA"
         echo "Perf script saved to $PERF_SCRIPT"
         
-        # Generate quick summary
         echo ""
         echo "Quick analysis:"
         perf report -i "$PERF_DATA" --stdio --no-children | head -30
         ;;
+        
     *)
         echo "Unknown test name: $TEST_NAME"
         exit 1

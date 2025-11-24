@@ -26,7 +26,7 @@ void sim_init( t_simulation* sim ){
 	const int n_species = 1;
 
 	// Use 1 particles per cell
-	int ppc = 1;
+	int ppc = 10;
 
 	// Density profile
 	t_density density = { .type = STEP, .start = 54.0 };//55

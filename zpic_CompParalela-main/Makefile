@@ -3,7 +3,7 @@
 # =========================================================================== #
 # - University - University of Minho
 # - Course - Parallel Computing (MCA)
-# - Authors - Diogo Silva & Tomás Pereira 
+# - Authors - Diogo Silva & Tomás Pereira
 # ============================================================================= #
 
 SHELL := /bin/bash
@@ -14,7 +14,7 @@ export MODULES
 
 OMP_NUM_THREADS?=12
 OMP_PLACES?=cores
-OMP_PROC_BIND?=close 
+OMP_PROC_BIND?=close
 
 MAKEFLAGS += --no-print-directory
 
@@ -24,13 +24,13 @@ CC = clang
 CFLAGS_DEFAULT = -std=c99 -pedantic -Wall
 CFLAGS_OPT_2_GCC = -O2 -march=native
 CFLAGS_OPT_2_CLANG = -O2 -mcpu=a64fx
-CFLAGS_OPT_3_GCC = -O3 -march=native 
+CFLAGS_OPT_3_GCC = -O3 -march=native
 CFLAGS_OPT_3_CLANG = -O3 -mcpu=a64fx
 CFLAGS_OPT_FULL_GCC = -Ofast -march=native
-CFLAGS_OPT_FULL_CLANG= -O3 -ffast-math -mcpu=a64fx  
+CFLAGS_OPT_FULL_CLANG= -O3 -ffast-math -mcpu=a64fx
 
 CFLAGS_PARALLEL = -fopenmp
-LDFLAGS = -lm 
+LDFLAGS = -lm
 
 CONFIG ?= OPT_FULL
 PARALLEL ?= Y
@@ -70,9 +70,9 @@ endif
 
 ifeq ($(DEBUG), Y)
     CFLAGS += -g -fno-omit-frame-pointer
-endif 
+endif
 
-.PHONY: all clean run docs no-opt opt-2 opt-3 opt-full debug 
+.PHONY: all clean run docs no-opt opt-2 opt-3 opt-full debug
 
 SRC_DIR = src
 LIB_DIR = lib
@@ -113,15 +113,12 @@ run: all
 	@echo "Loading modules..."
 	@mkdir -p output
 	@TIMESTAMP=$$(date +"%Y-%m-%d_%H-%M-%S"); \
-	module purge; \
-	module load GCC/13.3.0; \
-	module load LLVM/19; \
+	$(MODULES); \
 	echo "Modules loaded successfully"; \
 	OMP_NUM_THREADS=$(OMP_NUM_THREADS) \
 	OMP_PLACES=$(OMP_PLACES) \
 	OMP_PROC_BIND=$(OMP_PROC_BIND) \
-	./$(TARGET) > output/zpic_run_$${TIMESTAMP}.out 2>&1; \
-	echo "Output saved to output/zpic_run_$${TIMESTAMP}.out"
+	./$(TARGET) 2>&1 | tee output/zpic_run_$${TIMESTAMP}.out
 
 # =========================================================================== #
 #                                SHORTCUTS

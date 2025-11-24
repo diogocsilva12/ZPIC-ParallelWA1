@@ -4,9 +4,9 @@
  * @brief Particle species
  * @version 0.2
  * @date 2025/11/24
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
 */
 #define _POSIX_C_SOURCE 200112L
 
@@ -29,7 +29,7 @@ static int initialized_locals = 0;
 
 /**
  * @brief Returns the total time spent pushing particles (includes boundaries and moving window)
- * 
+ *
  * @return  Total time in seconds
  */
 double spec_time(void){
@@ -38,7 +38,7 @@ double spec_time(void){
 
 /**
  * @brief Returns the total number of particle pushes
- * 
+ *
  * @return  Number of particle pushes
  */
 uint64_t spec_npush(void){
@@ -47,7 +47,7 @@ uint64_t spec_npush(void){
 
 /**
  * @brief Returns the performance achieved by the code (push time)
- * 
+ *
  * @return  Performance in seconds per particle
  */
 double spec_perf(void){
@@ -60,7 +60,7 @@ double spec_perf(void){
 
 /**
  * @brief Sets the momentum of the range of particles supplieds using a thermal distribution
- * 
+ *
  * @param spec  Particle species
  * @param start Index of the first particle to set the momentum
  * @param end   Index of the last particle to set the momentum
@@ -218,7 +218,7 @@ int spec_np_inj( t_species* spec, const int range[] )
             np_inj = ceil(q * spec -> ppc);
         }
         break;
-    
+
     case EMPTY: // Empty profile
         np_inj = 0;
         break;
@@ -234,7 +234,7 @@ int spec_np_inj( t_species* spec, const int range[] )
 
 /**
  * @brief Sets initial position of particles according to density profile
- * 
+ *
  * @param spec      Particle species
  * @param range     Range of cells in which to inject
  */
@@ -262,7 +262,7 @@ void spec_set_x( t_species* spec, const int range[] )
         // Get edge position normalized to cell size;
         start = spec -> density.start / spec -> dx - spec -> n_move;
 	 for (i = range[0]; i <= range[1]; i++) {
-	     
+
             for (k=0; k<npc; k++) {
                 if (i + poscell[k] > start) {
                     spec->part.ix[ip] = i;
@@ -413,7 +413,7 @@ void spec_set_x( t_species* spec, const int range[] )
 
         // printf("Injected %d particles with custom injection \n", ip - spec -> np );
         break;
-    
+
     case EMPTY: // Empty profile
         break;
 
@@ -446,7 +446,7 @@ void spec_set_x( t_species* spec, const int range[] )
  * @param align Alignment
  */
 void* aligned_realloc(void *ptr, size_t new_size, size_t old_size, size_t align) {
-    
+
     if (new_size == 0) {
         free(ptr);
         return NULL;
@@ -477,14 +477,14 @@ void* aligned_realloc(void *ptr, size_t new_size, size_t old_size, size_t align)
 
 /**
  * @brief Grows particle buffer to specified size.
- * 
+ *
  * If the new size is smaller than the previous size the buffer size is not changed
  * and the function returns silently.
  * @param spec  Particle species
  * @param size  New buffer size (will be rounded up to next multiple of 1024)
  **/
 void spec_grow_buffer( t_species* spec, const int size ) {
- 
+
     int old_np_max = spec -> np_max;
     spec -> np_max = (size/1024 + 1) * 1024;
 
@@ -497,9 +497,9 @@ void spec_grow_buffer( t_species* spec, const int size ) {
 
 /**
  * @brief Inject new particles into the specified grid range.
- * 
+ *
  * The particle buffer will be grown if required
- * 
+ *
  * @param   spec    Particle species
  * @param   range   Grid range [ix0, ix1] where to inject particles
  **/
@@ -513,7 +513,7 @@ void spec_inject_particles( t_species* spec, const int range[] )
     // Check if buffer is large enough and if not reallocate
        // Increase by chunks of 1024 particles
     int size = spec -> np + np_inj;
-    if (size > spec -> np_max) { 
+    if (size > spec -> np_max) {
         spec_grow_buffer(spec, size);
     }
 
@@ -527,15 +527,15 @@ void spec_inject_particles( t_species* spec, const int range[] )
 
 /**
  * @brief Initialize particle Species object
- * 
+ *
  * This routine will also inject the initial particle distribution,
  * setting thermal/fluid velocities.
- * 
+ *
  * @param spec      Particle species
  * @param name      Name for the species (used for diagnostic output)
  * @param m_q       Mass over charge ratio for species, in simulation units
  * @param ppc       Reference number of particles per cell
- * @param ufl       Initial fluid momentum of particles, may be set to NULL 
+ * @param ufl       Initial fluid momentum of particles, may be set to NULL
  * @param uth       Initial thermal momentum of particles, may be set to NULL
  * @param nx        Number of grid points
  * @param box       Simulation box size in simulation units
@@ -620,11 +620,10 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
     spec->J_local_per_thread = J_local_per_thread;
 
     // Set default sorting frequency
-<<<<<<< HEAD
     spec -> n_sort = 256;
-=======
-    spec -> n_sort = 1;
->>>>>>> a649d87c13c30e857ac839928a2a1e9b25e86ea7
+    //=======
+    //spec -> n_sort = 1;
+
 
     // Default to periodic boundary condtions
     spec -> bc_type = PART_BC_PERIODIC;
@@ -633,10 +632,10 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
 
 /**
  * @brief Move simulation window
- * 
+ *
  * When using a moving simulation window checks if a window move is due
  * at the current iteration and if so shifts left the particle cell indices
- * 
+ *
  * @param spec      Particle species
  */
 void spec_move_window( t_species *spec ){
@@ -664,16 +663,16 @@ void spec_move_window( t_species *spec ){
 
 /**
  * @brief Frees dynamic memory from particle species
- * 
+ *
  * @param spec Particle species
  */
 void spec_delete( t_species* spec )
-{   
+{
     int num_threads = omp_get_max_threads();
     for (int i = 0; i < num_threads; i++) {
         free_float3Buffer(&spec->J_local_per_thread[i]);
     }
-    
+
     initialized_locals = 0;
 
     free(spec->J_local_per_thread);
@@ -694,7 +693,7 @@ void spec_delete( t_species* spec )
 
 /**
  * @brief Deposit single particle current using Esirkepov method
- * 
+ *
  * @param ix0       Initial cell index of particle
  * @param di        Number of cells moved {-1,0,1}
  * @param x0        Initial position of particle inside cell
@@ -758,7 +757,7 @@ void dep_current_esk( int ix0, int di,
 
 /**
  * @brief Deposit single particle current using zamb method
- * 
+ *
  * @param ix0       Initial cell index of particle
  * @param di        Number of cells moved {-1,0,1}
  * @param x0        Initial position of particle inside cell
@@ -876,11 +875,11 @@ void dep_current_zamb( int ix0, int di,
 
 /**
  * @brief Sorts particle buffer.
- * 
+ *
  * Sorts particles inside the particle buffer according to their cell
  * index to optimize memory cache use. Note: this is a performance
  * optimization only and is not required by the algorithm
- * 
+ *
  * @param spec      Particle species
  */
 void spec_sort( t_species* spec )
@@ -944,10 +943,10 @@ void spec_sort( t_species* spec )
 
 /**
  * @brief Interpolates EM fields at particle position
- * 
+ *
  * Routine uses linear interpolation and accounts for a staggered (Yee)
  * mesh, with the charge at the lower corner of the cell
- * 
+ *
  * @param E     Electric field grid
  * @param B     Magnetic field grid
  * @param part  Particle data
@@ -981,9 +980,9 @@ void interpolate_fld( const float* restrict const E_part_x, const float* restric
 
 /**
  * @brief Returns number of cells moved
- * 
+ *
  * Note that the particle will move at most 1 cell in either direction
- * 
+ *
  * @param x         End particle position, normalized to cell size
  * @return ltrim    Number of cells moved, {-1,0,1}
  */
@@ -994,18 +993,18 @@ int ltrim( float x )
 
 /**
  * @brief Advance Particle species 1 timestep
- * 
+ *
  * Particles are advanced in time using a leap-frog method; the velocity
  * advance is done using a relativistic Boris pusher. Particle motion is
  * used to deposit electric current on the grid using an exact charge
  * conservation method.
- * 
+ *
  * The routine will also:
  * 1. Calculate total time-centered kinetic energy for the Species
  * 2. Apply boundary conditions
  * 3. Move simulation window
  * 4. Sort particle buffer
- * 
+ *
  * @param spec      Particle species
  * @param emf       EM fields
  * @param current   Current density
@@ -1045,9 +1044,9 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             alloc_float3Buffer(&spec->J_local_per_thread[i], current_size);
         }
     }
-    
 
- 
+
+
     #pragma omp parallel reduction(+:energy)
     {
         int tid = omp_get_thread_num();
@@ -1196,7 +1195,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
             part_ix[i] += di;
         }
 
-    
+
     const int gc0 = current->gc[0];
     const int n_cells = current->nx;
     int block_size = 256;
@@ -1219,7 +1218,7 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
                 J_0z[j] += J_total_z[idx_local];
             }
         }
-    }	
+    }
         energy += energy_local;
     }
 
@@ -1241,22 +1240,22 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
                 continue;
             }
             i++;
-        }	
+        }
 
     } else {
         #pragma omp parallel for
 	    for (int i=0; i<spec->np; i++) {
-            spec-> part.ix[i] += (( spec -> part.ix[i] < 0 ) ? nx0 : 0 ) - 
+            spec-> part.ix[i] += (( spec -> part.ix[i] < 0 ) ? nx0 : 0 ) -
                                  (( spec -> part.ix[i] >= nx0 ) ? nx0 : 0);
         }
     }
 
-     
+
     if ( spec -> n_sort > 0 ) {
         if ( ! (spec -> iter % spec -> n_sort) ) spec_sort( spec );
     }
-    
-   
+
+
 
     _spec_npush += spec -> np;
     _spec_time += timer_interval_seconds( t0, timer_ticks() );
@@ -1270,12 +1269,12 @@ void spec_advance( t_species* spec, t_emf* emf, t_current* current )
 
 /**
  * @brief Deposits particle species charge density
- * 
+ *
  * Deposition is done using linear interpolation, charge grid is expected
  * to have 1 guard cell at the upper boundary.
- * 
+ *
  * Used for diagnostics purposes only.
- * 
+ *
  * @param spec      Particle species
  * @param charge    Electric charge density
  */
@@ -1306,7 +1305,7 @@ void spec_deposit_charge( const t_species* spec, float* charge )
 
 /**
  * @brief Saves raw particle data information to disk
- * 
+ *
  * Saves all particle positions and momenta. Positions are converted to
  * distance from simulation box corner before saving. Data is saved in the
  * "PARTICLES/sp_name" directory.
@@ -1387,7 +1386,7 @@ void spec_rep_particles( const t_species *spec )
 
 /**
  * @brief Saves particle species charge density information to disk
- * 
+ *
  * @param spec      Particle species
  */
 void spec_rep_charge( const t_species *spec )
@@ -1446,10 +1445,10 @@ void spec_rep_charge( const t_species *spec )
 
 /**
  * @brief Gets axis quantity for phasespace density calculation.
- * 
+ *
  * Depending on the selected quantity, the appropriate data will be copied
  * or calculated and stored in the output array.
- * 
+ *
  * @param spec      Particle species
  * @param i0        Start particle index
  * @param np        Number of particles to process
@@ -1481,7 +1480,7 @@ void spec_pha_axis( const t_species *spec, int i0, int np, int quant,
 
 /**
  * @brief Phasespace density axis units
- * 
+ *
  * @param quant     Quantity for axis
  * @return          Units for phasespace density axis
  */
@@ -1500,7 +1499,7 @@ const char * spec_pha_axis_units( int quant ) {
 
 /**
  * @brief Deposit 2D phasespace density.
- * 
+ *
  * @param spec      Particle species
  * @param rep_type  Type of phasespace, use the PHASESPACE macro to define
  * @param pha_nx    Number of grid points in the phasespace density grid
@@ -1574,7 +1573,7 @@ void spec_deposit_pha( const t_species *spec, const int rep_type,
 
 /**
  * @brief Saves particle species phasespace density information to disk
- * 
+ *
  * @param spec      Particle species
  * @param rep_type  Type of phasespace, use the PHASESPACE macro to define
  * @param pha_nx    Number of grid points in the phasespace density grid
@@ -1618,10 +1617,10 @@ void spec_rep_pha( const t_species *spec, const int rep_type,
     };
 
     char pha_name[64], pha_label[64];
-    
-    snprintf( pha_name, 64,"%s-%s%s", spec -> name, 
+
+    snprintf( pha_name, 64,"%s-%s%s", spec -> name,
         pha_ax_name[quant1-1], pha_ax_name[quant2-1] );
-    
+
     snprintf( pha_label, 64,"%s %s-%s", spec -> name,
         pha_ax_label[quant1-1], pha_ax_label[quant2-1] );
 
@@ -1653,7 +1652,7 @@ void spec_rep_pha( const t_species *spec, const int rep_type,
 
 /**
  * @brief Saves particle species diagnostic information to disk
- * 
+ *
  * @param spec      Particle species
  * @param rep_type  Type of diagnostic information {CHARGE, PHASESPACE(a,b), PARTICLES}
  * @param pha_nx    Number of grid points in the phasespace density grid, set to NULL for
@@ -1678,9 +1677,3 @@ void spec_report( const t_species *spec, const int rep_type,
             break;
     }
 }
-
-
-<<<<<<< HEAD
-
-=======
->>>>>>> a649d87c13c30e857ac839928a2a1e9b25e86ea7
