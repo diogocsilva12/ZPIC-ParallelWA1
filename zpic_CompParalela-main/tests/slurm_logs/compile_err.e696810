@@ -1,0 +1,110 @@
+In file included from src/current.c:15:
+lib/current.h:182:27: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  182 | void kernel_tmpbuf_cleanup();
+      |                           ^
+      |                            void
+lib/current.h:187:32: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  187 | float3Buffer* kernel_tmpbuf_get();
+      |                                ^
+      |                                 void
+lib/current.h:189:7: warning: no newline at end of file [-Wnewline-eof]
+  189 | #endif
+      |       ^
+src/current.c:39:27: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+   39 | void kernel_tmpbuf_cleanup() {
+      |                           ^
+      |                            void
+src/current.c:46:32: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+   46 | float3Buffer* kernel_tmpbuf_get() {
+      |                                ^
+      |                                 void
+5 warnings generated.
+In file included from src/simulation.c:16:
+In file included from src/../lib/simulation.h:13:
+In file included from src/../lib/particles.h:13:
+In file included from src/../lib/emf.h:13:
+src/../lib/current.h:182:27: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  182 | void kernel_tmpbuf_cleanup();
+      |                           ^
+      |                            void
+src/../lib/current.h:187:32: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  187 | float3Buffer* kernel_tmpbuf_get();
+      |                                ^
+      |                                 void
+src/../lib/current.h:189:7: warning: no newline at end of file [-Wnewline-eof]
+  189 | #endif
+      |       ^
+In file included from src/simulation.c:16:
+In file included from src/../lib/simulation.h:13:
+In file included from src/../lib/particles.h:13:
+src/../lib/emf.h:269:7: warning: no newline at end of file [-Wnewline-eof]
+  269 | #endif
+      |       ^
+src/simulation.c:190:2: warning: no newline at end of file [-Wnewline-eof]
+  190 | }
+      |  ^
+5 warnings generated.
+In file included from src/particles.c:19:
+In file included from src/../lib/particles.h:13:
+In file included from src/../lib/emf.h:13:
+src/../lib/current.h:182:27: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  182 | void kernel_tmpbuf_cleanup();
+      |                           ^
+      |                            void
+src/../lib/current.h:187:32: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  187 | float3Buffer* kernel_tmpbuf_get();
+      |                                ^
+      |                                 void
+src/../lib/current.h:189:7: warning: no newline at end of file [-Wnewline-eof]
+  189 | #endif
+      |       ^
+In file included from src/particles.c:19:
+In file included from src/../lib/particles.h:13:
+src/../lib/emf.h:269:7: warning: no newline at end of file [-Wnewline-eof]
+  269 | #endif
+      |       ^
+4 warnings generated.
+In file included from src/main.c:25:
+In file included from src/../lib/simulation.h:13:
+In file included from src/../lib/particles.h:13:
+In file included from src/../lib/emf.h:13:
+src/../lib/current.h:182:27: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  182 | void kernel_tmpbuf_cleanup();
+      |                           ^
+      |                            void
+src/../lib/current.h:187:32: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  187 | float3Buffer* kernel_tmpbuf_get();
+      |                                ^
+      |                                 void
+src/../lib/current.h:189:7: warning: no newline at end of file [-Wnewline-eof]
+  189 | #endif
+      |       ^
+In file included from src/main.c:25:
+In file included from src/../lib/simulation.h:13:
+In file included from src/../lib/particles.h:13:
+src/../lib/emf.h:269:7: warning: no newline at end of file [-Wnewline-eof]
+  269 | #endif
+      |       ^
+4 warnings generated.
+src/zpic.c:58:2: warning: no newline at end of file [-Wnewline-eof]
+   58 | }
+      |  ^
+1 warning generated.
+In file included from src/emf.c:19:
+In file included from src/../lib/emf.h:13:
+src/../lib/current.h:182:27: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  182 | void kernel_tmpbuf_cleanup();
+      |                           ^
+      |                            void
+src/../lib/current.h:187:32: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  187 | float3Buffer* kernel_tmpbuf_get();
+      |                                ^
+      |                                 void
+src/../lib/current.h:189:7: warning: no newline at end of file [-Wnewline-eof]
+  189 | #endif
+      |       ^
+In file included from src/emf.c:19:
+src/../lib/emf.h:269:7: warning: no newline at end of file [-Wnewline-eof]
+  269 | #endif
+      |       ^
+4 warnings generated.

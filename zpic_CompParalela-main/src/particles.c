@@ -620,7 +620,11 @@ void spec_new( t_species* spec, char name[], const float m_q, const int ppc,
     spec->J_local_per_thread = J_local_per_thread;
 
     // Set default sorting frequency
+<<<<<<< HEAD
     spec -> n_sort = 256;
+=======
+    spec -> n_sort = 1;
+>>>>>>> a649d87c13c30e857ac839928a2a1e9b25e86ea7
 
     // Default to periodic boundary condtions
     spec -> bc_type = PART_BC_PERIODIC;
@@ -1676,4 +1680,7 @@ void spec_report( const t_species *spec, const int rep_type,
 }
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> a649d87c13c30e857ac839928a2a1e9b25e86ea7

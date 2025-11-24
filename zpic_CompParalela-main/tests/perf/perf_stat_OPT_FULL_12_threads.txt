@@ -1,12 +1,30 @@
 
 Simulation ended.
 
+<<<<<<< HEAD
 Time for spec. advance = 5.258325 s
 Time for emf   advance = 1.401895 s
 Total simulation time  = 8.965453 s
 
 Particle advance [nsec/part] = 27.746259 
 Particle advance [Mpart/sec] = 36.040895 
+=======
+<<<<<<< HEAD
+Time for spec. advance = 3.789674 s
+Time for emf   advance = 1.401211 s
+Total simulation time  = 7.566205 s
+
+Particle advance [nsec/part] = 199.967243 
+Particle advance [Mpart/sec] = 5.000819 
+=======
+Time for spec. advance = 6.107859 s
+Time for emf   advance = 1.419008 s
+Total simulation time  = 9.924288 s
+
+Particle advance [nsec/part] = 32.228939 
+Particle advance [Mpart/sec] = 31.028015 
+>>>>>>> 182505e7de385d6d884f9c565b1f5bb6f8b2696a
+>>>>>>> a649d87c13c30e857ac839928a2a1e9b25e86ea7
 Starting simulation ...
 
 n = 0, t = 0.0
@@ -20,6 +38,7 @@ Final energy different from Initial Energy. Change in total energy is: 0.06 %
 
  Performance counter stats for './zpic':
 
+<<<<<<< HEAD
     98,388,601,103      L1D_CACHE                                                   
      1,973,323,338      L1D_CACHE_REFILL                                            
      3,900,465,149      L2D_CACHE                                                   
@@ -29,5 +48,36 @@ Final energy different from Initial Energy. Change in total energy is: 0.06 %
 
      100.049882000 seconds user
        7.624563000 seconds sys
+=======
+<<<<<<< HEAD
+         90,896.55 msec task-clock                #   11.904 CPUs utilized          
+               380      context-switches          #    0.004 K/sec                  
+                 0      cpu-migrations            #    0.000 K/sec                  
+               317      page-faults               #    0.003 K/sec                  
+   181,790,314,921      cycles                    #    2.000 GHz                    
+   219,177,950,474      instructions              #    1.21  insn per cycle         
+   <not supported>      branches                                                    
+        85,177,841      branch-misses                                               
+
+       7.635603472 seconds time elapsed
+
+      81.795336000 seconds user
+       9.102819000 seconds sys
+=======
+        119,195.06 msec task-clock                #   11.922 CPUs utilized          
+               610      context-switches          #    0.005 K/sec                  
+                 0      cpu-migrations            #    0.000 K/sec                  
+               276      page-faults               #    0.002 K/sec                  
+   238,386,049,361      cycles                    #    2.000 GHz                    
+   245,712,277,486      instructions              #    1.03  insn per cycle         
+   <not supported>      branches                                                    
+        82,771,978      branch-misses                                               
+
+       9.997698604 seconds time elapsed
+
+     114.426343000 seconds user
+       4.769847000 seconds sys
+>>>>>>> 182505e7de385d6d884f9c565b1f5bb6f8b2696a
+>>>>>>> a649d87c13c30e857ac839928a2a1e9b25e86ea7
 
 

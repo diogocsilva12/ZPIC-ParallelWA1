@@ -13,7 +13,7 @@
 #SBATCH -t 00:10:00    # 10 minutes max run
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=48
+#SBATCH --cpus-per-task=12
 #SBATCH --output=tests/slurm_logs/compile_out.o%j
 #SBATCH --error=tests/slurm_logs/compile_err.e%j
 #SBATCH --exclusive

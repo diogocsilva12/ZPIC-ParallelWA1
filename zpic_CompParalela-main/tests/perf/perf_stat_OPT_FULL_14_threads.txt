@@ -1,25 +1,39 @@
 
 Simulation ended.
 
+<<<<<<< HEAD
 Time for spec. advance = 5.131501 s
 Time for emf   advance = 2.015509 s
 Total simulation time  = 10.570551 s
 
 Particle advance [nsec/part] = 270.770548 
 Particle advance [Mpart/sec] = 3.693164 
+=======
+Time for spec. advance = 6.379054 s
+Time for emf   advance = 1.923444 s
+Total simulation time  = 11.437253 s
+
+Particle advance [nsec/part] = 33.659936 
+Particle advance [Mpart/sec] = 29.708910 
+>>>>>>> a649d87c13c30e857ac839928a2a1e9b25e86ea7
 Starting simulation ...
 
 n = 0, t = 0.0
 Allocating 14 threads
 Energy (fields | particles | total) = 3.000000e+02 0.000000e+00 3.000000e+02
 n = 42106, t = 40.000702
+<<<<<<< HEAD
 Energy (fields | particles | total) = 2.985473e+02 1.624788e+00 3.001721e+02
+=======
+Energy (fields | particles | total) = 2.985473e+02 1.624787e+00 3.001721e+02
+>>>>>>> a649d87c13c30e857ac839928a2a1e9b25e86ea7
 Initial energy: 3.000000e+02, Final energy: 3.001721e+02
 
 Final energy different from Initial Energy. Change in total energy is: 0.06 % 
 
  Performance counter stats for './zpic':
 
+<<<<<<< HEAD
         147,119.01 msec task-clock                #   13.811 CPUs utilized          
             48,783      context-switches          #    0.332 K/sec                  
                  7      cpu-migrations            #    0.000 K/sec                  
@@ -33,5 +47,20 @@ Final energy different from Initial Energy. Change in total energy is: 0.06 %
 
      134.266243000 seconds user
       12.853896000 seconds sys
+=======
+        159,905.01 msec task-clock                #   13.886 CPUs utilized          
+            22,519      context-switches          #    0.141 K/sec                  
+                 6      cpu-migrations            #    0.000 K/sec                  
+               350      page-faults               #    0.002 K/sec                  
+   319,790,426,636      cycles                    #    2.000 GHz                    
+   372,071,713,231      instructions              #    1.16  insn per cycle         
+   <not supported>      branches                                                    
+       110,248,465      branch-misses                                               
+
+      11.515626119 seconds time elapsed
+
+     145.232754000 seconds user
+      14.671288000 seconds sys
+>>>>>>> a649d87c13c30e857ac839928a2a1e9b25e86ea7
 
 
